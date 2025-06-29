@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 
-function CountingNumber({ target, duration = 2000, prefix = '', suffix = '' }) {
+function CountingNumber({ target, duration = 4000, prefix = '', suffix = '' }) {
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
