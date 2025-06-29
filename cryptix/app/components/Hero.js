@@ -91,10 +91,10 @@ export default function Hero() {
 
         {/* CTA Buttons */}
         <div className={`flex flex-col sm:flex-row gap-4 justify-center items-center transition-all duration-1000 ease-out delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          <button className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-lg text-lg font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25">
+          <button className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-md text-base font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25">
             Start Trading
           </button>
-          <button className="w-full sm:w-auto group flex items-center justify-center text-gray-300 hover:text-white px-8 py-4 text-lg font-medium transition-colors duration-200">
+          <button className="w-full sm:w-auto group flex items-center justify-center text-gray-300 hover:text-white px-6 py-3 text-base font-medium transition-colors duration-200">
             Learn more
             <svg className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
