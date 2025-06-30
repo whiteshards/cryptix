@@ -195,10 +195,10 @@ export default function Pricing() {
         {/* Bottom CTA */}
         <div className={`text-center mt-16 transition-all duration-1000 ease-out delay-800 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <p className="text-gray-400 mb-4">
-            Need help choosing the right plan?
+            Need More Specs For Free Plan?
           </p>
           <button className="text-green-400 hover:text-green-300 font-medium transition-colors duration-200 flex items-center justify-center mx-auto">
-            Contact our team
+            Join Our Discord
             <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>

@@ -75,8 +75,8 @@ export default function Features() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
         </svg>
       ),
-      title: "Secure Key System",
-      description: "Advanced encryption and security measures to protect your scripts and user data with enterprise-grade protection."
+      title: "Ad Key System",
+      description: "Monteize And Whitelist Your Scripts To The General Users For Free Using Our Ad Key System"
     },
     {
       icon: (
@@ -84,8 +84,8 @@ export default function Features() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
         </svg>
       ),
-      title: "Lightning Fast",
-      description: "Optimized performance ensuring minimal latency and maximum reliability for seamless script execution."
+      title: "Easiest Developer API",
+      description: "Optimized And Blazing Fast API Thats Easy To Use And Integrate With Your Scripts"
     },
     {
       icon: (
@@ -93,8 +93,8 @@ export default function Features() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
         </svg>
       ),
-      title: "Monetization Tools",
-      description: "Comprehensive analytics and payment processing to help you maximize revenue from your scripts."
+      title: "Secure Anti-Bypass",
+      description: "We Integerate Every Ad-Link Provider's Anti Bypass Into Our System So You Can Keep 100% Of Your Revenue."
     }
   ];
 
@@ -129,7 +129,7 @@ export default function Features() {
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600"> Modern Scripters</span>
           </h2>
           <p className="max-w-2xl mx-auto text-lg text-gray-300">
-            Experience the next generation of Roblox script management with our cutting-edge platform designed for professionals.
+            Experience the next generation of Roblox script management with Cryptix.
           </p>
         </div>
 
