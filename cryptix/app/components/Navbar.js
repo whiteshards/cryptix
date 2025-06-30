@@ -22,10 +22,10 @@ export default function Navbar() {
                 Features
               </a>
               <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-200 text-sm font-medium">
-                Trading
+                Create Account
               </a>
               <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-200 text-sm font-medium">
-                Portfolio
+                Dashboard
               </a>
               <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-200 text-sm font-medium">
                 Support
@@ -36,7 +36,7 @@ export default function Navbar() {
           {/* CTA Button */}
           <div className="hidden md:block">
             <button className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md text-sm font-medium transition-colors duration-200">
-              Get Started
+              Get Invite
             </button>
           </div>
 
@@ -70,16 +70,16 @@ export default function Navbar() {
               Features
             </a>
             <a href="#" className="text-gray-300 hover:text-green-400 block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
-              Trading
+              Create Account
             </a>
             <a href="#" className="text-gray-300 hover:text-green-400 block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
-              Portfolio
+              Dashboard
             </a>
             <a href="#" className="text-gray-300 hover:text-green-400 block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
               Support
             </a>
             <button className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md text-sm font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25">
-              Get Started
+              Get Invite
             </button>
           </div>
         </div>

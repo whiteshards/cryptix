@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Cryptix - Revolutionizing the Future of Crypto Trading",
-  description: "A premium cryptocurrency trading experience with the latest technologies to enhance your trading journey.",
-  keywords: "cryptocurrency, trading, crypto, blockchain, bitcoin, ethereum, portfolio",
+  title: "Cryptix - Landing Page",
+  description: "A Roblox Keysystem manager.",
+  keywords: "roblox, roblox scripts, scripts, grow a garden, lua, roblox key, delta key, delta executor",
 };
 
 export default function RootLayout({ children }) {

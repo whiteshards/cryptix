@@ -69,33 +69,32 @@ export default function Hero() {
         {/* Badge */}
         <div className={`mb-8 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-green-500/20 text-green-400 border border-green-500/30">
-            THE FUTURE IS NOW
+            MONETIZE YOUR SCRIPTS TODAY
           </span>
         </div>
 
         {/* Main Heading */}
         <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight transition-all duration-1200 ease-out delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          Revolutionizing the
-          <br />
+          Revolutionizing          <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">
-            future ⚡ of crypto
+          Roblox Scripting
           </span>
         </h1>
 
         {/* Subtitle */}
         <p className={`max-w-3xl mx-auto text-lg sm:text-xl text-gray-300 mb-12 leading-relaxed transition-all duration-1000 ease-out delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          A premium experience embedded with the latest technologies to enhance your
+          A premium experience for Roblox Scripters to
           <br className="hidden sm:block" />
-          cryptocurrency trading experience to the next level.
+          monetize their scripts seamlessly.
         </p>
 
         {/* CTA Buttons */}
         <div className={`flex flex-col sm:flex-row gap-4 justify-center items-center transition-all duration-1000 ease-out delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           <button className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-md text-base font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25">
-            Start Trading
+            Free Invite
           </button>
           <button className="w-full sm:w-auto group flex items-center justify-center text-gray-300 hover:text-white px-6 py-3 text-base font-medium transition-colors duration-200">
-            Learn more
+            Features
             <svg className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -106,21 +105,21 @@ export default function Hero() {
         <div className={`mt-20 mb-12 sm:mb-0 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto transition-all duration-1200 ease-out delay-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="text-center">
             <div className="text-3xl font-bold text-green-400 mb-2">
-              <CountingNumber target={2.4} prefix="$" suffix="B+" />
+              <CountingNumber target={10000} prefix="" suffix="+" />
             </div>
-            <div className="text-gray-400">Trading Volume</div>
+            <div className="text-gray-400">Daily Executions</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-green-400 mb-2">
-              <CountingNumber target={500} suffix="K+" />
+              <CountingNumber target={1000} suffix="+" />
             </div>
-            <div className="text-gray-400">Active Users</div>
+            <div className="text-gray-400">Active Scripters</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-green-400 mb-2">
-              <CountingNumber target={99.9} suffix="%" />
+              <CountingNumber target={100} suffix="%" />
             </div>
-            <div className="text-gray-400">Uptime</div>
+            <div className="text-gray-400">Security</div>
           </div>
         </div>
       </div>
