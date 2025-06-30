@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -13,13 +12,13 @@ function CountingNumber({ target, duration = 4000, prefix = '', suffix = '' }) {
     const animate = (timestamp) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
-      
+
       // Easing function for smooth animation
       const easeOutQuart = 1 - Math.pow(1 - progress, 4);
       const value = Math.floor(easeOutQuart * target);
-      
+
       setCurrent(value);
-      
+
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
       }
