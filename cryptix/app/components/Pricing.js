@@ -67,19 +67,10 @@ export default function Pricing() {
       period: "per month",
       description: "Advanced features for professional scripters",
       isPopular: true,
-      buttonText: "No Need To Pay",
+      buttonText: "No Need To Pay!",
       buttonStyle: "bg-gray-600 cursor-not-allowed text-gray-400",
       disabled: true,
-      features: [
-        { text: "Everything in Free", included: true },
-        { text: "Unlimited Scripts", included: true },
-        { text: "50,000 Key Capacity", included: true },
-        { text: "Priority Support", included: true },
-        { text: "Advanced Analytics", included: true },
-        { text: "Custom Branding", included: true },
-        { text: "No Extra Checkpoints", included: true },
-        { text: "API Access", included: true }
-      ]
+      noPayMessage: true
     },
     {
       name: "Custom",
@@ -87,19 +78,10 @@ export default function Pricing() {
       period: "pricing",
       description: "Tailored solutions for enterprise needs",
       isPopular: false,
-      buttonText: "No Need To Pay",
+      buttonText: "No Need To Pay!",
       buttonStyle: "bg-gray-600 cursor-not-allowed text-gray-400",
       disabled: true,
-      features: [
-        { text: "Everything in Pro", included: true },
-        { text: "Unlimited Everything", included: true },
-        { text: "Dedicated Support", included: true },
-        { text: "Custom Integrations", included: true },
-        { text: "SLA Guarantee", included: true },
-        { text: "White-label Solution", included: true },
-        { text: "Custom Development", included: true },
-        { text: "Enterprise Security", included: true }
-      ]
+      noPayMessage: true
     }
   ];
 
@@ -170,29 +152,41 @@ export default function Pricing() {
                   <p className="text-gray-400 text-sm">{plan.description}</p>
                 </div>
 
-                {/* Features List */}
-                <div className="space-y-4 mb-8">
-                  {plan.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-start space-x-3">
-                      <div className="flex-shrink-0 mt-0.5">
-                        {feature.included ? <CheckIcon /> : <CrossIcon />}
-                      </div>
-                      <span className={`text-sm ${feature.included ? 'text-gray-300' : 'text-gray-500'}`}>
-                        {feature.text}
-                      </span>
+                {/* Features List or No Pay Message */}
+                {plan.noPayMessage ? (
+                  <div className="flex-1 flex items-center justify-center mb-8">
+                    <div className="text-center">
+                      <div className="text-6xl mb-4">🎉</div>
+                      <h3 className="text-2xl font-bold text-green-400 mb-2">No Need To Pay!</h3>
+                      <p className="text-gray-400 text-sm">This plan is currently not required</p>
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4 mb-8">
+                    {plan.features.map((feature, featureIndex) => (
+                      <div key={featureIndex} className="flex items-start space-x-3">
+                        <div className="flex-shrink-0 mt-0.5">
+                          {feature.included ? <CheckIcon /> : <CrossIcon />}
+                        </div>
+                        <span className={`text-sm ${feature.included ? 'text-gray-300' : 'text-gray-500'}`}>
+                          {feature.text}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* CTA Button */}
-                <button 
-                  className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 ${plan.buttonStyle} ${
-                    !plan.disabled ? 'transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25' : ''
-                  }`}
-                  disabled={plan.disabled}
-                >
-                  {plan.buttonText}
-                </button>
+                <div className="mt-auto">
+                  <button 
+                    className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 ${plan.buttonStyle} ${
+                      !plan.disabled ? 'transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25' : ''
+                    }`}
+                    disabled={plan.disabled}
+                  >
+                    {plan.buttonText}
+                  </button>
+                </div>
               </div>
             </div>
           ))}
