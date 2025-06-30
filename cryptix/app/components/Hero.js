@@ -105,13 +105,13 @@ export default function Hero() {
         <div className={`mt-20 mb-12 sm:mb-0 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto transition-all duration-1200 ease-out delay-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="text-center">
             <div className="text-3xl font-bold text-green-400 mb-2">
-              <CountingNumber target={10000} prefix="" suffix="+" />
+              <CountingNumber target={30000} prefix="" suffix="+" />
             </div>
             <div className="text-gray-400">Daily Executions</div>
           </div>
           <div className="text-center">
             <div className="text-3xl font-bold text-green-400 mb-2">
-              <CountingNumber target={1000} suffix="+" />
+              <CountingNumber target={5000} suffix="+" />
             </div>
             <div className="text-gray-400">Active Scripters</div>
           </div>
