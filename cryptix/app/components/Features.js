@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Aurora from '../blocks/Backgrounds/Aurora/Aurora';
 
 function SpotlightCard({ children, className = "" }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -100,13 +101,20 @@ export default function Features() {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-20 bg-slate-900 overflow-hidden"
+      className="relative py-20 overflow-hidden"
     >
-      {/* Background decorative elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-40 right-10 w-40 h-40 bg-green-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-20 left-10 w-32 h-32 bg-green-400/10 rounded-lg transform rotate-45"></div>
+      {/* Aurora Background */}
+      <div className="absolute inset-0 opacity-30">
+        <Aurora 
+          colorStops={["#10b981", "#22c55e", "#34d399"]} 
+          amplitude={0.8} 
+          blend={0.6}
+          speed={0.5}
+        />
       </div>
+      
+      {/* Background overlay for better text readability */}
+      <div className="absolute inset-0 bg-slate-900/70"></div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
