@@ -46,7 +46,7 @@ export default function Pricing() {
       price: "$0",
       period: "forever",
       description: "Perfect for getting started with script monetization",
-      isPopular: false,
+      isPopular: true,
       buttonText: "Get Invite",
       buttonStyle: "bg-green-500 hover:bg-green-600 text-white",
       disabled: false,
@@ -66,7 +66,7 @@ export default function Pricing() {
       price: "$19",
       period: "per month",
       description: "Advanced features for professional scripters",
-      isPopular: true,
+      isPopular: false,
       buttonText: "No Need To Pay!",
       buttonStyle: "bg-gray-600 cursor-not-allowed text-gray-400",
       disabled: true,
@@ -135,7 +135,7 @@ export default function Pricing() {
                 </div>
               )}
 
-              <div className={`relative h-full p-8 rounded-xl border backdrop-blur-sm transition-all duration-300 hover:scale-105 ${
+              <div className={`relative h-full p-8 rounded-xl border backdrop-blur-sm transition-all duration-300 hover:scale-105 flex flex-col ${
                 plan.isPopular 
                   ? 'bg-slate-800/80 border-green-500/50 shadow-lg shadow-green-500/20' 
                   : 'bg-slate-800/50 border-slate-700/50 hover:border-green-500/30'
@@ -154,7 +154,7 @@ export default function Pricing() {
 
                 {/* Features List or No Pay Message */}
                 {plan.noPayMessage ? (
-                  <div className="flex-1 flex items-center justify-center mb-8">
+                  <div className="flex-1 flex items-center justify-center">
                     <div className="text-center">
                       <div className="text-6xl mb-4">🎉</div>
                       <h3 className="text-2xl font-bold text-green-400 mb-2">No Need To Pay!</h3>
@@ -162,7 +162,7 @@ export default function Pricing() {
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-4 mb-8">
+                  <div className="space-y-4 flex-grow">
                     {plan.features.map((feature, featureIndex) => (
                       <div key={featureIndex} className="flex items-start space-x-3">
                         <div className="flex-shrink-0 mt-0.5">
@@ -177,7 +177,7 @@ export default function Pricing() {
                 )}
 
                 {/* CTA Button */}
-                <div className="mt-auto">
+                <div className="mt-auto pt-6 pb-2">
                   <button 
                     className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 ${plan.buttonStyle} ${
                       !plan.disabled ? 'transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25' : ''
