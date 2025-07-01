@@ -27,26 +27,21 @@ export default function AuthModal({ isOpen, onClose }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Background blur overlay */}
       <div 
-        className="absolute inset-0 bg-black/50 backdrop-blur-md"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       ></div>
 
       {/* Modal */}
       <div className="relative z-10 w-full max-w-md mx-4">
         {/* Gradient border container */}
-        <div className="relative p-[2px] rounded-2xl bg-gradient-to-r from-red-500 via-purple-500 to-pink-500 animate-pulse">
+        <div className="relative p-[2px] rounded-2xl bg-gradient-to-r from-green-500 via-green-400 to-green-600">
           {/* Star border effect */}
-          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-500 via-purple-500 to-pink-500 opacity-75 blur-sm animate-pulse"></div>
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-500 via-green-400 to-green-600 opacity-50 blur-[1px]"></div>
           
           {/* Modal content */}
           <div className="relative bg-slate-900 rounded-2xl p-8">
-            {/* Alert icon and title */}
+            {/* Alert title */}
             <div className="text-center mb-6">
-              <div className="mx-auto w-16 h-16 bg-gradient-to-r from-red-500 to-purple-500 rounded-full flex items-center justify-center mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                </svg>
-              </div>
               <h3 className="text-2xl font-bold text-white mb-2">Alert!</h3>
             </div>
 
