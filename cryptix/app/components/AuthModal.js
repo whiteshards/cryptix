@@ -59,7 +59,7 @@ export default function AuthModal({ isOpen, onClose }) {
           }}></div>
           
           {/* Modal content */}
-          <div className="relative bg-slate-900 rounded-2xl p-8">
+          <div className="relative bg-slate-900 rounded-2xl p-8"></div>
             {/* Alert title */}
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold text-white mb-2">Alert!</h3>
