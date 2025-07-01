@@ -57,7 +57,7 @@ export default function AccountPage() {
   const handleLogout = () => {
     localStorage.removeItem('cryptix_jwt');
     localStorage.removeItem('cryptix_password');
-    router.push('/');
+    router.push('/login');
   };
 
   if (isLoading) {

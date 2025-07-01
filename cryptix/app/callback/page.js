@@ -16,13 +16,13 @@ function CallbackContent() {
 
       if (error) {
         setStatus(`Authentication error: ${error}`);
-        setTimeout(() => router.push('/'), 3000);
+        setTimeout(() => router.push('/login'), 3000);
         return;
       }
 
       if (!code) {
         setStatus('No authorization code received');
-        setTimeout(() => router.push('/'), 3000);
+        setTimeout(() => router.push('/login'), 3000);
         return;
       }
 
@@ -49,12 +49,12 @@ function CallbackContent() {
           router.push('/dashboard');
         } else {
           setStatus(`Registration failed: ${data.detail || 'Unknown error'}`);
-          setTimeout(() => router.push('/'), 3000);
+          setTimeout(() => router.push('/login'), 3000);
         }
       } catch (error) {
         console.error('Callback error:', error);
         setStatus('Network error occurred');
-        setTimeout(() => router.push('/'), 3000);
+        setTimeout(() => router.push('/login'), 3000);
       }
     };
 
