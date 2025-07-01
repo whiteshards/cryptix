@@ -27,7 +27,7 @@ function CallbackContent() {
       }
 
       try {
-        const response = await fetch('https://cryptix-backend.onrender.com/auth/discord/callback', {
+        const response = await fetch('https://cryptix-api.vercel.app/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
