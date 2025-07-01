@@ -38,6 +38,8 @@ function CallbackContent() {
         const data = await response.json();
 
         if (response.ok && data.success) {
+          console.log('Registration successful:', data);
+          
           // Store JWT token in localStorage
           localStorage.setItem('cryptix_jwt', data.token);
           
@@ -46,8 +48,15 @@ function CallbackContent() {
             localStorage.setItem('cryptix_password', data.password);
           }
           
-          router.push('/dashboard');
+          console.log('Token stored, redirecting to dashboard');
+          setStatus('Registration successful! Redirecting...');
+          
+          // Add a small delay before redirect to ensure localStorage is written
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 500);
         } else {
+          console.error('Registration failed:', data);
           setStatus(`Registration failed: ${data.detail || 'Unknown error'}`);
           setTimeout(() => router.push('/login'), 3000);
         }

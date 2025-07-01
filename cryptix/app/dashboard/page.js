@@ -30,20 +30,26 @@ export default function DashboardPage() {
         if (response.ok) {
           const data = await response.json();
           setProfile(data.customer);
+          setIsLoading(false);
         } else if (response.status === 401) {
+          console.log('Token invalid, redirecting to login');
           localStorage.removeItem('cryptix_jwt');
           localStorage.removeItem('cryptix_password');
           router.push('/login');
           return;
+        } else {
+          console.error('Profile fetch failed:', response.status);
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('Auth check error:', error);
+        setIsLoading(false);
       }
-
-      setIsLoading(false);
     };
 
-    checkAuth();
+    // Add a small delay to ensure localStorage is updated after redirect
+    const timeoutId = setTimeout(checkAuth, 100);
+    return () => clearTimeout(timeoutId);
   }, [router]);
 
   const handleLogout = () => {
