@@ -1,0 +1,43 @@
+[12:10:03.990] Running build in Washington, D.C., USA (East) – iad1
+[12:10:03.992] Build machine configuration: 2 cores, 8 GB
+[12:10:04.011] Cloning github.com/whiteshards/cryptix (Branch: main, Commit: 4f491eb)
+[12:10:04.332] Cloning completed: 321.000ms
+[12:10:06.136] Restored build cache from previous deployment (4T42P78NCt7zpgAi5yq3RpSRG433)
+[12:10:06.582] Running "vercel build"
+[12:10:07.040] Vercel CLI 43.3.0
+[12:10:07.344] Installing dependencies...
+[12:10:08.343] 
+[12:10:08.344] up to date in 720ms
+[12:10:08.344] 
+[12:10:08.344] 14 packages are looking for funding
+[12:10:08.345]   run `npm fund` for details
+[12:10:08.375] Detected Next.js version: 15.3.4
+[12:10:08.378] Running "npm run build"
+[12:10:08.496] 
+[12:10:08.496] > cryptix@0.1.0 build
+[12:10:08.496] > next build
+[12:10:08.497] 
+[12:10:09.314]    ▲ Next.js 15.3.4
+[12:10:09.314] 
+[12:10:09.384]    Creating an optimized production build ...
+[12:10:15.766]  ✓ Compiled successfully in 3.0s
+[12:10:15.771]    Linting and checking validity of types ...
+[12:10:15.886]    Collecting page data ...
+[12:10:17.435]    Generating static pages (0/7) ...
+[12:10:18.383]  ⨯ useSearchParams() should be wrapped in a suspense boundary at page "/callback". Read more: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+[12:10:18.383]     at a (/vercel/path0/cryptix/.next/server/chunks/293.js:5:41926)
+[12:10:18.384]     at f (/vercel/path0/cryptix/.next/server/chunks/293.js:3:19173)
+[12:10:18.384]     at a (/vercel/path0/cryptix/.next/server/app/callback/page.js:1:3976)
+[12:10:18.384]     at nF (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:46843)
+[12:10:18.384]     at nH (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:48618)
+[12:10:18.384]     at nW (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:67762)
+[12:10:18.384]     at nz (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:65337)
+[12:10:18.385]     at nB (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:47195)
+[12:10:18.385]     at nH (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:48664)
+[12:10:18.385]     at nH (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:64688)
+[12:10:18.385] Error occurred prerendering page "/callback". Read more: https://nextjs.org/docs/messages/prerender-error
+[12:10:18.385] Export encountered an error on /callback/page: /callback, exiting the build.
+[12:10:18.389]  ⨯ Next.js build worker exited with code: 1 and signal: null
+[12:10:18.416] Error: Command "npm run build" exited with 1
+[12:10:18.587] 
+[12:10:21.596] Exiting build container
