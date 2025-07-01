@@ -1,12 +1,39 @@
-
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AuthModal from './AuthModal';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [discordId, setDiscordId] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem('jwt_token');
+    if (token) {
+      setIsAuthenticated(true);
+      try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        setDiscordId(payload.discordId);
+      } catch (error) {
+        console.error("Error decoding JWT:", error);
+        localStorage.removeItem('jwt_token');
+        setIsAuthenticated(false);
+        router.push('/');
+      }
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('jwt_token');
+    setIsAuthenticated(false);
+    router.push('/');
+  };
 
   return (
     <nav className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800/50">
@@ -26,9 +53,15 @@ export default function Navbar() {
               <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-200 text-sm font-medium">
                 Create Account
               </a>
-              <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-200 text-sm font-medium">
-                Dashboard
-              </a>
+              {isAuthenticated ? (
+                <a href="/dashboard" className="text-gray-300 hover:text-green-400 transition-colors duration-200 text-sm font-medium">
+                  Dashboard
+                </a>
+              ) : (
+                <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-200 text-sm font-medium">
+                  Dashboard
+                </a>
+              )}
               <a href="#" className="text-gray-300 hover:text-green-400 transition-colors duration-200 text-sm font-medium">
                 Support
               </a>
@@ -37,12 +70,21 @@ export default function Navbar() {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <button 
-              onClick={() => setIsAuthModalOpen(true)}
-              className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-            >
-              Get Invite
-            </button>
+            {isAuthenticated ? (
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              >
+                Logout
+              </button>
+            ) : (
+              <button 
+                onClick={() => setIsAuthModalOpen(true)}
+                className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              >
+                Get Invite
+              </button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -77,18 +119,33 @@ export default function Navbar() {
             <a href="#" className="text-gray-300 hover:text-green-400 block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
               Create Account
             </a>
-            <a href="#" className="text-gray-300 hover:text-green-400 block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
-              Dashboard
-            </a>
+             {isAuthenticated ? (
+                <a href="/dashboard" className="text-gray-300 hover:text-green-400 block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
+                  Dashboard
+                </a>
+              ) : (
+                <a href="#" className="text-gray-300 hover:text-green-400 block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
+                  Dashboard
+                </a>
+              )}
             <a href="#" className="text-gray-300 hover:text-green-400 block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
               Support
             </a>
-            <button 
-              onClick={() => setIsAuthModalOpen(true)}
-              className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md text-sm font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25"
-            >
-              Get Invite
-            </button>
+            {!isAuthenticated ? (
+              <button 
+                onClick={() => setIsAuthModalOpen(true)}
+                className="w-full text-left bg-green-500 hover:bg-green-600 text-white px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1"
+              >
+                Get Invite
+              </button>
+            ) : (
+              <button 
+                onClick={handleLogout}
+                className="w-full text-left bg-red-600 hover:bg-red-700 text-white px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1"
+              >
+                Logout
+              </button>
+            )}
           </div>
         </div>
       </div>

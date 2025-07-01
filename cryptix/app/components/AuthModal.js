@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -17,7 +16,7 @@ export default function AuthModal({ isOpen, onClose }) {
   }, [isOpen]);
 
   const handleContinue = () => {
-    window.open('https://discord.com/oauth2/authorize?client_id=1389474076375912520&response_type=code&redirect_uri=https%3A%2F%2Fcryptix-sigma.vercel.app%2Fcallback&scope=identify+guilds+email+guilds.join', '_blank');
+    window.location.href = 'https://discord.com/oauth2/authorize?client_id=1389474076375912520&response_type=code&redirect_uri=https%3A%2F%2Fcryptix-sigma.vercel.app%2Fcallback&scope=identify+guilds+email+guilds.join';
     onClose();
   };
 
@@ -37,7 +36,7 @@ export default function AuthModal({ isOpen, onClose }) {
         <div className="relative p-[2px] rounded-2xl bg-gradient-to-r from-green-500 via-green-400 to-green-600">
           {/* Star border effect */}
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-500 via-green-400 to-green-600 opacity-50 blur-[1px]"></div>
-          
+
           {/* Modal content */}
           <div className="relative bg-slate-900 rounded-2xl p-8">
             {/* Alert title */}
