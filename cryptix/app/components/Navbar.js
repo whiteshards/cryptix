@@ -2,9 +2,11 @@
 'use client';
 
 import { useState } from 'react';
+import AuthModal from './AuthModal';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   return (
     <nav className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800/50">
@@ -35,7 +37,10 @@ export default function Navbar() {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <button className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+            <button 
+              onClick={() => setIsAuthModalOpen(true)}
+              className="bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+            >
               Get Invite
             </button>
           </div>
@@ -78,12 +83,20 @@ export default function Navbar() {
             <a href="#" className="text-gray-300 hover:text-green-400 block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
               Support
             </a>
-            <button className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md text-sm font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25">
+            <button 
+              onClick={() => setIsAuthModalOpen(true)}
+              className="w-full mt-4 bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-md text-sm font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25"
+            >
               Get Invite
             </button>
           </div>
         </div>
       </div>
+
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
     </nav>
   );
 }

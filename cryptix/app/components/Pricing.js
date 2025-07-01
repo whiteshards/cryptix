@@ -2,9 +2,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import AuthModal from './AuthModal';
 
 export default function Pricing() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -179,6 +181,7 @@ export default function Pricing() {
                 {/* CTA Button */}
                 <div className="mt-auto pt-6 pb-2">
                   <button 
+                    onClick={() => !plan.disabled && setIsAuthModalOpen(true)}
                     className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 ${plan.buttonStyle} ${
                       !plan.disabled ? 'transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25' : ''
                     }`}
@@ -205,6 +208,11 @@ export default function Pricing() {
           </button>
         </div>
       </div>
+
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
     </section>
   );
 }

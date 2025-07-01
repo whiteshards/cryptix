@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import AuthModal from './AuthModal';
 
 function CountingNumber({ target, duration = 4000, prefix = '', suffix = '' }) {
   const [current, setCurrent] = useState(0);
@@ -44,6 +45,7 @@ function CountingNumber({ target, duration = 4000, prefix = '', suffix = '' }) {
 
 export default function Hero() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   useEffect(() => {
     // Trigger animations after component mounts
@@ -89,7 +91,10 @@ export default function Hero() {
 
         {/* CTA Buttons */}
         <div className={`flex flex-col sm:flex-row gap-4 justify-center items-center transition-all duration-1000 ease-out delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
-          <button className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-md text-base font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25">
+          <button 
+            onClick={() => setIsAuthModalOpen(true)}
+            className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-md text-base font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25"
+          >
             Free Invite
           </button>
           <button className="w-full sm:w-auto group flex items-center justify-center text-gray-300 hover:text-white px-6 py-3 text-base font-medium transition-colors duration-200">
@@ -122,6 +127,11 @@ export default function Hero() {
           </div>
         </div>
       </div>
+
+      <AuthModal 
+        isOpen={isAuthModalOpen} 
+        onClose={() => setIsAuthModalOpen(false)} 
+      />
     </section>
   );
 }
