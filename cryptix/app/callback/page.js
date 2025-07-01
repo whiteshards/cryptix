@@ -27,7 +27,7 @@ function CallbackContent() {
       }
 
       try {
-        const response = await fetch('https://cryptix-api.vercel.app/api/v1/users/register', {
+        const response = await fetch('https://cryptix-api.vercel.app/api/v1/users/registe', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
