@@ -40,10 +40,13 @@ function CallbackContent() {
         if (response.ok && data.success) {
           // Store JWT token in localStorage
           localStorage.setItem('cryptix_jwt', data.token);
-          localStorage.setItem('cryptix_discord_id', data.customer.discord_id);
           
-          setStatus('Success! Redirecting to dashboard...');
-          setTimeout(() => router.push('/dashboard'), 1500);
+          // Store password if provided (for new registrations)
+          if (data.password) {
+            localStorage.setItem('cryptix_password', data.password);
+          }
+          
+          router.push('/dashboard');
         } else {
           setStatus(`Registration failed: ${data.detail || 'Unknown error'}`);
           setTimeout(() => router.push('/'), 3000);

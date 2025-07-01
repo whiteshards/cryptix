@@ -12,7 +12,7 @@ export default function Navbar() {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem('jwt_token');
+    const token = localStorage.getItem('cryptix_jwt');
     if (token) {
       setIsAuthenticated(true);
       try {
@@ -20,7 +20,8 @@ export default function Navbar() {
         setDiscordId(payload.discordId);
       } catch (error) {
         console.error("Error decoding JWT:", error);
-        localStorage.removeItem('jwt_token');
+        localStorage.removeItem('cryptix_jwt');
+        localStorage.removeItem('cryptix_password');
         setIsAuthenticated(false);
         router.push('/');
       }
@@ -30,7 +31,8 @@ export default function Navbar() {
   }, [router]);
 
   const handleLogout = () => {
-    localStorage.removeItem('jwt_token');
+    localStorage.removeItem('cryptix_jwt');
+    localStorage.removeItem('cryptix_password');
     setIsAuthenticated(false);
     router.push('/');
   };

@@ -7,30 +7,34 @@ import { useRouter } from 'next/navigation';
 export default function DashboardPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
-  const [discordId, setDiscordId] = useState('');
-  const [jwtToken, setJwtToken] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
   useEffect(() => {
     // Check for JWT token in localStorage
     const token = localStorage.getItem('cryptix_jwt');
-    const discord_id = localStorage.getItem('cryptix_discord_id');
 
     if (!token) {
-      // No JWT token found, redirect to landing page
-      router.push('/');
+      // No JWT token found, redirect to login page
+      router.push('/login');
       return;
     }
 
-    setJwtToken(token);
-    setDiscordId(discord_id || 'Not available');
     setIsLoading(false);
   }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem('cryptix_jwt');
-    localStorage.removeItem('cryptix_discord_id');
+    localStorage.removeItem('cryptix_password');
     router.push('/');
   };
+
+  const sidebarItems = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'scripthub', label: 'Script Hub', icon: '📝' },
+    { id: 'analytics', label: 'Analytics', icon: '📈' },
+    { id: 'account', label: 'Account', icon: '👤' },
+  ];
 
   if (isLoading) {
     return (
@@ -41,58 +45,122 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
-      {/* Header */}
-      <nav className="bg-slate-800 border-b border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold text-white">Cryptix Dashboard</h1>
-            <button 
-              onClick={handleLogout}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Discord ID Card */}
-          <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-            <h2 className="text-xl font-semibold text-white mb-4">Discord Information</h2>
-            <div className="space-y-2">
-              <div>
-                <span className="text-gray-400">Discord ID:</span>
-                <p className="text-white font-mono text-sm break-all">{discordId}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* JWT Token Card */}
-          <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
-            <h2 className="text-xl font-semibold text-white mb-4">Authentication Token</h2>
-            <div className="space-y-2">
-              <div>
-                <span className="text-gray-400">JWT Token:</span>
-                <p className="text-white font-mono text-xs break-all bg-slate-700 p-3 rounded mt-2">
-                  {jwtToken}
-                </p>
-              </div>
-            </div>
-          </div>
+    <div className="min-h-screen bg-slate-900 flex">
+      {/* Sidebar */}
+      <div className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 ease-in-out fixed md:static inset-y-0 left-0 z-50 w-64 bg-slate-800 border-r border-slate-700`}>
+        <div className="flex items-center justify-between h-16 px-6 border-b border-slate-700">
+          <h1 className="text-xl font-bold text-white">Cryptix</h1>
+          <button
+            onClick={() => setSidebarOpen(false)}
+            className="md:hidden text-gray-400 hover:text-white"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
-        {/* Welcome Section */}
-        <div className="mt-8 bg-slate-800 rounded-lg p-6 border border-slate-700">
-          <h2 className="text-2xl font-bold text-white mb-4">Welcome to Cryptix!</h2>
-          <p className="text-gray-400">
-            You have successfully authenticated with Discord. Your account is now set up and ready to use.
-          </p>
+        <nav className="mt-8 px-4">
+          <div className="space-y-2">
+            {sidebarItems.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => {
+                  if (item.id === 'account') {
+                    router.push('/dashboard/@me');
+                  } else {
+                    setActiveTab(item.id);
+                  }
+                  setSidebarOpen(false);
+                }}
+                className={`w-full flex items-center px-4 py-3 text-left rounded-lg transition-colors duration-200 ${
+                  activeTab === item.id
+                    ? 'bg-green-600 text-white'
+                    : 'text-gray-300 hover:bg-slate-700 hover:text-white'
+                }`}
+              >
+                <span className="mr-3 text-lg">{item.icon}</span>
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </nav>
+
+        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-slate-700">
+          <button
+            onClick={handleLogout}
+            className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
+          >
+            Logout
+          </button>
         </div>
       </div>
+
+      {/* Main Content */}
+      <div className="flex-1 md:ml-0">
+        {/* Top Bar */}
+        <div className="bg-slate-800 border-b border-slate-700 h-16 flex items-center justify-between px-6">
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="md:hidden text-gray-400 hover:text-white"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <h2 className="text-xl font-semibold text-white capitalize">{activeTab}</h2>
+          <div></div>
+        </div>
+
+        {/* Content Area */}
+        <div className="p-6">
+          {activeTab === 'overview' && (
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-6">Dashboard Overview</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                  <h4 className="text-lg font-semibold text-white mb-2">Total Scripts</h4>
+                  <p className="text-3xl font-bold text-green-400">0</p>
+                </div>
+                <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                  <h4 className="text-lg font-semibold text-white mb-2">Active Keys</h4>
+                  <p className="text-3xl font-bold text-blue-400">0</p>
+                </div>
+                <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                  <h4 className="text-lg font-semibold text-white mb-2">Total Users</h4>
+                  <p className="text-3xl font-bold text-purple-400">0</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'scripthub' && (
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-6">Script Hub</h3>
+              <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <p className="text-gray-400">No scripts available yet. Create your first script to get started!</p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'analytics' && (
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-6">Analytics</h3>
+              <div className="bg-slate-800 rounded-lg p-6 border border-slate-700">
+                <p className="text-gray-400">Analytics data will be displayed here once you have active scripts.</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Sidebar Overlay */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        ></div>
+      )}
     </div>
   );
 }
