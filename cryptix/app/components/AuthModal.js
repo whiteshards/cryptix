@@ -35,11 +35,31 @@ export default function AuthModal({ isOpen, onClose }) {
       <div className="relative z-10 w-full max-w-md mx-4">
         {/* Gradient border container */}
         <div className="relative p-[2px] rounded-2xl bg-gradient-to-r from-green-500 via-green-400 to-green-600">
-          {/* Star border effect */}
+          {/* Animated star border effects */}
           <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-500 via-green-400 to-green-600 opacity-50 blur-[1px]"></div>
           
+          {/* Primary animated border */}
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-green-500 via-green-300 to-green-500 opacity-75 animate-spin" style={{animationDuration: '3s'}}></div>
+          
+          {/* Secondary trail effect */}
+          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-green-400 to-transparent opacity-60 animate-pulse" style={{animationDuration: '2s'}}></div>
+          
+          {/* Rotating highlight */}
+          <div className="absolute inset-0 rounded-2xl" style={{
+            background: 'conic-gradient(from 0deg, transparent 270deg, #10b981 300deg, #22c55e 330deg, transparent 360deg)',
+            animation: 'spin 4s linear infinite',
+            opacity: 0.8
+          }}></div>
+          
+          {/* Trail sparkle effect */}
+          <div className="absolute inset-0 rounded-2xl" style={{
+            background: 'conic-gradient(from 180deg, transparent 90deg, #34d399 120deg, #22c55e 150deg, transparent 180deg)',
+            animation: 'spin 6s linear infinite reverse',
+            opacity: 0.6
+          }}></div>
+          
           {/* Modal content */}
-          <div className="relative bg-slate-900 rounded-2xl p-8">
+          <div className="relative bg-slate-900 rounded-2xl p-8"></div>
             {/* Alert title */}
             <div className="text-center mb-6">
               <h3 className="text-2xl font-bold text-white mb-2">Alert!</h3>
