@@ -167,7 +167,7 @@ export default function DashboardPage() {
 
             {/* Account Button */}
             <button
-              onClick={() => router.push('/dashboard/@me')}
+              onClick={() => router.push('/dashboard/me')}
               className="w-full flex items-center px-3 py-3 text-left rounded-lg transition-all duration-200 group text-gray-400 hover:bg-slate-700 hover:text-white"
               title={sidebarCollapsed ? 'Account' : ''}
             >
