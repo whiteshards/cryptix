@@ -20,6 +20,7 @@ export default function LoginPage() {
     if (token) {
       //router.push('/dashboard');
       console.log()
+      setCheckingAuth(false)
     } else {
       setCheckingAuth(false);
     }
