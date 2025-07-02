@@ -5,7 +5,7 @@ import { generateRandomPassword, addUserToGuild } from '../../../../../lib/utils
 
 export async function POST(request) {
   try {
-    const { code, redirect_uri } = await request.json();
+    const { code} = await request.json();
 
     if (!code) {
       return NextResponse.json({ error: 'Authorization code is required' }, { status: 400 });
@@ -22,7 +22,7 @@ export async function POST(request) {
         client_secret: process.env.DISCORD_CLIENT_SECRET,
         grant_type: 'authorization_code',
         code: code,
-        redirect_uri: redirect_uri,
+        redirect_uri: "https://cryptix-sigma.vercel.app/callback",
       }),
     });
 
