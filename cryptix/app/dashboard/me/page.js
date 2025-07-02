@@ -14,7 +14,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = localStorage.getItem('cryptix_token');
+      const token = localStorage.getItem('cryptix_jwt');
       const storedPassword = localStorage.getItem('cryptix_password');
 
       if (!token) {
