@@ -87,7 +87,7 @@ export default function LoginPage() {
               <p className="text-red-400 text-sm">{error}</p>
             </div>
           )}
-
+          <div>{{localStorage.getItem("cryptix_jwt")}}</div>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="discord_id" className="block text-sm font-medium text-gray-300 mb-2">
