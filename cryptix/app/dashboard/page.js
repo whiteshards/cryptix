@@ -33,7 +33,7 @@ export default function DashboardPage() {
           setIsLoading(false);
         } else if (response.status === 401) {
           console.log('Token invalid, redirecting to login');
-          localStorage.removeItem('cryptix_jwt');
+          //localStorage.removeItem('cryptix_jwt');
           localStorage.removeItem('cryptix_password');
           router.push('/login');
           return;
