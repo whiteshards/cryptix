@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
@@ -27,7 +26,7 @@ function CallbackContent() {
       }
 
       try {
-        const response = await fetch('https://cryptix-api.vercel.app/api/v1/users/register', {
+        const response = await fetch('/api/v1/auth/register', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -39,18 +38,18 @@ function CallbackContent() {
 
         if (response.ok && data.success) {
           console.log('Registration successful:', data);
-          
+
           // Store JWT token in localStorage
           localStorage.setItem('cryptix_jwt', data.token);
-          
+
           // Store password if provided (for new registrations)
           if (data.password) {
             localStorage.setItem('cryptix_password', data.password);
           }
-          
+
           console.log('Token stored, redirecting to dashboard');
           setStatus('Registration successful! Redirecting...');
-          
+
           // Add a small delay before redirect to ensure localStorage is written
           setTimeout(() => {
             router.push('/dashboard');

@@ -14,7 +14,7 @@ export default function AccountPage() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const token = localStorage.getItem('cryptix_jwt');
+      const token = localStorage.getItem('cryptix_token');
       const storedPassword = localStorage.getItem('cryptix_password');
 
       if (!token) {
@@ -27,7 +27,7 @@ export default function AccountPage() {
       }
 
       try {
-        const response = await fetch('https://cryptix-api.vercel.app/api/v1/users/profile', {
+        const response = await fetch('/api/v1/users/profile', {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -37,7 +37,7 @@ export default function AccountPage() {
           const data = await response.json();
           setProfile(data.customer);
         } else if (response.status === 401) {
-          localStorage.removeItem('cryptix_jwt');
+          localStorage.removeItem('cryptix_token');
           localStorage.removeItem('cryptix_password');
           router.push('/login');
         } else {
@@ -183,9 +183,9 @@ export default function AccountPage() {
             <h2 className="text-xl font-semibold text-white mb-4">Your Token</h2>
             <div className="space-y-2">
               <div>
-                <span className="text-gray-400 text-sm">JWT Token:</span>
+                <span className="text-gray-400 text-sm">Refresh Token:</span>
                 <div className="text-white font-mono text-xs break-all bg-slate-700 p-3 rounded mt-2 max-h-32 overflow-y-auto">
-                  {localStorage.getItem('cryptix_jwt')}
+                  {localStorage.getItem('cryptix_token')}
                 </div>
               </div>
               <p className="text-gray-400 text-xs">
