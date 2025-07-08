@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Aurora from '../blocks/Backgrounds/Aurora/Aurora';
 
 function SpotlightCard({ children, className = "" }) {
   const [isHovered, setIsHovered] = useState(false);
@@ -21,7 +20,7 @@ function SpotlightCard({ children, className = "" }) {
   return (
     <div
       ref={cardRef}
-      className={`relative p-6 rounded-xl bg-slate-800/50 border border-slate-700/50 backdrop-blur-sm transition-all duration-300 hover:border-green-500/50 group overflow-hidden ${className}`}
+      className={`relative p-6 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm transition-all duration-300 hover:border-white/30 group overflow-hidden ${className}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onMouseMove={handleMouseMove}
@@ -30,7 +29,7 @@ function SpotlightCard({ children, className = "" }) {
       <div
         className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none`}
         style={{
-          background: `radial-gradient(300px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(16, 185, 129, 0.1), transparent 40%)`,
+          background: `radial-gradient(300px circle at ${mousePosition.x}px ${mousePosition.y}px, rgba(255, 255, 255, 0.1), transparent 40%)`,
         }}
       />
 
@@ -100,32 +99,27 @@ export default function Features() {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-20 overflow-hidden"
+      className="relative py-20 bg-black overflow-hidden"
     >
-      {/* Aurora Background */}
-      <div className="absolute inset-0 opacity-30">
-        <Aurora 
-          colorStops={["#10b981", "#22c55e", "#34d399"]} 
-          amplitude={0.8} 
-          blend={0.6}
-          speed={0.5}
-        />
+      {/* Background decorative elements */}
+      <div className="absolute inset-0">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-white/5 rounded-lg transform rotate-45"></div>
+        <div className="absolute bottom-40 right-20 w-24 h-24 bg-white/10 rounded-full"></div>
+        <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/5 rounded-lg transform rotate-12"></div>
+        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-white/10 rounded-full"></div>
       </div>
-
-      {/* Background overlay for better text readability */}
-      <div className="absolute inset-0 bg-slate-900/70"></div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className={`text-center mb-16 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="mb-4">
-            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white/10 text-white border border-white/20">
               POWERFUL FEATURES
             </span>
           </div>
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6">
             Built for
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600"> Modern Scripters</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-white"> Modern Scripters</span>
           </h2>
           <p className="max-w-2xl mx-auto text-lg text-gray-300">
             Experience the next generation of Roblox script management with Cryptix.
@@ -146,17 +140,17 @@ export default function Features() {
             >
               <SpotlightCard className="h-full">
                 <div className="flex flex-col items-start space-y-4">
-                  <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                  <div className="p-3 rounded-lg bg-white/10 border border-white/20">
                     {feature.icon}
                   </div>
-                  <h3 className="text-xl font-semibold text-white group-hover:text-green-400 transition-colors duration-300">
+                  <h3 className="text-xl font-semibold text-white group-hover:text-gray-300 transition-colors duration-300">
                     {feature.title}
                   </h3>
                   <p className="text-gray-400 leading-relaxed">
                     {feature.description}
                   </p>
                   <div className="pt-2">
-                    <button className="text-green-400 hover:text-green-300 font-medium text-sm flex items-center group/btn transition-colors duration-200">
+                    <button className="text-white hover:text-gray-300 font-medium text-sm flex items-center group/btn transition-colors duration-200">
                       Learn more
                       <svg className="ml-1 w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

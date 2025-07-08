@@ -77,7 +77,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center px-4">
       <div className="max-w-md w-full">
-        <div className="bg-black/50 backdrop-blur-md rounded-lg p-8 border border-white/20"></div>
+        <div className="bg-black/50 backdrop-blur-md rounded-lg p-8 border border-white/20">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">Cryptix</h1>
             <p className="text-gray-400">Sign in to your account</p>

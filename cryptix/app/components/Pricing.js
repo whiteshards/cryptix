@@ -57,13 +57,14 @@ export default function Pricing() {
         { text: "Custom branding", included: false }
       ],
       cta: "Get Started",
-      popular: false
+      popular: true,
+      disabled: false
     },
     {
       name: "Pro",
       price: "$19",
       period: "/month",
-      description: "Best for growing scripters",
+      description: "Coming Soon",
       features: [
         { text: "Unlimited scripts", included: true },
         { text: "Advanced analytics", included: true },
@@ -72,14 +73,15 @@ export default function Pricing() {
         { text: "API access", included: true },
         { text: "Webhook integrations", included: false }
       ],
-      cta: "Start Free Trial",
-      popular: true
+      cta: "Coming Soon",
+      popular: false,
+      disabled: true
     },
     {
       name: "Enterprise",
       price: "$99",
       period: "/month", 
-      description: "For large teams and organizations",
+      description: "Coming Soon",
       features: [
         { text: "Everything in Pro", included: true },
         { text: "Webhook integrations", included: true },
@@ -88,8 +90,9 @@ export default function Pricing() {
         { text: "SLA guarantee", included: true },
         { text: "On-premise deployment", included: true }
       ],
-      cta: "Contact Sales",
-      popular: false
+      cta: "Coming Soon",
+      popular: false,
+      disabled: true
     }
   ];
 
@@ -138,6 +141,8 @@ export default function Pricing() {
               <div className={`relative p-8 rounded-2xl border backdrop-blur-sm h-full ${
                 plan.popular 
                   ? 'bg-white/10 border-white/30 shadow-lg' 
+                  : plan.disabled
+                  ? 'bg-white/5 border-white/10 opacity-50'
                   : 'bg-white/5 border-white/10'
               }`}>
                 {plan.popular && (
@@ -171,9 +176,12 @@ export default function Pricing() {
                 </ul>
 
                 <button 
-                  onClick={() => setIsAuthModalOpen(true)}
+                  onClick={() => !plan.disabled && setIsAuthModalOpen(true)}
+                  disabled={plan.disabled}
                   className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-200 ${
-                    plan.popular
+                    plan.disabled
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                      : plan.popular
                       ? 'bg-white text-black hover:bg-gray-200'
                       : 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
                   }`}
