@@ -39,9 +39,9 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 p-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-6 py-4 shadow-lg">
+    <nav className="fixed top-0 left-0 right-0 z-50 p-4 pt-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-3 shadow-lg"></div>
           <div className="flex justify-between items-center">
             {/* Logo */}
             <div className="flex-shrink-0">

@@ -77,7 +77,7 @@ export default function Hero() {
         {/* Main Heading */}
         <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight transition-all duration-1200 ease-out delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           Revolutionizing          <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-green-600">
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-white">
           Roblox Scripting
           </span>
         </h1>
@@ -93,7 +93,7 @@ export default function Hero() {
         <div className={`flex flex-col sm:flex-row gap-4 justify-center items-center transition-all duration-1000 ease-out delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           <button 
             onClick={() => setIsAuthModalOpen(true)}
-            className="w-full sm:w-auto bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-md text-base font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25"
+            className="w-full sm:w-auto bg-white hover:bg-gray-200 text-black px-6 py-3 rounded-md text-base font-medium transition-all duration-200 transform hover:scale-105 hover:shadow-lg hover:shadow-white/25"
           >
             Free Invite
           </button>
