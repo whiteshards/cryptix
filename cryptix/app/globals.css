@@ -10,11 +10,11 @@
 }
 
 :root {
-  --background: #0f172a;
-  --foreground: #f8fafc;
-  --green-primary: #10b981;
-  --green-secondary: #22c55e;
-  --green-accent: #34d399;
+  --background: #000000;
+  --foreground: #ffffff;
+  --gray-primary: #ffffff;
+  --gray-secondary: #e5e5e5;
+  --gray-accent: #cccccc;
 }
 
 @theme inline {
@@ -26,8 +26,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0f172a;
-    --foreground: #f8fafc;
+    --background: #000000;
+    --foreground: #ffffff;
   }
 }
 

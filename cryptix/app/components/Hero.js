@@ -57,19 +57,19 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-slate-900 overflow-hidden pt-12 px-4 sm:px-6 lg:px-8">
+    <section className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden pt-20 px-4 sm:px-6 lg:px-8">
       {/* Background decorative elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-green-500/10 rounded-lg transform rotate-45"></div>
-        <div className="absolute bottom-40 right-20 w-24 h-24 bg-green-400/20 rounded-full"></div>
-        <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-green-300/15 rounded-lg transform rotate-12"></div>
-        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-green-500/20 rounded-full"></div>
+        <div className="absolute top-20 left-10 w-32 h-32 bg-white/5 rounded-lg transform rotate-45"></div>
+        <div className="absolute bottom-40 right-20 w-24 h-24 bg-white/10 rounded-full"></div>
+        <div className="absolute top-1/2 right-1/4 w-16 h-16 bg-white/5 rounded-lg transform rotate-12"></div>
+        <div className="absolute bottom-20 left-1/4 w-20 h-20 bg-white/10 rounded-full"></div>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto text-center">
         {/* Badge */}
         <div className={`mb-8 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-green-500/20 text-green-400 border border-green-500/30">
+          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white/10 text-white border border-white/20">
             MONETIZE YOUR SCRIPTS TODAY
           </span>
         </div>
@@ -108,19 +108,19 @@ export default function Hero() {
         {/* Stats with counting animation */}
         <div className={`mt-20 mb-20 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto transition-all duration-1200 ease-out delay-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="text-center">
-            <div className="text-3xl font-bold text-green-400 mb-2">
+            <div className="text-3xl font-bold text-white mb-2">
               <CountingNumber target={30000} prefix="" suffix="+" />
             </div>
             <div className="text-gray-400">Daily Executions</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-green-400 mb-2">
+            <div className="text-3xl font-bold text-white mb-2">
               <CountingNumber target={5000} suffix="+" />
             </div>
             <div className="text-gray-400">Active Scripters</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl font-bold text-green-400 mb-2">
+            <div className="text-3xl font-bold text-white mb-2">
               <CountingNumber target={100} suffix="%" />
             </div>
             <div className="text-gray-400">Security</div>
