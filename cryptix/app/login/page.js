@@ -13,11 +13,13 @@ export default function LoginPage() {
     // Check if user is already logged in
     const token = localStorage.getItem('cryptix_jwt');
     if (token) {
-      router.push('/dashboard');
+      //router.push('/dashboard');
+      setCheckingAuth(false)
     } else {
       setCheckingAuth(false);
-    }
+    } 
   }, [router]);
+  //setCheckingAuth(false)
 
   const handleDiscordLogin = () => {
     window.location.href = 'https://discord.com/oauth2/authorize?client_id=1389474076375912520&response_type=code&redirect_uri=https%3A%2F%2Fcryptix-sigma.vercel.app%2Fcallback&scope=identify+guilds+email+guilds.join';
