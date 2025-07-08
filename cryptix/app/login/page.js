@@ -36,7 +36,6 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    error = localStorage.getItem("cryptix_jwt")
     try {
       const response = await fetch('https://cryptix-api.vercel.app/api/v1/users/login', {
         method: 'POST',
