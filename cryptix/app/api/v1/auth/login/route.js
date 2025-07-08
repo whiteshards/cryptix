@@ -77,7 +77,8 @@ export async function POST(request) {
       message: 'Login successful',
       user: {
         discord_id: discordUser.id,
-        password: existingUser.password
+        password: existingUser.password,
+        token: refresh_token
       }
     });
 

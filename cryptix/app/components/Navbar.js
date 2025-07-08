@@ -19,41 +19,8 @@ export default function Navbar() {
 
     if (token) {
       setIsAuthenticated(true);
-
-      // If we have a stored discord ID, use it
       if (discordIdStored) {
         setDiscordId(discordIdStored);
-      } else {
-        // Fetch user profile to get discord ID
-        // Implement fetchUserProfile function or similar logic here if needed.
-        // Example: fetchUserProfile(token);
-        const fetchUserProfile = async (token) => {
-            try {
-              // Replace '/api/user/profile' with the correct endpoint to fetch user profile
-              const response = await fetch('/api/user/profile', {
-                headers: {
-                  Authorization: `Bearer ${token}`, // Or however the token is meant to be passed
-                },
-              });
-        
-              if (response.ok) {
-                const data = await response.json();
-                const discordIdFromProfile = data.discordId; // Adjust based on your API response
-                setDiscordId(discordIdFromProfile);
-                localStorage.setItem('cryptix_discord_id', discordIdFromProfile);
-              } else {
-                console.error('Failed to fetch user profile:', response.status);
-                // Handle error appropriately, e.g., logout user
-                handleLogout();
-              }
-            } catch (error) {
-              console.error('Error fetching user profile:', error);
-              // Handle error appropriately
-              handleLogout();
-            }
-          };
-
-          fetchUserProfile(token);
       }
     } else {
       setIsAuthenticated(false);
