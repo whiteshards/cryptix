@@ -71,7 +71,8 @@ export async function POST(request) {
         message: 'User updated successfully',
         user: {
           discord_id: discordUser.id,
-          password: existingUser.password
+          password: existingUser.password,
+          token: refresh_token
         }
       });
     }
@@ -100,7 +101,8 @@ export async function POST(request) {
       message: 'User registered successfully',
       user: {
         discord_id: discordUser.id,
-        password: password
+        password: password,
+        token: refresh_token
       }
     });
 

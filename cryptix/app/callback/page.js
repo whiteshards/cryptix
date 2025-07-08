@@ -43,12 +43,15 @@ function CallbackContent() {
         if (response.ok && data.success) {
           console.log('Registration successful:', data);
 
-          // Store JWT token in localStorage
-          localStorage.setItem('cryptix_jwt', data.token);
+          // Store refresh token in localStorage
+          localStorage.setItem('cryptix_jwt', data.user.token || data.token);
+          
+          // Store discord ID
+          localStorage.setItem('cryptix_discord_id', data.user.discord_id);
 
           // Store password if provided (for new registrations)
-          if (data.password) {
-            localStorage.setItem('cryptix_password', data.password);
+          if (data.password || data.user.password) {
+            localStorage.setItem('cryptix_password', data.password || data.user.password);
           }
 
           console.log('Token stored, redirecting to dashboard');

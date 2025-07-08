@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,17 +15,45 @@ export default function Navbar() {
 
   useEffect(() => {
     const token = localStorage.getItem('cryptix_jwt');
+    const discordIdStored = localStorage.getItem('cryptix_discord_id');
+
     if (token) {
       setIsAuthenticated(true);
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        setDiscordId(payload.discordId);
-      } catch (error) {
-        console.error("Error decoding JWT:", error);
-        localStorage.removeItem('cryptix_jwt');
-        localStorage.removeItem('cryptix_password');
-        setIsAuthenticated(false);
-        router.push('/');
+
+      // If we have a stored discord ID, use it
+      if (discordIdStored) {
+        setDiscordId(discordIdStored);
+      } else {
+        // Fetch user profile to get discord ID
+        // Implement fetchUserProfile function or similar logic here if needed.
+        // Example: fetchUserProfile(token);
+        const fetchUserProfile = async (token) => {
+            try {
+              // Replace '/api/user/profile' with the correct endpoint to fetch user profile
+              const response = await fetch('/api/user/profile', {
+                headers: {
+                  Authorization: `Bearer ${token}`, // Or however the token is meant to be passed
+                },
+              });
+        
+              if (response.ok) {
+                const data = await response.json();
+                const discordIdFromProfile = data.discordId; // Adjust based on your API response
+                setDiscordId(discordIdFromProfile);
+                localStorage.setItem('cryptix_discord_id', discordIdFromProfile);
+              } else {
+                console.error('Failed to fetch user profile:', response.status);
+                // Handle error appropriately, e.g., logout user
+                handleLogout();
+              }
+            } catch (error) {
+              console.error('Error fetching user profile:', error);
+              // Handle error appropriately
+              handleLogout();
+            }
+          };
+
+          fetchUserProfile(token);
       }
     } else {
       setIsAuthenticated(false);
@@ -36,16 +63,17 @@ export default function Navbar() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem('cryptix_jwt');
     localStorage.removeItem('cryptix_password');
+    localStorage.removeItem('cryptix_discord_id'); // Also remove the discord id
     setIsAuthenticated(false);
     router.push('/');
   };
