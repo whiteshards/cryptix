@@ -3,14 +3,16 @@
 
 import { useState, useEffect } from 'react';
 import AuthModal from './AuthModal';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [discordId, setDiscordId] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     const token = localStorage.getItem('cryptix_jwt');
@@ -29,6 +31,16 @@ export default function Navbar() {
     } else {
       setIsAuthenticated(false);
     }
+
+    // Check if mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
   }, [router]);
 
   const handleLogout = () => {
@@ -37,6 +49,11 @@ export default function Navbar() {
     setIsAuthenticated(false);
     router.push('/');
   };
+
+  // Hide navbar on mobile for landing page
+  if (isMobile && pathname === '/') {
+    return null;
+  }
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 p-4 pt-8">

@@ -47,14 +47,14 @@ export default function Pricing() {
       name: "Free",
       price: "$0",
       period: "/month",
-      description: "Perfect for getting started",
+      description: "We are completely free to use!",
       features: [
-        { text: "Up to 3 scripts", included: true },
-        { text: "Basic analytics", included: true },
+        { text: "Unlimited scripts", included: true },
+        { text: "Advanced analytics", included: true },
         { text: "Community support", included: true },
-        { text: "Priority support", included: false },
-        { text: "Advanced analytics", included: false },
-        { text: "Custom branding", included: false }
+        { text: "Priority support", included: true },
+        { text: "Custom branding", included: true },
+        { text: "API access", included: true }
       ],
       cta: "Get Started",
       popular: true,
@@ -62,35 +62,31 @@ export default function Pricing() {
     },
     {
       name: "Pro",
-      price: "$19",
+      price: "$0",
       period: "/month",
-      description: "Coming Soon",
+      description: "We are completely free to use!",
       features: [
-        { text: "Unlimited scripts", included: true },
-        { text: "Advanced analytics", included: true },
-        { text: "Priority support", included: true },
-        { text: "Custom branding", included: true },
-        { text: "API access", included: true },
-        { text: "Webhook integrations", included: false }
+        { text: "Everything in Free", included: true },
+        { text: "Webhook integrations", included: true },
+        { text: "Dedicated support", included: true },
+        { text: "Custom integrations", included: true }
       ],
-      cta: "Coming Soon",
+      cta: "Get Started",
       popular: false,
       disabled: true
     },
     {
       name: "Enterprise",
-      price: "$99",
+      price: "$0",
       period: "/month", 
-      description: "Coming Soon",
+      description: "We are completely free to use!",
       features: [
         { text: "Everything in Pro", included: true },
-        { text: "Webhook integrations", included: true },
-        { text: "Dedicated support", included: true },
-        { text: "Custom integrations", included: true },
         { text: "SLA guarantee", included: true },
-        { text: "On-premise deployment", included: true }
+        { text: "On-premise deployment", included: true },
+        { text: "Dedicated account manager", included: true }
       ],
-      cta: "Coming Soon",
+      cta: "Get Started",
       popular: false,
       disabled: true
     }
