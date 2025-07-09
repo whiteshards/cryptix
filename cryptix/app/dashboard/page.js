@@ -127,7 +127,7 @@ export default function Dashboard() {
       </div>
 
       {/* Your Keysystems Section */}
-      <div className="px-8">
+      <div className="px-8 py-16">
         <div className="max-w-6xl mx-auto">
           <div className="bg-[#1a1b2e] rounded-lg border border-white/10 p-6">
             <h2 className="text-white text-xl font-semibold mb-6">Your Keysystems</h2>
