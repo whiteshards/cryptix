@@ -101,6 +101,34 @@ export default function Dashboard() {
         [field]: value,
         keyTimer: value ? 0 : 12 
       }));
+    } else if (field === 'maxKeyPerPerson') {
+      const numValue = parseInt(value) || 1;
+      if (numValue < 1) {
+        showToast('Max key per person must be at least 1');
+        return;
+      }
+      setFormData(prev => ({ ...prev, [field]: numValue }));
+    } else if (field === 'numberOfCheckpoints') {
+      const numValue = parseInt(value) || 1;
+      if (numValue < 1 || numValue > 5) {
+        showToast('Number of checkpoints must be between 1 and 5');
+        return;
+      }
+      setFormData(prev => ({ ...prev, [field]: numValue }));
+    } else if (field === 'keyTimer') {
+      const numValue = parseInt(value) || 1;
+      if (numValue < 1 || numValue > 196) {
+        showToast('Key timer must be between 1 and 196 hours');
+        return;
+      }
+      setFormData(prev => ({ ...prev, [field]: numValue }));
+    } else if (field === 'keyCooldown') {
+      const numValue = parseInt(value) || 1;
+      if (numValue < 1 || numValue > 180) {
+        showToast('Key cooldown must be between 1 and 180 minutes');
+        return;
+      }
+      setFormData(prev => ({ ...prev, [field]: numValue }));
     } else {
       setFormData(prev => ({ ...prev, [field]: value }));
     }
@@ -284,7 +312,7 @@ export default function Dashboard() {
       {/* Create Keysystem Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1a1b2e] border border-white/10 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-[#1a1b2e] border border-white/10 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-white text-lg font-semibold">Create New Keysystem</h3>
@@ -298,113 +326,119 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              <div className="space-y-4">
-                {/* Name Field */}
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">
-                    Keysystem Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
-                    placeholder="Enter keysystem name"
-                    maxLength={24}
-                    className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
-                  />
-                  <p className="text-gray-400 text-xs mt-1">Max 24 characters, letters and spaces only</p>
-                </div>
-
-                {/* Max Key Per Person */}
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">
-                    Max Key Per Person
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.maxKeyPerPerson}
-                    onChange={(e) => handleInputChange('maxKeyPerPerson', Math.max(1, parseInt(e.target.value) || 1))}
-                    min="1"
-                    className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
-                  />
-                  <p className="text-gray-400 text-xs mt-1">This is the number of individual keys a person can create in one session</p>
-                </div>
-
-                {/* Number of Checkpoints */}
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">
-                    Number of Checkpoints
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.numberOfCheckpoints}
-                    onChange={(e) => handleInputChange('numberOfCheckpoints', Math.min(5, Math.max(1, parseInt(e.target.value) || 2)))}
-                    min="1"
-                    max="5"
-                    className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
-                  />
-                  <p className="text-gray-400 text-xs mt-1">
-                    Cryptix will add an extra checkpoint for site monetization that aligns with the same ad-link provider you use. 
-                    If you want to remove this extra link the users would have to go through, contact staff on discord to buy the pro plan.
-                  </p>
-                </div>
-
-                {/* Permanent Keys Toggle */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-white text-sm font-medium">
-                      Permanent Keys
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left Column */}
+                <div className="space-y-4">
+                  {/* Name Field */}
+                  <div>
+                    <label className="block text-white text-sm font-medium mb-2">
+                      Keysystem Name
                     </label>
-                    <button
-                      onClick={() => handleInputChange('permanentKeys', !formData.permanentKeys)}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        formData.permanentKeys ? 'bg-[#6366f1]' : 'bg-gray-600'
-                      }`}
-                    >
-                      <span
-                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          formData.permanentKeys ? 'translate-x-6' : 'translate-x-1'
-                        }`}
-                      />
-                    </button>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => handleInputChange('name', e.target.value)}
+                      placeholder="Enter keysystem name"
+                      maxLength={24}
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                    />
+                    <p className="text-gray-400 text-xs mt-1">Max 24 characters, letters and spaces only</p>
                   </div>
-                  <p className="text-gray-400 text-xs">If you want to enable permanent keys turn on the toggle above</p>
+
+                  {/* Max Key Per Person */}
+                  <div>
+                    <label className="block text-white text-sm font-medium mb-2">
+                      Max Key Per Person
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.maxKeyPerPerson}
+                      onChange={(e) => handleInputChange('maxKeyPerPerson', e.target.value)}
+                      min="1"
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                    />
+                    <p className="text-gray-400 text-xs mt-1">This is the number of individual keys a person can create in one session</p>
+                  </div>
+
+                  {/* Number of Checkpoints */}
+                  <div>
+                    <label className="block text-white text-sm font-medium mb-2">
+                      Number of Checkpoints
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.numberOfCheckpoints}
+                      onChange={(e) => handleInputChange('numberOfCheckpoints', e.target.value)}
+                      min="1"
+                      max="5"
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                    />
+                    <p className="text-gray-400 text-xs mt-1">
+                      Cryptix will add an extra checkpoint for site monetization that aligns with the same ad-link provider you use. 
+                      If you want to remove this extra link the users would have to go through, contact staff on discord to buy the pro plan.
+                    </p>
+                  </div>
                 </div>
 
-                {/* Key Timer */}
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">
-                    Key Timer (Hours)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.keyTimer}
-                    onChange={(e) => handleInputChange('keyTimer', Math.min(196, Math.max(1, parseInt(e.target.value) || 12)))}
-                    min="1"
-                    max="196"
-                    disabled={formData.permanentKeys}
-                    className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors ${
-                      formData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2d47]'
-                    }`}
-                  />
-                </div>
+                {/* Right Column */}
+                <div className="space-y-4">
+                  {/* Permanent Keys Toggle */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <label className="text-white text-sm font-medium">
+                        Permanent Keys
+                      </label>
+                      <button
+                        onClick={() => handleInputChange('permanentKeys', !formData.permanentKeys)}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                          formData.permanentKeys ? 'bg-[#6366f1]' : 'bg-gray-600'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            formData.permanentKeys ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+                    <p className="text-gray-400 text-xs">If you want to enable permanent keys turn on the toggle above</p>
+                  </div>
 
-                {/* Key Cooldown */}
-                <div>
-                  <label className="block text-white text-sm font-medium mb-2">
-                    Key Cooldown (Minutes)
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.keyCooldown}
-                    onChange={(e) => handleInputChange('keyCooldown', Math.min(180, Math.max(1, parseInt(e.target.value) || 10)))}
-                    min="1"
-                    max="180"
-                    className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
-                  />
-                  <p className="text-gray-400 text-xs mt-1">
-                    This will be counted in minutes and its used to determine how much cooldown the user needs to go through before completing the checkpoints again
-                  </p>
+                  {/* Key Timer */}
+                  <div>
+                    <label className="block text-white text-sm font-medium mb-2">
+                      Key Timer (Hours)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.keyTimer}
+                      onChange={(e) => handleInputChange('keyTimer', e.target.value)}
+                      min="1"
+                      max="196"
+                      disabled={formData.permanentKeys}
+                      className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors ${
+                        formData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2d47]'
+                      }`}
+                    />
+                  </div>
+
+                  {/* Key Cooldown */}
+                  <div>
+                    <label className="block text-white text-sm font-medium mb-2">
+                      Key Cooldown (Minutes)
+                    </label>
+                    <input
+                      type="number"
+                      value={formData.keyCooldown}
+                      onChange={(e) => handleInputChange('keyCooldown', e.target.value)}
+                      min="1"
+                      max="180"
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                    />
+                    <p className="text-gray-400 text-xs mt-1">
+                      This will be counted in minutes and its used to determine how much cooldown the user needs to go through before completing the checkpoints again
+                    </p>
+                  </div>
                 </div>
               </div>
 
