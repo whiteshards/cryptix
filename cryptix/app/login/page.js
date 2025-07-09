@@ -11,9 +11,7 @@ export default function LoginPage() {
     // Check if user is already logged in
     const token = localStorage.getItem('cryptix_jwt');
     if (token) {
-      // Uncomment when dashboard is ready
-      // router.push('/dashboard');
-      setCheckingAuth(false)
+      router.push('/dashboard');
     } else {
       setCheckingAuth(false);
     } 
