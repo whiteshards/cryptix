@@ -30,8 +30,8 @@ export default function Hero() {
 
       <div className="relative z-10 max-w-7xl mx-auto text-center">
         {/* Badge */}
-        <div className={`mb-8 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-white/10 text-white border border-white/20">
+        <div className={`mb-2 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-white">
             MONETIZE YOUR SCRIPTS TODAY
           </span>
         </div>
