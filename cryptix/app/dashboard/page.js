@@ -10,6 +10,17 @@ export default function Dashboard() {
   const [userProfile, setUserProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [toast, setToast] = useState(null);
+  const [formData, setFormData] = useState({
+    name: '',
+    maxKeyPerPerson: 1,
+    numberOfCheckpoints: 2,
+    keyTimer: 12,
+    permanentKeys: false,
+    keyCooldown: 10
+  });
 
   useEffect(() => {
     // Check authentication and fetch profile
@@ -74,6 +85,79 @@ export default function Dashboard() {
   const username = userProfile?.username || 'User';
   const keysystems = userProfile?.keysystems || [];
 
+  const showToast = (message, type = 'error') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 5000);
+  };
+
+  const handleInputChange = (field, value) => {
+    if (field === 'name') {
+      // Only allow letters and spaces, max 24 characters
+      const sanitized = value.replace(/[^a-zA-Z\s]/g, '').slice(0, 24);
+      setFormData(prev => ({ ...prev, [field]: sanitized }));
+    } else if (field === 'permanentKeys') {
+      setFormData(prev => ({ 
+        ...prev, 
+        [field]: value,
+        keyTimer: value ? 0 : 12 
+      }));
+    } else {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    }
+  };
+
+  const handleCreateKeysystem = async () => {
+    if (!formData.name.trim()) {
+      showToast('Keysystem name is required');
+      return;
+    }
+
+    if (formData.name.length < 3) {
+      showToast('Keysystem name must be at least 3 characters');
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      const token = localStorage.getItem('cryptix_jwt');
+      const response = await fetch('/api/v1/keysystems/create', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to create keysystem');
+      }
+
+      showToast('Keysystem created successfully!', 'success');
+      setShowModal(false);
+      setFormData({
+        name: '',
+        maxKeyPerPerson: 1,
+        numberOfCheckpoints: 2,
+        keyTimer: 12,
+        permanentKeys: false,
+        keyCooldown: 10
+      });
+      
+      // Refresh the page to show the new keysystem
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+
+    } catch (error) {
+      showToast(error.message);
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0f1015]">
       {/* Profile Section (Navbar) */}
@@ -118,7 +202,10 @@ export default function Dashboard() {
                 </svg>
               </button>
               
-              <button className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors">
+              <button 
+                onClick={() => setShowModal(true)}
+                className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
+              >
                 New
               </button>
             </div>
@@ -193,6 +280,175 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Create Keysystem Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#1a1b2e] border border-white/10 rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-white text-lg font-semibold">Create New Keysystem</h3>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                {/* Name Field */}
+                <div>
+                  <label className="block text-white text-sm font-medium mb-2">
+                    Keysystem Name
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    placeholder="Enter keysystem name"
+                    maxLength={24}
+                    className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                  />
+                  <p className="text-gray-400 text-xs mt-1">Max 24 characters, letters and spaces only</p>
+                </div>
+
+                {/* Max Key Per Person */}
+                <div>
+                  <label className="block text-white text-sm font-medium mb-2">
+                    Max Key Per Person
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.maxKeyPerPerson}
+                    onChange={(e) => handleInputChange('maxKeyPerPerson', Math.max(1, parseInt(e.target.value) || 1))}
+                    min="1"
+                    className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                  />
+                  <p className="text-gray-400 text-xs mt-1">This is the number of individual keys a person can create in one session</p>
+                </div>
+
+                {/* Number of Checkpoints */}
+                <div>
+                  <label className="block text-white text-sm font-medium mb-2">
+                    Number of Checkpoints
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.numberOfCheckpoints}
+                    onChange={(e) => handleInputChange('numberOfCheckpoints', Math.min(5, Math.max(1, parseInt(e.target.value) || 2)))}
+                    min="1"
+                    max="5"
+                    className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                  />
+                  <p className="text-gray-400 text-xs mt-1">
+                    Cryptix will add an extra checkpoint for site monetization that aligns with the same ad-link provider you use. 
+                    If you want to remove this extra link the users would have to go through, contact staff on discord to buy the pro plan.
+                  </p>
+                </div>
+
+                {/* Permanent Keys Toggle */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-white text-sm font-medium">
+                      Permanent Keys
+                    </label>
+                    <button
+                      onClick={() => handleInputChange('permanentKeys', !formData.permanentKeys)}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        formData.permanentKeys ? 'bg-[#6366f1]' : 'bg-gray-600'
+                      }`}
+                    >
+                      <span
+                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                          formData.permanentKeys ? 'translate-x-6' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  <p className="text-gray-400 text-xs">If you want to enable permanent keys turn on the toggle above</p>
+                </div>
+
+                {/* Key Timer */}
+                <div>
+                  <label className="block text-white text-sm font-medium mb-2">
+                    Key Timer (Hours)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.keyTimer}
+                    onChange={(e) => handleInputChange('keyTimer', Math.min(196, Math.max(1, parseInt(e.target.value) || 12)))}
+                    min="1"
+                    max="196"
+                    disabled={formData.permanentKeys}
+                    className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors ${
+                      formData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2d47]'
+                    }`}
+                  />
+                </div>
+
+                {/* Key Cooldown */}
+                <div>
+                  <label className="block text-white text-sm font-medium mb-2">
+                    Key Cooldown (Minutes)
+                  </label>
+                  <input
+                    type="number"
+                    value={formData.keyCooldown}
+                    onChange={(e) => handleInputChange('keyCooldown', Math.min(180, Math.max(1, parseInt(e.target.value) || 10)))}
+                    min="1"
+                    max="180"
+                    className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                  />
+                  <p className="text-gray-400 text-xs mt-1">
+                    This will be counted in minutes and its used to determine how much cooldown the user needs to go through before completing the checkpoints again
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex space-x-3 mt-6">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="flex-1 px-4 py-2 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateKeysystem}
+                  disabled={isCreating || !formData.name.trim()}
+                  className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isCreating ? 'Creating...' : 'Create'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed top-4 right-4 z-50">
+          <div className={`bg-black/80 backdrop-blur-md border rounded-lg px-4 py-3 max-w-sm ${
+            toast.type === 'success' ? 'border-green-500/30 text-green-400' : 'border-red-500/30 text-red-400'
+          }`}>
+            <div className="flex items-center space-x-2">
+              {toast.type === 'success' ? (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              )}
+              <span className="text-sm">{toast.message}</span>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
