@@ -20,6 +20,31 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden px-2 sm:px-6 lg:px-8 pt-2">
+      {/* Animated grid background */}
+      <div className="absolute inset-0">
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px',
+            animation: 'gridMove 20s linear infinite'
+          }}
+        />
+        <style jsx>{`
+          @keyframes gridMove {
+            0% {
+              transform: translate(0, 0);
+            }
+            100% {
+              transform: translate(50px, 50px);
+            }
+          }
+        `}</style>
+      </div>
+
       {/* Background decorative elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-16 h-16 bg-white/3 rounded-lg transform rotate-45"></div>
