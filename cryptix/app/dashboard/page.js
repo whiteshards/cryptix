@@ -533,7 +533,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-3 mt-6">
+              <div className="flex flex-col sm:flex-row  sm:space-x-3 mt-6">
                 <button
                   onClick={() => setShowModal(false)}
                   className="flex-1 px-4 py-2 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded transition-colors"
@@ -543,7 +543,7 @@ export default function Dashboard() {
                 <button
                   onClick={handleCreateKeysystem}
                   disabled={isCreating}
-                  className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreating ? 'Creating...' : 'Create'}
                 </button>
@@ -685,7 +685,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-3 mt-6">
+              <div className="flex flex-col sm:flex-row sm:space-x-3 mt-6">
                 <button
                   onClick={() => setShowEditModal(false)}
                   className="flex-1 px-4 py-2 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded transition-colors"
@@ -695,7 +695,7 @@ export default function Dashboard() {
                 <button
                   onClick={handleUpdateKeysystem}
                   disabled={isUpdating}
-                  className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isUpdating ? 'Updating...' : 'Update'}
                 </button>

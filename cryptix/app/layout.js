@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Cryptix - Landing Page",
+  title: "Cryptix",
   description: "A Roblox Keysystem manager.",
   keywords: "roblox, roblox scripts, scripts, grow a garden, lua, roblox key, delta key, delta executor",
 };
