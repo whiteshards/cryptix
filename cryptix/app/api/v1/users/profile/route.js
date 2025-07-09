@@ -29,7 +29,9 @@ export async function GET(request) {
       customer: {
         id: user._id,
         discord_id: user.discord_id,
+        username: user.username,
         activated: user.activated,
+        keysystems: user.keysystems || [],
         createdAt: user.createdAt
       }
     });

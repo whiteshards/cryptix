@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -15,7 +14,7 @@ export default function DashboardPage() {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('cryptix_jwt');
-        
+
         if (!token) {
           router.push('/login');
           return;
@@ -32,10 +31,9 @@ export default function DashboardPage() {
         }
 
         const data = await response.json();
-        
+
         if (data.success) {
           setUser(data.customer);
-          // Check if user has keysystems property
           setKeySystemsData(data.customer.keysystems || []);
         } else {
           throw new Error('Failed to get user data');
@@ -43,7 +41,6 @@ export default function DashboardPage() {
       } catch (error) {
         console.error('Error fetching user data:', error);
         setError(error.message);
-        // If token is invalid, redirect to login
         localStorage.removeItem('cryptix_jwt');
         router.push('/login');
       } finally {
@@ -54,10 +51,8 @@ export default function DashboardPage() {
     fetchUserData();
   }, [router]);
 
-  const getInitials = (discordId) => {
-    // For now, use first character of discord ID since we don't have username
-    // You can modify this when you have access to username
-    return discordId ? discordId.charAt(0).toUpperCase() : 'U';
+  const getInitials = (username) => {
+    return username ? username.charAt(0).toUpperCase() : 'U';
   };
 
   if (loading) {
@@ -91,19 +86,16 @@ export default function DashboardPage() {
       <nav className="border-b border-white/10 bg-black/50 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Left side - no logo as requested */}
             <div></div>
-            
-            {/* Right side */}
+
             <div className="flex items-center space-x-4">
-              <button className="text-gray-400 hover:text-white transition-colors duration-200">
+              <button className="text-gray-400 hover:text-white transition-colors duration-200 text-sm">
                 Help
               </button>
-              
-              {/* User Profile */}
+
               <div className="w-8 h-8 bg-gradient-to-r from-gray-600 to-gray-400 rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-medium font-inter">
-                  {getInitials(user?.discord_id)}
+                  {getInitials(user?.username)}
                 </span>
               </div>
             </div>
@@ -114,24 +106,19 @@ export default function DashboardPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
-          <div className="flex items-center space-x-4 mb-4 sm:mb-0">
-            {/* User Avatar */}
-            <div className="w-10 h-10 bg-gradient-to-r from-gray-600 to-gray-400 rounded-full flex items-center justify-center">
-              <span className="text-white text-lg font-medium font-inter">
-                {getInitials(user?.discord_id)}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-12">
+          <div className="flex items-center space-x-3 mb-4 sm:mb-0">
+            <div className="w-8 h-8 bg-gradient-to-r from-gray-600 to-gray-400 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm font-medium font-inter">
+                {getInitials(user?.username)}
               </span>
             </div>
-            
-            {/* User Info */}
-            <div>
-              <h1 className="text-2xl font-bold text-white font-inter">
-                {user?.discord_id}'s Key Systems
-              </h1>
-            </div>
+
+            <h1 className="text-xl font-medium text-white font-inter">
+              {user?.username}'s Key Systems
+            </h1>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex items-center space-x-3">
             <button className="p-2 text-gray-400 hover:text-white transition-colors duration-200">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,8 +126,8 @@ export default function DashboardPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </button>
-            
-            <button className="bg-white hover:bg-gray-200 text-black py-2 px-4 rounded-md font-medium transition-colors duration-200 flex items-center space-x-2 font-inter">
+
+            <button className="bg-white hover:bg-gray-200 text-black py-2 px-4 rounded-md font-medium transition-colors duration-200 flex items-center space-x-2 font-inter text-sm">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
@@ -152,30 +139,21 @@ export default function DashboardPage() {
         {/* Key Systems Content */}
         <div className="space-y-6">
           {keySystemsData.length === 0 ? (
-            /* Empty State */
-            <div className="text-center py-16">
-              <div className="max-w-md mx-auto">
-                {/* Roblox/Lua themed icon */}
-                <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-r from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
-                  <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L13.09 8.26L19 9L13.09 9.74L12 16L10.91 9.74L5 9L10.91 8.26L12 2Z"/>
-                    <path d="M19.5 9.5L20.27 12.77L23.5 13.5L20.27 14.23L19.5 17.5L18.73 14.23L15.5 13.5L18.73 12.77L19.5 9.5Z"/>
-                    <path d="M4.5 6.5L5.27 9.77L8.5 10.5L5.27 11.23L4.5 14.5L3.73 11.23L0.5 10.5L3.73 9.77L4.5 6.5Z"/>
-                  </svg>
-                </div>
-                
-                <h3 className="text-xl font-semibold text-white mb-2 font-inter">
-                  Create A New KeySystem
-                </h3>
-                
-                <p className="text-gray-400 mb-6 font-inter">
-                  Get started by creating your first Roblox script key system to monetize and protect your Lua scripts.
-                </p>
-                
-                <button className="bg-white hover:bg-gray-200 text-black py-3 px-6 rounded-lg font-medium transition-colors duration-200 font-inter">
-                  Create Your First KeySystem
-                </button>
+            /* Empty State - Clean design matching reference */
+            <div className="flex flex-col items-center justify-center py-24 text-center">
+              <div className="w-16 h-16 mb-6 border-2 border-dashed border-gray-600 rounded-lg flex items-center justify-center">
+                <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
               </div>
+
+              <h3 className="text-lg font-medium text-white mb-2 font-inter">
+                Create A New KeySystem
+              </h3>
+
+              <p className="text-gray-400 font-inter text-sm max-w-md">
+                Deploy a GitHub Repository, Provision a Database, or create an Empty Project to start from local.
+              </p>
             </div>
           ) : (
             /* Key Systems Grid */
@@ -192,7 +170,7 @@ export default function DashboardPage() {
                       </svg>
                     </button>
                   </div>
-                  
+
                   <div className="text-sm text-gray-400 space-y-2 font-inter">
                     <div>Keys: {keySystem.keys?.length || 0}</div>
                     <div>Status: {keySystem.activated ? 'Active' : 'Inactive'}</div>
