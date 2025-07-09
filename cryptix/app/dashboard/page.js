@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,7 +6,7 @@ import { useRouter } from 'next/navigation';
 export default function Dashboard() {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userProfile, setUserProfile] = useState(null);
+  const [userProfile, setUserProfile] useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -102,28 +101,40 @@ export default function Dashboard() {
         keyTimer: value ? 0 : 12 
       }));
     } else if (field === 'maxKeyPerPerson') {
-      const numValue = parseInt(value) || 1;
+      let numValue = parseInt(value);
+        if (isNaN(numValue)) {
+            numValue = 1;
+        }
       if (numValue < 1) {
         showToast('Max key per person must be at least 1');
         return;
       }
       setFormData(prev => ({ ...prev, [field]: numValue }));
     } else if (field === 'numberOfCheckpoints') {
-      const numValue = parseInt(value) || 1;
+      let numValue = parseInt(value);
+        if (isNaN(numValue)) {
+            numValue = 1;
+        }
       if (numValue < 1 || numValue > 5) {
         showToast('Number of checkpoints must be between 1 and 5');
         return;
       }
       setFormData(prev => ({ ...prev, [field]: numValue }));
     } else if (field === 'keyTimer') {
-      const numValue = parseInt(value) || 1;
+      let numValue = parseInt(value);
+        if (isNaN(numValue)) {
+            numValue = 1;
+        }
       if (numValue < 1 || numValue > 196) {
         showToast('Key timer must be between 1 and 196 hours');
         return;
       }
       setFormData(prev => ({ ...prev, [field]: numValue }));
     } else if (field === 'keyCooldown') {
-      const numValue = parseInt(value) || 1;
+      let numValue = parseInt(value);
+        if (isNaN(numValue)) {
+            numValue = 1;
+        }
       if (numValue < 1 || numValue > 180) {
         showToast('Key cooldown must be between 1 and 180 minutes');
         return;
@@ -173,7 +184,7 @@ export default function Dashboard() {
         permanentKeys: false,
         keyCooldown: 10
       });
-      
+
       // Refresh the page to show the new keysystem
       setTimeout(() => {
         window.location.reload();
@@ -199,7 +210,7 @@ export default function Dashboard() {
                   {username.charAt(0).toUpperCase()}
                 </span>
               </div>
-              
+
               <div className="flex items-center space-x-3">
                 <h1 className="text-white text-lg font-medium">
                   {username}'s Dashboard
@@ -222,14 +233,14 @@ export default function Dashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </button>
-              
+
               <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </button>
-              
+
               <button 
                 onClick={() => setShowModal(true)}
                 className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
@@ -246,7 +257,7 @@ export default function Dashboard() {
         <div className="max-w-6xl mx-auto">
           <div className="bg-[#1a1b2e] rounded-lg border border-white/10 p-6">
             <h2 className="text-white text-xl font-semibold mb-6">Your Keysystems</h2>
-            
+
             {error && (
               <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
                 <p className="text-red-400 text-sm">
@@ -277,7 +288,7 @@ export default function Dashboard() {
                         {keysystem.active ? 'Active' : 'Inactive'}
                       </span>
                     </div>
-                    
+
                     <div className="space-y-2 text-sm">
                       {keysystem.id && (
                         <div className="flex justify-between">
@@ -292,7 +303,7 @@ export default function Dashboard() {
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="mt-4 flex space-x-2">
                       <button className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors">
                         Edit
@@ -312,8 +323,8 @@ export default function Dashboard() {
       {/* Create Keysystem Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1a1b2e] border border-white/10 rounded-lg max-w-4xl w-full max-h-[80vh] overflow-y-auto">
-            <div className="p-6">
+          <div className="bg-[#1a1b2e] border border-white/10 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-white text-lg font-semibold">Create New Keysystem</h3>
                 <button
@@ -326,7 +337,7 @@ export default function Dashboard() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Left Column */}
                 <div className="space-y-4">
                   {/* Name Field */}
@@ -442,7 +453,7 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <div className="flex space-x-3 mt-6">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-3 mt-6">
                 <button
                   onClick={() => setShowModal(false)}
                   className="flex-1 px-4 py-2 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded transition-colors"
