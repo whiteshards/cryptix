@@ -28,16 +28,16 @@ export default function Hero() {
         <div className="absolute bottom-20 left-1/4 w-10 h-10 bg-white/5 rounded-full"></div>
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto text-center px-4">
+      <div className="relative z-10 max-w-4xl mx-auto text-center">
         {/* Badge */}
-        <div className={`mb-8 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium text-gray-400 uppercase tracking-wider border border-gray-700/50">
+        <div className={`mb-6 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-gray-400 uppercase tracking-wider">
             MONETIZE YOUR SCRIPTS TODAY
           </span>
         </div>
 
         {/* Main Heading */}
-        <h1 className={`text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold mb-8 leading-tight transition-all duration-1200 ease-out delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+        <h1 className={`text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight transition-all duration-1200 ease-out delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 via-gray-200 to-gray-400">
             Monetizing
           </span>
@@ -52,21 +52,21 @@ export default function Hero() {
         </h1>
 
         {/* Subtitle */}
-        <p className={`max-w-3xl mx-auto text-lg sm:text-xl text-gray-400 mb-10 leading-relaxed transition-all duration-1000 ease-out delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        <p className={`max-w-2xl mx-auto text-base sm:text-lg text-gray-400 mb-8 leading-relaxed transition-all duration-1000 ease-out delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           A premium experience for Roblox Scripters to monetize their scripts seamlessly.
         </p>
 
         {/* CTA Buttons */}
-        <div className={`flex flex-col sm:flex-row gap-4 justify-center items-center transition-all duration-1000 ease-out delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        <div className={`flex flex-col sm:flex-row gap-3 justify-center items-center transition-all duration-1000 ease-out delay-700 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           <button 
             onClick={() => setIsAuthModalOpen(true)}
-            className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
+            className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md transition-all duration-200"
           >
             Free Invite
           </button>
-          <button className="px-8 py-3 text-gray-300 hover:text-white text-base font-medium transition-colors duration-200 group flex items-center">
+          <button className="px-6 py-2.5 text-gray-300 hover:text-white text-sm font-medium transition-colors duration-200 group flex items-center">
             Features
-            <svg className="ml-2 h-4 w-4 group-hover:translate-x-0.5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="ml-1 h-4 w-4 group-hover:translate-x-0.5 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </button>
