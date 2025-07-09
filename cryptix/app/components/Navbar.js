@@ -53,7 +53,7 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 p-4 pt-8">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-3 shadow-lg">
+        <div className="bg-white/2 backdrop-blur-sm border border-white/10 rounded-lg px-5 py-3 shadow-lg">
           <div className="flex justify-between items-center">
             {/* Logo */}
             <div className="flex-shrink-0">
@@ -64,7 +64,7 @@ export default function Navbar() {
             <div className="hidden md:block">
               <div className="flex items-center space-x-8">
                 <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
-                  Features
+                  Documentation
                 </a>
                 <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
                   Create Account

@@ -57,7 +57,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden pt-32 px-4 sm:px-6 lg:px-8">
+    <section className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden pt-36 px-4 sm:px-6 lg:px-8">
       {/* Background decorative elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-32 h-32 bg-white/5 rounded-lg transform rotate-45"></div>
@@ -75,15 +75,15 @@ export default function Hero() {
         </div>
 
         {/* Main Heading */}
-        <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight transition-all duration-1200 ease-out delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          Revolutionizing          <br />
+        <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight transition-all duration-1200 ease-out delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          Monetizing          <br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-white">
           Roblox Scripting
           </span>
         </h1>
 
         {/* Subtitle */}
-        <p className={`max-w-3xl mx-auto text-lg sm:text-xl text-gray-300 mb-12 leading-relaxed transition-all duration-1000 ease-out delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        <p className={`max-w-3xl mx-auto text-md sm:text-lg text-gray-300 mb-12 leading-relaxed transition-all duration-1000 ease-out delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           A premium experience for Roblox Scripters to
           <br className="hidden sm:block" />
           monetize their scripts seamlessly.
