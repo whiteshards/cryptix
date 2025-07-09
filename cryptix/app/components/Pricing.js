@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
@@ -95,7 +94,7 @@ export default function Pricing() {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-20 bg-black overflow-hidden"
+      className="relative py-24 bg-[#0f1015] overflow-hidden"
     >
       {/* Background decorative elements */}
       <div className="absolute inset-0">
