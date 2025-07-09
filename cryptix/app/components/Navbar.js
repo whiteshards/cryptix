@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -40,123 +41,110 @@ export default function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem('cryptix_jwt');
     localStorage.removeItem('cryptix_password');
-    localStorage.removeItem('cryptix_discord_id'); // Also remove the discord id
+    localStorage.removeItem('cryptix_discord_id');
     setIsAuthenticated(false);
     router.push('/');
   };
 
-  // Hide navbar on mobile for landing page
-  if (isMobile && pathname === '/') {
-    return null;
-  }
-
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 p-4 pt-8">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl px-5 py-3 shadow-lg">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
-            <div className="flex-shrink-0">
-              <h1 className="text-2xl font-bold text-white">Cryptix</h1>
-            </div>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0f1015] border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          {/* Logo */}
+          <div className="flex-shrink-0">
+            <h1 className="text-xl font-bold text-white">Cryptix</h1>
+          </div>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:block">
-              <div className="flex items-center space-x-8">
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
-                  Features
-                </a>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
-                  Create Account
-                </a>
-                <a href={isAuthenticated ? "/dashboard" : "/login"} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
-                  Dashboard
-                </a>
-                <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
-                  Support
-                </a>
-              </div>
-            </div>
-
-            {/* CTA Button */}
-            <div className="hidden md:block">
-              {isAuthenticated ? (
-                <button
-                  onClick={handleLogout}
-                  className="bg-black hover:bg-gray-800 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors duration-200 border border-white/20"
-                >
-                  Logout
-                </button>
-              ) : (
-                <button 
-                  onClick={() => setIsAuthModalOpen(true)}
-                  className="bg-white hover:bg-gray-100 text-black px-5 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
-                >
-                  Get Invite
-                </button>
-              )}
-            </div>
-
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-gray-300 hover:text-white focus:outline-none focus:text-white transition-colors duration-200"
-              >
-                <svg className={`h-6 w-6 transform transition-transform duration-300 ${isMenuOpen ? 'rotate-90' : 'rotate-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  {isMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
-              </button>
+          {/* Desktop Navigation */}
+          <div className="hidden md:block">
+            <div className="flex items-center space-x-8">
+              <a href="#features" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
+                Documentation
+              </a>
+              <a href="#pricing" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
+                Pricing
+              </a>
+              <a href={isAuthenticated ? "/dashboard" : "/login"} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
+                Status
+              </a>
             </div>
           </div>
 
-          {/* Mobile menu */}
-          <div 
-            className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-              isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-            }`}
-          >
-            <div className={`px-2 pt-4 pb-3 space-y-1 transform transition-all duration-300 ease-in-out ${
-              isMenuOpen ? 'translate-y-0 scale-100' : '-translate-y-4 scale-95'
-            }`}>
-              <a href="#" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
-                Features
-              </a>
-              <a href="#" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
-                Create Account
-              </a>
-               {isAuthenticated ? (
-                  <a href="/dashboard" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
-                    Dashboard
-                  </a>
+          {/* CTA Button */}
+          <div className="hidden md:block">
+            {isAuthenticated ? (
+              <button
+                onClick={handleLogout}
+                className="bg-[#1a1b2e] hover:bg-[#2a2d47] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200 border border-white/10"
+              >
+                Logout
+              </button>
+            ) : (
+              <button 
+                onClick={() => setIsAuthModalOpen(true)}
+                className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+              >
+                Sign in
+              </button>
+            )}
+          </div>
+
+          {/* Mobile menu button */}
+          <div className="md:hidden">
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-gray-300 hover:text-white focus:outline-none focus:text-white transition-colors duration-200"
+            >
+              <svg className={`h-6 w-6 transform transition-transform duration-300 ${isMenuOpen ? 'rotate-90' : 'rotate-0'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {isMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 ) : (
-                  <a href="#" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
-                    Dashboard
-                  </a>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 )}
-              <a href="#" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
-                Support
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        <div 
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}
+        >
+          <div className={`px-2 pt-4 pb-3 space-y-1 transform transition-all duration-300 ease-in-out ${
+            isMenuOpen ? 'translate-y-0 scale-100' : '-translate-y-4 scale-95'
+          }`}>
+            <a href="#features" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
+              Documentation
+            </a>
+            <a href="#pricing" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
+              Pricing
+            </a>
+            {isAuthenticated ? (
+              <a href="/dashboard" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
+                Dashboard
               </a>
-              {!isAuthenticated ? (
-                <button 
-                  onClick={() => setIsAuthModalOpen(true)}
-                  className="w-full text-left bg-white hover:bg-gray-100 text-black px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1 rounded-lg mt-2"
-                >
-                  Get Invite
-                </button>
-              ) : (
-                <button 
-                  onClick={handleLogout}
-                  className="w-full text-left bg-black hover:bg-gray-800 text-white px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1 rounded-lg mt-2 border border-white/20"
-                >
-                  Logout
-                </button>
-              )}
-            </div>
+            ) : (
+              <a href="#" className="text-gray-300 hover:text-white block px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1">
+                Status
+              </a>
+            )}
+            {!isAuthenticated ? (
+              <button 
+                onClick={() => setIsAuthModalOpen(true)}
+                className="w-full text-left bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1 rounded-md mt-2"
+              >
+                Sign in
+              </button>
+            ) : (
+              <button 
+                onClick={handleLogout}
+                className="w-full text-left bg-[#1a1b2e] hover:bg-[#2a2d47] text-white px-3 py-2 text-base font-medium transition-all duration-200 hover:translate-x-1 rounded-md mt-2 border border-white/10"
+              >
+                Logout
+              </button>
+            )}
           </div>
         </div>
       </div>
