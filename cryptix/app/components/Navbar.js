@@ -69,15 +69,9 @@ export default function Navbar() {
                 <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
                   Create Account
                 </a>
-                {isAuthenticated ? (
-                  <a href="/dashboard" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
-                    Dashboard
-                  </a>
-                ) : (
-                  <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
-                    Dashboard
-                  </a>
-                )}
+                <a href={isAuthenticated ? "/dashboard" : "/login"} className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
+                  Dashboard
+                </a>
                 <a href="#" className="text-gray-300 hover:text-white transition-colors duration-200 text-sm font-medium">
                   Support
                 </a>

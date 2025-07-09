@@ -55,7 +55,7 @@ function CallbackContent() {
           }
 
           console.log('Token stored, redirecting to dashboard');
-          setStatus('Registration successful! Redirecting to dashboard...');
+          setStatus('Authentication successful! Redirecting to dashboard...');
 
           // Add a small delay before redirect to ensure localStorage is written
           setTimeout(() => {
