@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import AuthModal from './AuthModal';
+import DotBackground from './DotBackground';
 
 
 
@@ -19,41 +20,17 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden px-2 sm:px-6 lg:px-8 pt-2">
-      {/* Animated grid background */}
-      <div className="absolute inset-0">
-        <div 
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px',
-            animation: 'gridMove 20s linear infinite'
-          }}
-        />
-        <style jsx>{`
-          @keyframes gridMove {
-            0% {
-              transform: translate(0, 0);
-            }
-            100% {
-              transform: translate(50px, 50px);
-            }
-          }
-        `}</style>
-      </div>
+    <section className="relative min-h-screen bg-black overflow-hidden px-2 sm:px-6 lg:px-8 pt-2">
+      <DotBackground className="min-h-screen">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-16 h-16 bg-white/3 rounded-lg transform rotate-45"></div>
+          <div className="absolute bottom-40 right-20 w-12 h-12 bg-white/5 rounded-full"></div>
+          <div className="absolute top-1/2 right-1/4 w-8 h-8 bg-white/3 rounded-lg transform rotate-12"></div>
+          <div className="absolute bottom-20 left-1/4 w-10 h-10 bg-white/5 rounded-full"></div>
+        </div>
 
-      {/* Background decorative elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-16 h-16 bg-white/3 rounded-lg transform rotate-45"></div>
-        <div className="absolute bottom-40 right-20 w-12 h-12 bg-white/5 rounded-full"></div>
-        <div className="absolute top-1/2 right-1/4 w-8 h-8 bg-white/3 rounded-lg transform rotate-12"></div>
-        <div className="absolute bottom-20 left-1/4 w-10 h-10 bg-white/5 rounded-full"></div>
-      </div>
-
-      <div className="relative z-10 max-w-4xl mx-auto text-center">
+        <div className="relative z-10 max-w-4xl mx-auto text-center flex items-center justify-center min-h-screen">
         {/* Badge */}
         <div className={`mb-6 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-gray-400 uppercase tracking-wider">
@@ -99,6 +76,7 @@ export default function Hero() {
 
         
       </div>
+      </DotBackground>
 
       <AuthModal 
         isOpen={isAuthModalOpen} 
