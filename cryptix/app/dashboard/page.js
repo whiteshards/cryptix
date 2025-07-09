@@ -782,7 +782,7 @@ export default function Dashboard() {
 
                 {/* Right Column - Configuration */}
                 <div className="space-y-4">
-                  <div className="bg-[#2a2d47] rounded-lg p-4 border border-white/10">
+                  <div className="bg-[#2a2d47] rounded-lg p-4 border border-white/10 h-fit">
                     <h4 className="text-white font-medium mb-3">Configuration</h4>
                     <div className="space-y-3">
                       <div className="flex justify-between items-center">
@@ -811,29 +811,6 @@ export default function Dashboard() {
                             : 'bg-gray-500/20 text-gray-400'
                         }`}>
                           {viewingKeysystem.permanent ? 'Yes' : 'No'}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-[#2a2d47] rounded-lg p-4 border border-white/10">
-                    <h4 className="text-white font-medium mb-3">Statistics</h4>
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Total Keys Generated:</span>
-                        <span className="text-white font-medium">{viewingKeysystem.totalKeys || 0}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Active Keys:</span>
-                        <span className="text-white font-medium">{viewingKeysystem.activeKeys || 0}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Last Updated:</span>
-                        <span className="text-gray-300">
-                          {viewingKeysystem.updatedAt 
-                            ? new Date(viewingKeysystem.updatedAt).toLocaleString() 
-                            : 'Never'
-                          }
                         </span>
                       </div>
                     </div>
