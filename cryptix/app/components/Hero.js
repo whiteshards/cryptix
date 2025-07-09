@@ -19,7 +19,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden px-2 sm:px-6 lg:px-8 pt-46">
+    <section className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden px-2 sm:px-6 lg:px-8 pt-32">
       {/* Background decorative elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-16 h-16 bg-white/3 rounded-lg transform rotate-45"></div>
