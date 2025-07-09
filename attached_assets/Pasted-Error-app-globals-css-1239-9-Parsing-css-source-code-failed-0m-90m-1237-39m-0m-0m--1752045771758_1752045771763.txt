@@ -1,0 +1,23 @@
+Error: ./app/globals.css:1239:9
+Parsing css source code failed
+[0m [90m 1237 |[39m   }[0m
+[0m [90m 1238 |[39m }[0m
+[0m[31m[1m>[22m[39m[90m 1239 |[39m [33m@[39m[36mimport[39m url([32m'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap'[39m)[33m;[39m[0m
+[0m [90m      |[39m         [31m[1m^[22m[39m[0m
+[0m [90m 1240 |[39m [33m@[39mfont[33m-[39mface {[0m
+[0m [90m 1241 |[39m   font[33m-[39mfamily[33m:[39m [32m'Clash Grotesk'[39m[33m;[39m[0m
+[0m [90m 1242 |[39m   src[33m:[39m url([32m'/fonts/clash_grotesk.otf'[39m) format([32m'opentype'[39m)[33m;[39m[0m
+
+@import rules must precede all rules aside from @charset and @layer statements at [project]/app/globals.css:1238:8
+    at BuildError (https://72aa0d66-64dd-43f8-bacb-3c4f2a6e7dc0-00-3oqbzwo4x9knn.pike.replit.dev/_next/static/chunks/%5Broot-of-the-server%5D__e2c08166._.js:17395:41)
+    at react-stack-bottom-frame (https://72aa0d66-64dd-43f8-bacb-3c4f2a6e7dc0-00-3oqbzwo4x9knn.pike.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:13596:24)
+    at renderWithHooks (https://72aa0d66-64dd-43f8-bacb-3c4f2a6e7dc0-00-3oqbzwo4x9knn.pike.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:3560:24)
+    at updateFunctionComponent (https://72aa0d66-64dd-43f8-bacb-3c4f2a6e7dc0-00-3oqbzwo4x9knn.pike.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:5317:21)
+    at beginWork (https://72aa0d66-64dd-43f8-bacb-3c4f2a6e7dc0-00-3oqbzwo4x9knn.pike.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:5916:24)
+    at runWithFiberInDEV (https://72aa0d66-64dd-43f8-bacb-3c4f2a6e7dc0-00-3oqbzwo4x9knn.pike.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:1335:74)
+    at performUnitOfWork (https://72aa0d66-64dd-43f8-bacb-3c4f2a6e7dc0-00-3oqbzwo4x9knn.pike.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:7988:97)
+    at workLoopSync (https://72aa0d66-64dd-43f8-bacb-3c4f2a6e7dc0-00-3oqbzwo4x9knn.pike.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:7880:40)
+    at renderRootSync (https://72aa0d66-64dd-43f8-bacb-3c4f2a6e7dc0-00-3oqbzwo4x9knn.pike.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:7863:13)
+    at performWorkOnRoot (https://72aa0d66-64dd-43f8-bacb-3c4f2a6e7dc0-00-3oqbzwo4x9knn.pike.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:7602:212)
+    at performWorkOnRootViaSchedulerTask (https://72aa0d66-64dd-43f8-bacb-3c4f2a6e7dc0-00-3oqbzwo4x9knn.pike.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:8566:9)
+    at MessagePort.performWorkUntilDeadline (https://72aa0d66-64dd-43f8-bacb-3c4f2a6e7dc0-00-3oqbzwo4x9knn.pike.replit.dev/_next/static/chunks/node_modules_a51498a5._.js:1119:64)
