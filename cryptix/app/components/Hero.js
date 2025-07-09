@@ -3,45 +3,7 @@
 import { useState, useEffect } from 'react';
 import AuthModal from './AuthModal';
 
-function CountingNumber({ target, duration = 4000, prefix = '', suffix = '' }) {
-  const [current, setCurrent] = useState(0);
 
-  useEffect(() => {
-    let startTime = null;
-    let animationFrame = null;
-
-    const animate = (timestamp) => {
-      if (!startTime) startTime = timestamp;
-      const progress = Math.min((timestamp - startTime) / duration, 1);
-
-      // Easing function for smooth animation
-      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-      const value = Math.floor(easeOutQuart * target);
-
-      setCurrent(value);
-
-      if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate);
-      }
-    };
-
-    // Start animation after a small delay
-    const timeout = setTimeout(() => {
-      animationFrame = requestAnimationFrame(animate);
-    }, 500);
-
-    return () => {
-      if (animationFrame) cancelAnimationFrame(animationFrame);
-      clearTimeout(timeout);
-    };
-  }, [target, duration]);
-
-  return (
-    <span>
-      {prefix}{current.toLocaleString()}{suffix}
-    </span>
-  );
-}
 
 export default function Hero() {
   const [isVisible, setIsVisible] = useState(false);
@@ -75,15 +37,18 @@ export default function Hero() {
         </div>
 
         {/* Main Heading */}
-        <h1 className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight transition-all duration-1200 ease-out delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          Monetizing          <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-200 to-white">
-          Roblox Scripting
+        <h1 className={`text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight transition-all duration-1200 ease-out delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-400 via-gray-200 to-gray-400">
+            Monetizing
+          </span>
+          <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-300 via-white to-gray-300">
+            Roblox Scripting
           </span>
         </h1>
 
         {/* Subtitle */}
-        <p className={`max-w-3xl mx-auto text-md sm:text-lg text-gray-300 mb-12 leading-relaxed transition-all duration-1000 ease-out delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
+        <p className={`max-w-4xl mx-auto text-lg sm:text-xl text-transparent bg-clip-text bg-gradient-to-r from-gray-400 via-gray-300 to-gray-400 mb-12 leading-relaxed transition-all duration-1000 ease-out delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'}`}>
           A premium experience for Roblox Scripters to
           <br className="hidden sm:block" />
           monetize their scripts seamlessly.
@@ -105,27 +70,7 @@ export default function Hero() {
           </button>
         </div>
 
-        {/* Stats with counting animation */}
-        <div className={`mt-20 mb-20 grid grid-cols-1 sm:grid-cols-3 gap-8 max-w-4xl mx-auto transition-all duration-1200 ease-out delay-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-white mb-2">
-              <CountingNumber target={30000} prefix="" suffix="+" />
-            </div>
-            <div className="text-gray-400">Daily Executions</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-white mb-2">
-              <CountingNumber target={5000} suffix="+" />
-            </div>
-            <div className="text-gray-400">Active Scripters</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-white mb-2">
-              <CountingNumber target={100} suffix="%" />
-            </div>
-            <div className="text-gray-400">Security</div>
-          </div>
-        </div>
+        
       </div>
 
       <AuthModal 
