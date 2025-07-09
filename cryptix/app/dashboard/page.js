@@ -90,72 +90,18 @@ export default function Dashboard() {
   };
 
   const handleInputChange = (field, value) => {
-    if (field === 'name') {
-      // Only allow letters and spaces, max 24 characters
-      const sanitized = value.replace(/[^a-zA-Z\s]/g, '').slice(0, 24);
-      setFormData(prev => ({ ...prev, [field]: sanitized }));
-    } else if (field === 'permanentKeys') {
+    if (field === 'permanentKeys') {
       setFormData(prev => ({ 
         ...prev, 
         [field]: value,
         keyTimer: value ? 0 : 12 
       }));
-    } else if (field === 'maxKeyPerPerson') {
-      let numValue = parseInt(value);
-        if (isNaN(numValue)) {
-            numValue = 1;
-        }
-      if (numValue < 1) {
-        showToast('Max key per person must be at least 1');
-        return;
-      }
-      setFormData(prev => ({ ...prev, [field]: numValue }));
-    } else if (field === 'numberOfCheckpoints') {
-      let numValue = parseInt(value);
-        if (isNaN(numValue)) {
-            numValue = 1;
-        }
-      if (numValue < 1 || numValue > 5) {
-        showToast('Number of checkpoints must be between 1 and 5');
-        return;
-      }
-      setFormData(prev => ({ ...prev, [field]: numValue }));
-    } else if (field === 'keyTimer') {
-      let numValue = parseInt(value);
-        if (isNaN(numValue)) {
-            numValue = 1;
-        }
-      if (numValue < 1 || numValue > 196) {
-        showToast('Key timer must be between 1 and 196 hours');
-        return;
-      }
-      setFormData(prev => ({ ...prev, [field]: numValue }));
-    } else if (field === 'keyCooldown') {
-      let numValue = parseInt(value);
-        if (isNaN(numValue)) {
-            numValue = 1;
-        }
-      if (numValue < 1 || numValue > 180) {
-        showToast('Key cooldown must be between 1 and 180 minutes');
-        return;
-      }
-      setFormData(prev => ({ ...prev, [field]: numValue }));
     } else {
       setFormData(prev => ({ ...prev, [field]: value }));
     }
   };
 
   const handleCreateKeysystem = async () => {
-    if (!formData.name.trim()) {
-      showToast('Keysystem name is required');
-      return;
-    }
-
-    if (formData.name.length < 3) {
-      showToast('Keysystem name must be at least 3 characters');
-      return;
-    }
-
     setIsCreating(true);
     try {
       const token = localStorage.getItem('cryptix_jwt');
@@ -171,7 +117,8 @@ export default function Dashboard() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to create keysystem');
+        showToast(data.error || 'Failed to create keysystem');
+        return;
       }
 
       showToast('Keysystem created successfully!', 'success');
@@ -191,7 +138,7 @@ export default function Dashboard() {
       }, 1000);
 
     } catch (error) {
-      showToast(error.message);
+      showToast(error.message || 'An error occurred while creating the keysystem');
     } finally {
       setIsCreating(false);
     }
@@ -349,10 +296,8 @@ export default function Dashboard() {
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
                       placeholder="Enter keysystem name"
-                      maxLength={24}
                       className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
-                    <p className="text-gray-400 text-xs mt-1">Max 24 characters, letters and spaces only</p>
                   </div>
 
                   {/* Max Key Per Person */}
@@ -364,7 +309,6 @@ export default function Dashboard() {
                       type="number"
                       value={formData.maxKeyPerPerson}
                       onChange={(e) => handleInputChange('maxKeyPerPerson', e.target.value)}
-                      min="1"
                       className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                     <p className="text-gray-400 text-xs mt-1">This is the number of individual keys a person can create in one session</p>
@@ -379,8 +323,6 @@ export default function Dashboard() {
                       type="number"
                       value={formData.numberOfCheckpoints}
                       onChange={(e) => handleInputChange('numberOfCheckpoints', e.target.value)}
-                      min="1"
-                      max="5"
                       className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                     <p className="text-gray-400 text-xs mt-1">
@@ -423,8 +365,6 @@ export default function Dashboard() {
                       type="number"
                       value={formData.keyTimer}
                       onChange={(e) => handleInputChange('keyTimer', e.target.value)}
-                      min="1"
-                      max="196"
                       disabled={formData.permanentKeys}
                       className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors ${
                         formData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2d47]'
@@ -441,8 +381,6 @@ export default function Dashboard() {
                       type="number"
                       value={formData.keyCooldown}
                       onChange={(e) => handleInputChange('keyCooldown', e.target.value)}
-                      min="1"
-                      max="180"
                       className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                     <p className="text-gray-400 text-xs mt-1">
@@ -461,7 +399,7 @@ export default function Dashboard() {
                 </button>
                 <button
                   onClick={handleCreateKeysystem}
-                  disabled={isCreating || !formData.name.trim()}
+                  disabled={isCreating}
                   className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreating ? 'Creating...' : 'Create'}
