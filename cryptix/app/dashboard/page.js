@@ -17,6 +17,8 @@ export default function Dashboard() {
   const [editingKeysystem, setEditingKeysystem] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deletingKeysystem, setDeletingKeysystem] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewingKeysystem, setViewingKeysystem] = useState(null);
   const [toast, setToast] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -222,6 +224,11 @@ export default function Dashboard() {
     }
   };
 
+  const handleViewKeysystem = (keysystem) => {
+    setViewingKeysystem(keysystem);
+    setShowViewModal(true);
+  };
+
   const handleDeleteKeysystem = (keysystem) => {
     setDeletingKeysystem(keysystem);
     setShowDeleteModal(true);
@@ -374,6 +381,12 @@ export default function Dashboard() {
                     </div>
 
                     <div className="mt-4 flex space-x-2">
+                      <button 
+                        onClick={() => handleViewKeysystem(keysystem)}
+                        className="flex-1 bg-[#10b981] hover:bg-[#059669] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                      >
+                        View
+                      </button>
                       <button 
                         onClick={() => handleEditKeysystem(keysystem)}
                         className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
@@ -685,6 +698,155 @@ export default function Dashboard() {
                   className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isUpdating ? 'Updating...' : 'Update'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* View Keysystem Modal */}
+      {showViewModal && viewingKeysystem && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#1a1b2e] border border-white/10 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-white text-lg font-semibold">Keysystem Details</h3>
+                <button
+                  onClick={() => setShowViewModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Left Column - Basic Information */}
+                <div className="space-y-4">
+                  <div className="bg-[#2a2d47] rounded-lg p-4 border border-white/10">
+                    <h4 className="text-white font-medium mb-3">Basic Information</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Name:</span>
+                        <span className="text-white font-medium">{viewingKeysystem.name}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">ID:</span>
+                        <span className="text-gray-300 font-mono text-sm">{viewingKeysystem.id}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Status:</span>
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          viewingKeysystem.active 
+                            ? 'bg-green-500/20 text-green-400' 
+                            : 'bg-gray-500/20 text-gray-400'
+                        }`}>
+                          {viewingKeysystem.active ? 'Active' : 'Inactive'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Created:</span>
+                        <span className="text-gray-300">{new Date(viewingKeysystem.createdAt).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#2a2d47] rounded-lg p-4 border border-white/10">
+                    <h4 className="text-white font-medium mb-3">Owner Information</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Owner:</span>
+                        <span className="text-white font-medium">{userProfile?.username || 'Unknown'}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">User ID:</span>
+                        <span className="text-gray-300 font-mono text-sm">{userProfile?.id || 'N/A'}</span>
+                      </div>
+                      {userProfile?.email && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">Email:</span>
+                          <span className="text-gray-300">{userProfile.email}</span>
+                        </div>
+                      )}
+                      {userProfile?.createdAt && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">Account Created:</span>
+                          <span className="text-gray-300">{new Date(userProfile.createdAt).toLocaleDateString()}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column - Configuration */}
+                <div className="space-y-4">
+                  <div className="bg-[#2a2d47] rounded-lg p-4 border border-white/10">
+                    <h4 className="text-white font-medium mb-3">Configuration</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Max Keys Per Person:</span>
+                        <span className="text-white font-medium">{viewingKeysystem.maxKeyPerPerson}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Checkpoints:</span>
+                        <span className="text-white font-medium">{viewingKeysystem.numberOfCheckpoints}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Key Timer:</span>
+                        <span className="text-white font-medium">
+                          {viewingKeysystem.permanent ? 'Permanent' : `${viewingKeysystem.keyTimer} hours`}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Key Cooldown:</span>
+                        <span className="text-white font-medium">{viewingKeysystem.keyCooldown} minutes</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Permanent Keys:</span>
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${
+                          viewingKeysystem.permanent 
+                            ? 'bg-green-500/20 text-green-400' 
+                            : 'bg-gray-500/20 text-gray-400'
+                        }`}>
+                          {viewingKeysystem.permanent ? 'Yes' : 'No'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-[#2a2d47] rounded-lg p-4 border border-white/10">
+                    <h4 className="text-white font-medium mb-3">Statistics</h4>
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Total Keys Generated:</span>
+                        <span className="text-white font-medium">{viewingKeysystem.totalKeys || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Active Keys:</span>
+                        <span className="text-white font-medium">{viewingKeysystem.activeKeys || 0}</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">Last Updated:</span>
+                        <span className="text-gray-300">
+                          {viewingKeysystem.updatedAt 
+                            ? new Date(viewingKeysystem.updatedAt).toLocaleString() 
+                            : 'Never'
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end mt-6">
+                <button
+                  onClick={() => setShowViewModal(false)}
+                  className="px-4 py-2 bg-[#6366f1] hover:bg-[#5856eb] text-white rounded font-medium transition-colors"
+                >
+                  Close
                 </button>
               </div>
             </div>
