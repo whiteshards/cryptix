@@ -3,7 +3,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Navbar from '../components/Navbar';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -39,8 +38,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-[#0f1015]">
-      <Navbar />
-      
       {/* Profile Section */}
       <div className="pt-32 px-8">
         <div className="max-w-6xl mx-auto">
