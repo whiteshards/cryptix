@@ -215,26 +215,17 @@ export default function Dashboard() {
                 <h1 className="text-white text-lg font-medium">
                   {username}'s Dashboard
                 </h1>
-                {userProfile?.activated !== undefined && (
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    userProfile.activated 
-                      ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-                      : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
-                  }`}>
-                    {userProfile.activated ? 'Activated' : 'Pending Activation'}
-                  </span>
-                )}
               </div>
             </div>
 
             <div className="flex items-center space-x-3">
-              <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
+              <button className="hidden md:flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
               </button>
 
-              <button className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
+              <button className="hidden md:flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -243,7 +234,7 @@ export default function Dashboard() {
 
               <button 
                 onClick={() => setShowModal(true)}
-                className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
+                className="hidden md:block bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
               >
                 New
               </button>
@@ -256,7 +247,15 @@ export default function Dashboard() {
       <div className="px-8 py-16">
         <div className="max-w-6xl mx-auto">
           <div className="bg-[#1a1b2e] rounded-lg border border-white/10 p-6">
-            <h2 className="text-white text-xl font-semibold mb-6">Your Keysystems</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-white text-xl font-semibold">Your Keysystems</h2>
+              <button 
+                onClick={() => setShowModal(true)}
+                className="md:hidden bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
+              >
+                New
+              </button>
+            </div>
 
             {error && (
               <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
