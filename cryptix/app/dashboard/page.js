@@ -58,7 +58,7 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0f172a] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
       </div>
     );
@@ -66,7 +66,7 @@ export default function DashboardPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0f172a] flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white mb-4">Error</h1>
           <p className="text-gray-400 mb-4">{error}</p>
@@ -82,13 +82,19 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-[#0f172a]">
       {/* Top Navigation Bar */}
-      <nav className="bg-slate-800 border-b border-slate-700">
+      <nav className="bg-[#1e293b] border-b border-[#334155]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center h-16">
-            {/* Left side - empty in reference */}
-            <div></div>
+            {/* Left side - Logo */}
+            <div className="flex items-center">
+              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                </svg>
+              </div>
+            </div>
 
             {/* Right side */}
             <div className="flex items-center space-x-4">
@@ -96,23 +102,23 @@ export default function DashboardPage() {
                 Help
               </button>
 
-              <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-medium">
-                  {getInitials(user?.username)}
-                </span>
+              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+                </svg>
               </div>
             </div>
           </div>
         </div>
       </nav>
 
-      {/* Account Activation Alert - positioned like reference */}
+      {/* Account Activation Alert */}
       {user && !user.activated && (
-        <div className="bg-green-900/20 border-b border-green-500/20">
+        <div className="bg-green-900/30 border-b border-green-600/30">
           <div className="max-w-7xl mx-auto px-6 py-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 rounded-full border border-green-500/30">
+                <span className="inline-block px-2 py-1 text-xs font-medium bg-green-500/20 text-green-300 rounded border border-green-500/40">
                   30 days or $5.00
                 </span>
                 <span className="text-green-300 text-sm">
@@ -133,17 +139,17 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-12">
           {/* Left side - Project title and avatar */}
           <div className="flex items-center space-x-4">
-            <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm font-medium">
-                {getInitials(user?.username)}
-              </span>
+            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+              <svg className="w-5 h-5 text-black" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z"/>
+              </svg>
             </div>
 
             <h1 className="text-xl font-medium text-white">
               {user?.username}'s Projects
             </h1>
 
-            <span className="inline-block px-2 py-1 text-xs font-medium bg-green-500/20 text-green-300 rounded border border-green-500/30">
+            <span className="inline-block px-2 py-1 text-xs font-medium bg-green-500/20 text-green-300 rounded border border-green-500/40">
               TRIAL
             </span>
 
@@ -154,28 +160,34 @@ export default function DashboardPage() {
 
           {/* Right side - Action buttons */}
           <div className="flex items-center space-x-3">
-            <button className="p-2 text-gray-400 hover:text-white transition-colors duration-200 rounded-md hover:bg-slate-800">
+            <button className="p-2 text-gray-400 hover:text-white transition-colors duration-200 rounded-md hover:bg-slate-700/50">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </button>
 
-            <button className="p-2 text-gray-400 hover:text-white transition-colors duration-200 rounded-md hover:bg-slate-800">
+            <button className="p-2 text-gray-400 hover:text-white transition-colors duration-200 rounded-md hover:bg-slate-700/50">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </button>
 
-            <button className="p-2 text-gray-400 hover:text-white transition-colors duration-200 rounded-md hover:bg-slate-800">
+            <button className="p-2 text-gray-400 hover:text-white transition-colors duration-200 rounded-md hover:bg-slate-700/50">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </button>
+
+            <button className="p-2 text-gray-400 hover:text-white transition-colors duration-200 rounded-md hover:bg-slate-700/50">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
               </svg>
             </button>
 
-            <button className="p-2 text-gray-400 hover:text-white transition-colors duration-200 rounded-md hover:bg-slate-800">
+            <button className="p-2 text-gray-400 hover:text-white transition-colors duration-200 rounded-md hover:bg-slate-700/50">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
             </button>
 
@@ -193,32 +205,32 @@ export default function DashboardPage() {
           {keySystemsData.length === 0 ? (
             /* Empty State */
             <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="w-16 h-16 mb-6 border-2 border-dashed border-purple-500/30 rounded-xl flex items-center justify-center bg-purple-500/5">
+              <div className="w-20 h-20 mb-6 border-2 border-dashed border-purple-500/30 rounded-xl flex items-center justify-center bg-purple-500/5">
                 <div className="grid grid-cols-2 gap-1">
-                  <div className="w-3 h-3 bg-purple-500/30 rounded-sm flex items-center justify-center">
-                    <svg className="w-2 h-2 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <div className="w-4 h-4 bg-purple-500/30 rounded flex items-center justify-center">
+                    <svg className="w-3 h-3 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <div className="w-3 h-3 bg-purple-500/20 rounded-sm flex items-center justify-center">
-                    <svg className="w-2 h-2 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  <div className="w-4 h-4 bg-purple-500/20 rounded flex items-center justify-center">
+                    <svg className="w-3 h-3 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <div className="w-3 h-3 bg-purple-500/10 rounded-sm flex items-center justify-center">
-                    <svg className="w-2 h-2 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+                  <div className="w-4 h-4 bg-purple-500/10 rounded flex items-center justify-center">
+                    <svg className="w-3 h-3 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 4v16m8-8H4" />
                     </svg>
                   </div>
-                  <div className="w-3 h-3 bg-purple-500/10 rounded-sm flex items-center justify-center">
-                    <svg className="w-2 h-2 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
+                  <div className="w-4 h-4 bg-purple-500/10 rounded flex items-center justify-center">
+                    <svg className="w-3 h-3 text-purple-400" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 4v16m8-8H4" />
                     </svg>
                   </div>
                 </div>
               </div>
 
-              <h3 className="text-lg font-medium text-white mb-3">
+              <h3 className="text-lg font-medium text-white mb-2">
                 Create a New Project
               </h3>
 
@@ -230,7 +242,7 @@ export default function DashboardPage() {
             /* Projects Grid */
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {keySystemsData.map((keySystem, index) => (
-                <div key={index} className="bg-slate-800 border border-slate-700 rounded-lg p-6 hover:border-slate-600 transition-all duration-200">
+                <div key={index} className="bg-[#1e293b] border border-[#334155] rounded-lg p-6 hover:border-[#475569] transition-all duration-200">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-base font-semibold text-white">
                       {keySystem.name}
