@@ -728,18 +728,18 @@ export default function Dashboard() {
                 </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-3">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                 <button
                   onClick={() => setShowDeleteModal(false)}
                   disabled={isDeleting}
-                  className="flex-1 px-4 py-2 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-3 py-1.5 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmDeleteKeysystem}
                   disabled={isDeleting}
-                  className="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isDeleting ? 'Deleting...' : 'Delete'}
                 </button>
