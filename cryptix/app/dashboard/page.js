@@ -15,6 +15,8 @@ export default function Dashboard() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingKeysystem, setEditingKeysystem] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingKeysystem, setDeletingKeysystem] = useState(null);
   const [toast, setToast] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
@@ -220,10 +222,13 @@ export default function Dashboard() {
     }
   };
 
-  const handleDeleteKeysystem = async (keysystemId) => {
-    if (!confirm('Are you sure you want to delete this keysystem? This action cannot be undone.')) {
-      return;
-    }
+  const handleDeleteKeysystem = (keysystem) => {
+    setDeletingKeysystem(keysystem);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteKeysystem = async () => {
+    if (!deletingKeysystem) return;
 
     setIsDeleting(true);
     try {
@@ -235,7 +240,7 @@ export default function Dashboard() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          keysystemId: keysystemId
+          keysystemId: deletingKeysystem.id
         }),
       });
 
@@ -247,6 +252,8 @@ export default function Dashboard() {
       }
 
       showToast('Keysystem deleted successfully!', 'success');
+      setShowDeleteModal(false);
+      setDeletingKeysystem(null);
 
       // Refresh the page to show the changes
       setTimeout(() => {
@@ -374,7 +381,7 @@ export default function Dashboard() {
                         Edit
                       </button>
                       <button 
-                        onClick={() => handleDeleteKeysystem(keysystem.id)}
+                        onClick={() => handleDeleteKeysystem(keysystem)}
                         disabled={isDeleting}
                         className="px-3 py-1.5 border border-red-500/50 text-red-400 hover:text-red-300 hover:border-red-400 rounded text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
@@ -678,6 +685,63 @@ export default function Dashboard() {
                   className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isUpdating ? 'Updating...' : 'Update'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && deletingKeysystem && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#1a1b2e] border border-red-500/30 rounded-lg max-w-md w-full">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-red-500/20 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </div>
+                  <h3 className="text-white text-lg font-semibold">Delete Keysystem</h3>
+                </div>
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-gray-300 mb-2">
+                  Are you sure you want to delete the keysystem:
+                </p>
+                <p className="text-white font-medium bg-[#2a2d47] px-3 py-2 rounded border border-white/10">
+                  {deletingKeysystem.name}
+                </p>
+                <p className="text-red-400 text-sm mt-3">
+                  This action cannot be undone. All data associated with this keysystem will be permanently deleted.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-3">
+                <button
+                  onClick={() => setShowDeleteModal(false)}
+                  disabled={isDeleting}
+                  className="flex-1 px-4 py-2 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDeleteKeysystem}
+                  disabled={isDeleting}
+                  className="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDeleting ? 'Deleting...' : 'Delete'}
                 </button>
               </div>
             </div>
