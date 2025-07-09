@@ -36,9 +36,6 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center mx-auto mb-6">
-            <div className="w-6 h-6 bg-black rounded-full"></div>
-          </div>
           <h1 className="text-2xl font-medium text-white mb-2">Log in to Cryptix</h1>
         </div>
 
@@ -60,11 +57,7 @@ export default function LoginPage() {
           <p className="text-sm text-gray-400">
             Don't have an account?{' '}
             <span className="text-white font-medium cursor-pointer hover:underline">
-              Sign up
-            </span>
-            {' '}or{' '}
-            <span className="text-white font-medium cursor-pointer hover:underline">
-              Learn more
+              Continue with Discord to auto register
             </span>
           </p>
         </div>
