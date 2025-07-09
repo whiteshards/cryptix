@@ -51,9 +51,9 @@ export default function Pricing() {
       features: [
         { text: "Unlimited scripts", included: true },
         { text: "Advanced analytics", included: true },
-        { text: "Community support", included: true },
+        { text: "Anti-Bypassing Capabilities", included: true },
         { text: "Priority support", included: true },
-        { text: "Custom branding", included: true },
+        { text: "Seamless Checkpoints", included: true },
         { text: "API access", included: true }
       ],
       cta: "Get Started",
@@ -66,10 +66,12 @@ export default function Pricing() {
       period: "/month",
       description: "We are completely free to use!",
       features: [
-        { text: "Everything in Free", included: true },
-        { text: "Webhook integrations", included: true },
-        { text: "Dedicated support", included: true },
-        { text: "Custom integrations", included: true }
+        { text: "No Need To Pay!", included: true },
+        { text: "No Need To Pay!", included: true },
+        { text: "No Need To Pay!", included: true },
+        { text: "No Need To Pay!", included: true },
+        { text: "No Need To Pay!", included: true },
+        { text: "No Need To Pay!", included: true }
       ],
       cta: "Get Started",
       popular: false,
@@ -81,10 +83,12 @@ export default function Pricing() {
       period: "/month", 
       description: "We are completely free to use!",
       features: [
-        { text: "Everything in Pro", included: true },
-        { text: "SLA guarantee", included: true },
-        { text: "On-premise deployment", included: true },
-        { text: "Dedicated account manager", included: true }
+        { text: "No Need To Pay!", included: true },
+        { text: "No Need To Pay!", included: true },
+        { text: "No Need To Pay!", included: true },
+        { text: "No Need To Pay!", included: true },
+        { text: "No Need To Pay!", included: true },
+        { text: "No Need To Pay!", included: true }
       ],
       cta: "Get Started",
       popular: false,
