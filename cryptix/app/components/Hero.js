@@ -19,7 +19,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden px-2 sm:px-6 lg:px-8 pt-32">
+    <section className="relative min-h-screen flex items-center justify-center bg-black overflow-hidden px-2 sm:px-6 lg:px-8 pt-2">
       {/* Background decorative elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-16 h-16 bg-white/3 rounded-lg transform rotate-45"></div>
@@ -28,7 +28,7 @@ export default function Hero() {
         <div className="absolute bottom-20 left-1/4 w-10 h-10 bg-white/5 rounded-full"></div>
       </div>
 
-      <div className="relative z-10 max-w-4xl mx-auto text-center m-auto">
+      <div className="relative z-10 max-w-4xl mx-auto text-center">
         {/* Badge */}
         <div className={`mb-6 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-gray-400 uppercase tracking-wider">
