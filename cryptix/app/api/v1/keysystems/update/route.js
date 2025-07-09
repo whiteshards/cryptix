@@ -1,0 +1,92 @@
+
+import { NextResponse } from 'next/server';
+import clientPromise from '../../../../../lib/mongodb';
+
+export async function PUT(request) {
+  try {
+    const authHeader = request.headers.get('authorization');
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Authorization token required' }, { status: 401 });
+    }
+
+    const token = authHeader.substring(7);
+    const {
+      keysystemId,
+      maxKeyPerPerson,
+      numberOfCheckpoints,
+      keyTimer,
+      permanentKeys,
+      keyCooldown,
+      active
+    } = await request.json();
+
+    // Validation
+    if (!keysystemId) {
+      return NextResponse.json({ error: 'Keysystem ID is required' }, { status: 400 });
+    }
+
+    // Validate numeric fields
+    const maxKeys = parseInt(maxKeyPerPerson);
+    if (!maxKeys || maxKeys < 1) {
+      return NextResponse.json({ error: 'Max key per person must be at least 1' }, { status: 400 });
+    }
+
+    const checkpoints = parseInt(numberOfCheckpoints);
+    if (!checkpoints || checkpoints < 1 || checkpoints > 5) {
+      return NextResponse.json({ error: 'Number of checkpoints must be between 1 and 5' }, { status: 400 });
+    }
+
+    const timer = parseInt(keyTimer);
+    if (!permanentKeys && (!timer || timer < 1 || timer > 196)) {
+      return NextResponse.json({ error: 'Key timer must be between 1 and 196 hours' }, { status: 400 });
+    }
+
+    const cooldown = parseInt(keyCooldown);
+    if (!cooldown || cooldown < 1 || cooldown > 180) {
+      return NextResponse.json({ error: 'Key cooldown must be between 1 and 180 minutes' }, { status: 400 });
+    }
+
+    // Connect to MongoDB
+    const client = await clientPromise;
+    const db = client.db('Cryptix');
+    const collection = db.collection('customers');
+
+    // Find user by token
+    const user = await collection.findOne({ token: token });
+    if (!user) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+    }
+
+    // Update the specific keysystem
+    const result = await collection.updateOne(
+      { 
+        _id: user._id,
+        'keysystems.id': keysystemId
+      },
+      { 
+        $set: {
+          'keysystems.$.maxKeyPerPerson': maxKeys,
+          'keysystems.$.numberOfCheckpoints': checkpoints,
+          'keysystems.$.keyTimer': permanentKeys ? 0 : timer,
+          'keysystems.$.permanent': permanentKeys,
+          'keysystems.$.keyCooldown': cooldown,
+          'keysystems.$.active': active !== undefined ? active : true
+        }
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return NextResponse.json({ error: 'Keysystem not found or failed to update' }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Keysystem updated successfully'
+    });
+
+  } catch (error) {
+    console.error('Update keysystem error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
