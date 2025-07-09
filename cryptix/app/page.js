@@ -18,7 +18,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0f1015]"></div>
+    <div className="min-h-screen bg-black">
       <Navbar />
       <Hero />
       <Features />
