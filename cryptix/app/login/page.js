@@ -57,7 +57,7 @@ export default function LoginPage() {
           <p className="text-sm text-gray-400">
             Don't have an account?{' '}
             <span className="text-white font-medium cursor-pointer hover:underline">
-              Continue with Discord to auto register
+              Continue to auto register
             </span>
           </p>
         </div>
