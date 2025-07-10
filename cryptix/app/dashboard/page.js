@@ -521,9 +521,12 @@ export default function Dashboard() {
                       {keysystems.map((keysystem, index) => (
                         <tr key={index} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                           <td className="py-3 px-4">
-                            <div className="text-white font-medium text-sm">
+                            <button
+                              onClick={() => router.push(`/dashboard/scripts?id=${keysystem.id}`)}
+                              className="text-white font-medium text-sm hover:text-[#6366f1] transition-colors text-left"
+                            >
                               {keysystem.name || `Keysystem ${index + 1}`}
-                            </div>
+                            </button>
                           </td>
                           <td className="py-3 px-4">
                             <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
