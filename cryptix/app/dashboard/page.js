@@ -37,6 +37,8 @@ export default function Dashboard() {
     active: true
   });
   const [activeTab, setActiveTab] = useState('keysystems');
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingText, setLoadingText] = useState('Fetching Your Data...');
 
   useEffect(() => {
     // Check authentication and fetch profile
@@ -51,6 +53,13 @@ export default function Dashboard() {
 
   const fetchUserProfile = async (token) => {
     try {
+      // Simulate smooth loading progress
+      setLoadingProgress(20);
+      setLoadingText('Authenticating...');
+      
+      await new Promise(resolve => setTimeout(resolve, 300));
+      setLoadingProgress(40);
+      
       const response = await fetch('/api/v1/users/profile', {
         method: 'GET',
         headers: {
@@ -58,6 +67,10 @@ export default function Dashboard() {
           'Content-Type': 'application/json',
         },
       });
+
+      setLoadingProgress(60);
+      setLoadingText('Loading Profile...');
+      await new Promise(resolve => setTimeout(resolve, 200));
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -70,26 +83,93 @@ export default function Dashboard() {
       }
 
       const data = await response.json();
+      setLoadingProgress(80);
+      setLoadingText('Preparing Dashboard...');
+      await new Promise(resolve => setTimeout(resolve, 300));
+
       if (data.success) {
         setUserProfile(data.customer);
         setIsAuthenticated(true);
+        setLoadingProgress(100);
+        setLoadingText('Initializing Dashboard');
+        await new Promise(resolve => setTimeout(resolve, 400));
       } else {
         throw new Error('Failed to fetch profile data');
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
       setError(error.message);
+      setLoadingText('Error occurred, loading limited view...');
       // If there's an error, still allow them to see the dashboard with limited functionality
       setIsAuthenticated(true);
     } finally {
-      setIsLoading(false);
+      setTimeout(() => setIsLoading(false), 200);
     }
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#1a1b2e] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+      <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
+        <div className="w-full max-w-md px-8">
+          {/* Loading Text */}
+          <div className="text-center mb-8">
+            <div className="text-white text-lg font-medium mb-2 transition-all duration-500 ease-out">
+              {loadingText}
+            </div>
+            <div className="text-gray-400 text-sm">
+              Please wait while we prepare your workspace
+            </div>
+          </div>
+
+          {/* Progress Bar Container */}
+          <div className="relative w-full h-2 bg-white/10 rounded-full overflow-hidden">
+            {/* Animated Progress Bar */}
+            <div 
+              className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-full transition-all duration-500 ease-out"
+              style={{ width: `${loadingProgress}%` }}
+            >
+              {/* Shimmer Effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+            </div>
+            
+            {/* Progress Glow */}
+            <div 
+              className="absolute top-0 left-0 h-full bg-[#6366f1]/50 rounded-full blur-sm transition-all duration-500 ease-out"
+              style={{ width: `${loadingProgress}%` }}
+            ></div>
+          </div>
+
+          {/* Progress Percentage */}
+          <div className="text-center mt-4">
+            <span className="text-gray-300 text-sm font-mono transition-all duration-300">
+              {loadingProgress}%
+            </span>
+          </div>
+
+          {/* Progress Dots */}
+          <div className="flex justify-center space-x-2 mt-6">
+            <div className="w-2 h-2 bg-[#6366f1] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-[#6366f1] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-[#6366f1] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
+        </div>
+
+        <style jsx>{`
+          @keyframes loading-progress {
+            0% { transform: translateX(-100%); }
+            50% { transform: translateX(0%); }
+            100% { transform: translateX(100%); }
+          }
+          
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+          
+          .animate-shimmer {
+            animation: shimmer 2s infinite;
+          }
+        `}</style>
       </div>
     );
   }
