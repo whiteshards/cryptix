@@ -58,11 +58,19 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Maximum of 10 checkpoints allowed' }, { status: 400 });
     }
 
+    // Map checkpoint types to provider codes
+    const providerMap = {
+      'linkvertise': 'lv',
+      'lootlabs': 'lb', 
+      'workink': 'wrk',
+      'custom': 'cs'
+    };
+
     // Create checkpoint object
     const newCheckpoint = {
       type: type,
       redirect_url: redirect_url,
-      callback_url: `https://cryptixmanager.vercel.app/sys/callback/${keysystemId}`
+      callback_url: `https://cryptixmanager.vercel.app/sys/callback/${keysystemId}?prov=${providerMap[type]}`
     };
 
     // Add checkpoint to keysystem
