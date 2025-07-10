@@ -349,60 +349,89 @@ export default function Dashboard() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {keysystems.map((keysystem, index) => (
-                  <div key={index} className="bg-[#2a2d47] rounded-lg border border-white/10 p-4 hover:border-white/20 transition-colors">
-                    <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-white font-medium text-sm truncate">
-                        {keysystem.name || `Keysystem ${index + 1}`}
-                      </h3>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        keysystem.active 
-                          ? 'bg-green-500/20 text-green-400' 
-                          : 'bg-gray-500/20 text-gray-400'
-                      }`}>
-                        {keysystem.active ? 'Active' : 'Inactive'}
-                      </span>
-                    </div>
-
-                    <div className="space-y-2 text-sm">
-                      {keysystem.id && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">ID:</span>
-                          <span className="text-gray-300 font-mono text-xs">{keysystem.id}</span>
-                        </div>
-                      )}
-                      {keysystem.createdAt && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Created:</span>
-                          <span className="text-gray-300">{new Date(keysystem.createdAt).toLocaleDateString()}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="mt-4 flex space-x-2">
-                      <button 
-                        onClick={() => handleViewKeysystem(keysystem)}
-                        className="flex-1 bg-[#10b981] hover:bg-[#059669] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
-                      >
-                        View
-                      </button>
-                      <button 
-                        onClick={() => handleEditKeysystem(keysystem)}
-                        className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDeleteKeysystem(keysystem)}
-                        disabled={isDeleting}
-                        className="px-3 py-1.5 border border-red-500/50 text-red-400 hover:text-red-300 hover:border-red-400 rounded text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Name</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Status</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">ID</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Max Keys</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Checkpoints</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Key Timer</th>
+                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Created</th>
+                      <th className="text-right py-3 px-4 text-sm font-medium text-gray-300">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {keysystems.map((keysystem, index) => (
+                      <tr key={index} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                        <td className="py-3 px-4">
+                          <div className="text-white font-medium text-sm">
+                            {keysystem.name || `Keysystem ${index + 1}`}
+                          </div>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                            keysystem.active 
+                              ? 'bg-green-500/20 text-green-400' 
+                              : 'bg-gray-500/20 text-gray-400'
+                          }`}>
+                            {keysystem.active ? 'Active' : 'Inactive'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="text-gray-300 font-mono text-xs">
+                            {keysystem.id ? keysystem.id.substring(0, 12) + '...' : 'N/A'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="text-gray-300 text-sm">
+                            {keysystem.maxKeyPerPerson || 'N/A'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="text-gray-300 text-sm">
+                            {keysystem.numberOfCheckpoints || 'N/A'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="text-gray-300 text-sm">
+                            {keysystem.permanent ? 'Permanent' : `${keysystem.keyTimer || 0}h`}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <span className="text-gray-300 text-sm">
+                            {keysystem.createdAt ? new Date(keysystem.createdAt).toLocaleDateString() : 'N/A'}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4">
+                          <div className="flex items-center justify-end space-x-2">
+                            <button 
+                              onClick={() => handleViewKeysystem(keysystem)}
+                              className="bg-[#10b981] hover:bg-[#059669] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                            >
+                              View
+                            </button>
+                            <button 
+                              onClick={() => handleEditKeysystem(keysystem)}
+                              className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                            >
+                              Edit
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteKeysystem(keysystem)}
+                              disabled={isDeleting}
+                              className="border border-red-500/50 text-red-400 hover:text-red-300 hover:border-red-400 px-3 py-1.5 rounded text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
