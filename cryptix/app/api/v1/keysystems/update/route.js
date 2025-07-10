@@ -14,7 +14,6 @@ export async function PUT(request) {
     const {
       keysystemId,
       maxKeyPerPerson,
-      numberOfCheckpoints,
       keyTimer,
       permanentKeys,
       keyCooldown,
@@ -32,10 +31,7 @@ export async function PUT(request) {
       return NextResponse.json({ error: 'Max key per person must be at least 1' }, { status: 400 });
     }
 
-    const checkpoints = parseInt(numberOfCheckpoints);
-    if (!checkpoints || checkpoints < 1 || checkpoints > 5) {
-      return NextResponse.json({ error: 'Number of checkpoints must be between 1 and 5' }, { status: 400 });
-    }
+    
 
     const timer = parseInt(keyTimer);
     if (!permanentKeys && (!timer || timer < 1 || timer > 196)) {
@@ -67,7 +63,6 @@ export async function PUT(request) {
       { 
         $set: {
           'keysystems.$.maxKeyPerPerson': maxKeys,
-          'keysystems.$.numberOfCheckpoints': checkpoints,
           'keysystems.$.keyTimer': permanentKeys ? 0 : timer,
           'keysystems.$.permanent': permanentKeys,
           'keysystems.$.keyCooldown': cooldown,

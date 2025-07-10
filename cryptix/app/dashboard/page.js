@@ -23,14 +23,12 @@ export default function Dashboard() {
   const [formData, setFormData] = useState({
     name: '',
     maxKeyPerPerson: 1,
-    numberOfCheckpoints: 2,
     keyTimer: 12,
     permanentKeys: false,
     keyCooldown: 10
   });
   const [editFormData, setEditFormData] = useState({
     maxKeyPerPerson: 1,
-    numberOfCheckpoints: 2,
     keyTimer: 12,
     permanentKeys: false,
     keyCooldown: 10,
@@ -56,10 +54,10 @@ export default function Dashboard() {
       // Simulate smooth loading progress
       setLoadingProgress(20);
       setLoadingText('Authenticating...');
-      
+
       await new Promise(resolve => setTimeout(resolve, 300));
       setLoadingProgress(40);
-      
+
       const response = await fetch('/api/v1/users/profile', {
         method: 'GET',
         headers: {
@@ -131,7 +129,7 @@ export default function Dashboard() {
               {/* Shimmer Effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
             </div>
-            
+
             {/* Progress Glow */}
             <div 
               className="absolute top-0 left-0 h-full bg-[#6366f1]/50 rounded-full blur-sm transition-all duration-500 ease-out"
@@ -160,12 +158,12 @@ export default function Dashboard() {
             50% { transform: translateX(0%); }
             100% { transform: translateX(100%); }
           }
-          
+
           @keyframes shimmer {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
           }
-          
+
           .animate-shimmer {
             animation: shimmer 2s infinite;
           }
@@ -235,7 +233,6 @@ export default function Dashboard() {
       setFormData({
         name: '',
         maxKeyPerPerson: 1,
-        numberOfCheckpoints: 2,
         keyTimer: 12,
         permanentKeys: false,
         keyCooldown: 10
@@ -257,7 +254,6 @@ export default function Dashboard() {
     setEditingKeysystem(keysystem);
     setEditFormData({
       maxKeyPerPerson: keysystem.maxKeyPerPerson,
-      numberOfCheckpoints: keysystem.numberOfCheckpoints,
       keyTimer: keysystem.keyTimer,
       permanentKeys: keysystem.permanent,
       keyCooldown: keysystem.keyCooldown,
@@ -516,7 +512,6 @@ export default function Dashboard() {
                         <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Status</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">ID</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Max Keys</th>
-                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Checkpoints</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Key Timer</th>
                         <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Created</th>
                         <th className="text-right py-3 px-4 text-sm font-medium text-gray-300">Actions</th>
@@ -547,11 +542,6 @@ export default function Dashboard() {
                           <td className="py-3 px-4">
                             <span className="text-gray-300 text-sm">
                               {keysystem.maxKeyPerPerson || 'N/A'}
-                            </span>
-                          </td>
-                          <td className="py-3 px-4">
-                            <span className="text-gray-300 text-sm">
-                              {keysystem.numberOfCheckpoints || 'N/A'}
                             </span>
                           </td>
                           <td className="py-3 px-4">
@@ -722,23 +712,6 @@ export default function Dashboard() {
                     />
                     <p className="text-gray-400 text-xs mt-1">This is the number of individual keys a person can create in one session</p>
                   </div>
-
-                  {/* Number of Checkpoints */}
-                  <div>
-                    <label className="block text-white text-sm font-medium mb-2">
-                      Number of Checkpoints
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.numberOfCheckpoints}
-                      onChange={(e) => handleInputChange('numberOfCheckpoints', e.target.value)}
-                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
-                    />
-                    <p className="text-gray-400 text-xs mt-1">
-                      Cryptix will add an extra checkpoint for site monetization that aligns with the same ad-link provider you use. 
-                      If you want to remove this extra link the users would have to go through, contact staff on discord to buy the pro plan.
-                    </p>
-                  </div>
                 </div>
 
                 {/* Right Column */}
@@ -873,23 +846,6 @@ export default function Dashboard() {
                       className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                     <p className="text-gray-400 text-xs mt-1">This is the number of individual keys a person can create in one session</p>
-                  </div>
-
-                  {/* Number of Checkpoints */}
-                  <div>
-                    <label className="block text-white text-sm font-medium mb-2">
-                      Number of Checkpoints
-                    </label>
-                    <input
-                      type="number"
-                      value={editFormData.numberOfCheckpoints}
-                      onChange={(e) => handleEditInputChange('numberOfCheckpoints', e.target.value)}
-                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
-                    />
-                    <p className="text-gray-400 text-xs mt-1">
-                      Cryptix will add an extra checkpoint for site monetization that aligns with the same ad-link provider you use. 
-                      If you want to remove this extra link the users would have to go through, contact staff on discord to buy the pro plan.
-                    </p>
                   </div>
                 </div>
 
@@ -1054,10 +1010,6 @@ export default function Dashboard() {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400">Max Keys Per Person:</span>
                         <span className="text-white font-medium">{viewingKeysystem.maxKeyPerPerson}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-gray-400">Checkpoints:</span>
-                        <span className="text-white font-medium">{viewingKeysystem.numberOfCheckpoints}</span>
                       </div>
                       <div className="flex justify-between items-center">
                         <span className="text-gray-400">Key Timer:</span>

@@ -14,7 +14,6 @@ export async function POST(request) {
     const {
       name,
       maxKeyPerPerson,
-      numberOfCheckpoints,
       keyTimer,
       permanentKeys,
       keyCooldown
@@ -37,10 +36,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Max key per person must be at least 1' }, { status: 400 });
     }
 
-    const checkpoints = parseInt(numberOfCheckpoints);
-    if (!checkpoints || checkpoints < 1 || checkpoints > 5) {
-      return NextResponse.json({ error: 'Number of checkpoints must be between 1 and 5' }, { status: 400 });
-    }
+    
 
     const timer = parseInt(keyTimer);
     if (!permanentKeys && (!timer || timer < 1 || timer > 196)) {
@@ -71,14 +67,11 @@ export async function POST(request) {
       id: keysystemId,
       name: sanitizedName,
       maxKeyPerPerson: maxKeys,
-      numberOfCheckpoints: checkpoints,
       keyTimer: permanentKeys ? 0 : timer,
       permanent: permanentKeys,
       keyCooldown: cooldown,
       active: true,
-      createdAt: new Date().toISOString(),
-      totalKeys: 0,
-      activeKeys: 0
+      createdAt: new Date().toISOString()
     };
 
     // Add keysystem to user's keysystems array
