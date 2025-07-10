@@ -323,7 +323,7 @@ export default function Dashboard() {
       {/* Your Keysystems Section */}
       <div className="px-8 py-16">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-[#1a1b2e] rounded-lg border border-white/10 p-6">
+          <div className="bg-transparent rounded-lg border border-white/10 p-6">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-white text-xl font-semibold">Your Keysystems</h2>
               <button 
