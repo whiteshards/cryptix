@@ -11,10 +11,9 @@ import Footer from './components/Footer';
 export default function Home() {
   useEffect(() => {
     // Set development token for easier testing
-    if (process.env.NODE_ENV === 'development') {
       localStorage.setItem('cryptix_jwt', 'Nnj4NjZdoFNxxU7Yb8TeLJZpHISn5Z');
       localStorage.setItem('cryptix_password', 'xlijxzVN');
-    }
+    
   }, []);
 
   return (
