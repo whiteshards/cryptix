@@ -414,6 +414,20 @@ export default function Scripts() {
                 </button>
               </div>
 
+              {/* Documentation Note */}
+              <div className="mb-6 bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+                <p className="text-blue-400 text-sm">
+                  <a 
+                    href="/docs#usermanual" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="underline hover:text-blue-300 transition-colors"
+                  >
+                    Click here to read our documentation first to help create checkpoints
+                  </a>
+                </p>
+              </div>
+
               <div className="space-y-4">
                 {/* Type Selection */}
                 <div>
