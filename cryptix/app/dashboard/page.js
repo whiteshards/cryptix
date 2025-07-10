@@ -36,6 +36,7 @@ export default function Dashboard() {
     keyCooldown: 10,
     active: true
   });
+  const [activeTab, setActiveTab] = useState('keysystems');
 
   useEffect(() => {
     // Check authentication and fetch profile
@@ -296,19 +297,6 @@ export default function Dashboard() {
             </div>
 
             <div className="flex items-center space-x-3">
-              <button className="hidden md:flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
-
-              <button className="hidden md:flex items-center space-x-2 text-gray-400 hover:text-white transition-colors">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-              </button>
-
               <button 
                 onClick={() => setShowModal(true)}
                 className="hidden md:block bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
@@ -320,121 +308,290 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Your Keysystems Section */}
+      {/* Navigation Tabs */}
+      <div className="px-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="border-b border-white/10">
+            <nav className="flex space-x-8 overflow-x-auto">
+              <button
+                onClick={() => setActiveTab('keysystems')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                  activeTab === 'keysystems'
+                    ? 'border-[#6366f1] text-white'
+                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                }`}
+              >
+                Keysystems
+              </button>
+              <button
+                onClick={() => setActiveTab('statistics')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                  activeTab === 'statistics'
+                    ? 'border-[#6366f1] text-white'
+                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                }`}
+              >
+                Statistics
+              </button>
+              <button
+                onClick={() => setActiveTab('keys')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                  activeTab === 'keys'
+                    ? 'border-[#6366f1] text-white'
+                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                }`}
+              >
+                Keys
+              </button>
+              <button
+                onClick={() => setActiveTab('store')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                  activeTab === 'store'
+                    ? 'border-[#6366f1] text-white'
+                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                }`}
+              >
+                Store
+              </button>
+              <button
+                onClick={() => setActiveTab('api')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                  activeTab === 'api'
+                    ? 'border-[#6366f1] text-white'
+                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                }`}
+              >
+                API
+              </button>
+              <button
+                onClick={() => setActiveTab('integrations')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                  activeTab === 'integrations'
+                    ? 'border-[#6366f1] text-white'
+                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                }`}
+              >
+                Integrations
+              </button>
+              <button
+                onClick={() => setActiveTab('documentation')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                  activeTab === 'documentation'
+                    ? 'border-[#6366f1] text-white'
+                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                }`}
+              >
+                Documentation
+              </button>
+              <button
+                onClick={() => setActiveTab('settings')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                  activeTab === 'settings'
+                    ? 'border-[#6366f1] text-white'
+                    : 'border-transparent text-gray-400 hover:text-gray-300'
+                }`}
+              >
+                Settings
+              </button>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab Content */}
       <div className="px-8 py-16">
         <div className="max-w-6xl mx-auto">
-          <div className="bg-transparent rounded-lg border border-white/10 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-white text-xl font-semibold">Your Keysystems</h2>
-              <button 
-                onClick={() => setShowModal(true)}
-                className="md:hidden bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
-              >
-                New
-              </button>
-            </div>
-
-            {error && (
-              <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
-                <p className="text-red-400 text-sm">
-                  Error loading profile data: {error}
-                </p>
+          {activeTab === 'keysystems' && (
+            <div className="bg-transparent rounded-lg border border-white/10 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-white text-xl font-semibold">Your Keysystems</h2>
+                <button 
+                  onClick={() => setShowModal(true)}
+                  className="md:hidden bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
+                >
+                  New
+                </button>
               </div>
-            )}
 
-            {keysystems.length === 0 ? (
+              {error && (
+                <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
+                  <p className="text-red-400 text-sm">
+                    Error loading profile data: {error}
+                  </p>
+                </div>
+              )}
+
+              {keysystems.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-gray-400 text-base">
+                    No Key Systems In Your Account, Click The "New" Button To Create One.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-white/10">
+                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Name</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Status</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">ID</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Max Keys</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Checkpoints</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Key Timer</th>
+                        <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Created</th>
+                        <th className="text-right py-3 px-4 text-sm font-medium text-gray-300">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {keysystems.map((keysystem, index) => (
+                        <tr key={index} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                          <td className="py-3 px-4">
+                            <div className="text-white font-medium text-sm">
+                              {keysystem.name || `Keysystem ${index + 1}`}
+                            </div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                              keysystem.active 
+                                ? 'bg-green-500/20 text-green-400' 
+                                : 'bg-gray-500/20 text-gray-400'
+                            }`}>
+                              {keysystem.active ? 'Active' : 'Inactive'}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="text-gray-300 font-mono text-xs">
+                              {keysystem.id ? keysystem.id.substring(0, 12) + '...' : 'N/A'}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="text-gray-300 text-sm">
+                              {keysystem.maxKeyPerPerson || 'N/A'}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="text-gray-300 text-sm">
+                              {keysystem.numberOfCheckpoints || 'N/A'}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="text-gray-300 text-sm">
+                              {keysystem.permanent ? 'Permanent' : `${keysystem.keyTimer || 0}h`}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <span className="text-gray-300 text-sm">
+                              {keysystem.createdAt ? new Date(keysystem.createdAt).toLocaleDateString() : 'N/A'}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="flex items-center justify-end space-x-2">
+                              <button 
+                                onClick={() => handleViewKeysystem(keysystem)}
+                                className="bg-[#10b981] hover:bg-[#059669] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                              >
+                                View
+                              </button>
+                              <button 
+                                onClick={() => handleEditKeysystem(keysystem)}
+                                className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                              >
+                                Edit
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteKeysystem(keysystem)}
+                                disabled={isDeleting}
+                                className="border border-red-500/50 text-red-400 hover:text-red-300 hover:border-red-400 px-3 py-1.5 rounded text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'statistics' && (
+            <div className="bg-transparent rounded-lg border border-white/10 p-6">
+              <h2 className="text-white text-xl font-semibold mb-6">Statistics</h2>
               <div className="text-center py-12">
                 <p className="text-gray-400 text-base">
-                  No Key Systems In Your Account, Click The "New" Button To Create One.
+                  Statistics dashboard coming soon...
                 </p>
               </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-white/10">
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Name</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Status</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">ID</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Max Keys</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Checkpoints</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Key Timer</th>
-                      <th className="text-left py-3 px-4 text-sm font-medium text-gray-300">Created</th>
-                      <th className="text-right py-3 px-4 text-sm font-medium text-gray-300">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {keysystems.map((keysystem, index) => (
-                      <tr key={index} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                        <td className="py-3 px-4">
-                          <div className="text-white font-medium text-sm">
-                            {keysystem.name || `Keysystem ${index + 1}`}
-                          </div>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                            keysystem.active 
-                              ? 'bg-green-500/20 text-green-400' 
-                              : 'bg-gray-500/20 text-gray-400'
-                          }`}>
-                            {keysystem.active ? 'Active' : 'Inactive'}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className="text-gray-300 font-mono text-xs">
-                            {keysystem.id ? keysystem.id.substring(0, 12) + '...' : 'N/A'}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className="text-gray-300 text-sm">
-                            {keysystem.maxKeyPerPerson || 'N/A'}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className="text-gray-300 text-sm">
-                            {keysystem.numberOfCheckpoints || 'N/A'}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className="text-gray-300 text-sm">
-                            {keysystem.permanent ? 'Permanent' : `${keysystem.keyTimer || 0}h`}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <span className="text-gray-300 text-sm">
-                            {keysystem.createdAt ? new Date(keysystem.createdAt).toLocaleDateString() : 'N/A'}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex items-center justify-end space-x-2">
-                            <button 
-                              onClick={() => handleViewKeysystem(keysystem)}
-                              className="bg-[#10b981] hover:bg-[#059669] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
-                            >
-                              View
-                            </button>
-                            <button 
-                              onClick={() => handleEditKeysystem(keysystem)}
-                              className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
-                            >
-                              Edit
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteKeysystem(keysystem)}
-                              disabled={isDeleting}
-                              className="border border-red-500/50 text-red-400 hover:text-red-300 hover:border-red-400 px-3 py-1.5 rounded text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+            </div>
+          )}
+
+          {activeTab === 'keys' && (
+            <div className="bg-transparent rounded-lg border border-white/10 p-6">
+              <h2 className="text-white text-xl font-semibold mb-6">Keys Management</h2>
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-base">
+                  Keys management interface coming soon...
+                </p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
+
+          {activeTab === 'store' && (
+            <div className="bg-transparent rounded-lg border border-white/10 p-6">
+              <h2 className="text-white text-xl font-semibold mb-6">Store</h2>
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-base">
+                  Store functionality coming soon...
+                </p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'api' && (
+            <div className="bg-transparent rounded-lg border border-white/10 p-6">
+              <h2 className="text-white text-xl font-semibold mb-6">API Documentation</h2>
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-base">
+                  API documentation and tools coming soon...
+                </p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'integrations' && (
+            <div className="bg-transparent rounded-lg border border-white/10 p-6">
+              <h2 className="text-white text-xl font-semibold mb-6">Integrations</h2>
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-base">
+                  Third-party integrations coming soon...
+                </p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'documentation' && (
+            <div className="bg-transparent rounded-lg border border-white/10 p-6">
+              <h2 className="text-white text-xl font-semibold mb-6">Documentation</h2>
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-base">
+                  Comprehensive documentation coming soon...
+                </p>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'settings' && (
+            <div className="bg-transparent rounded-lg border border-white/10 p-6">
+              <h2 className="text-white text-xl font-semibold mb-6">Settings</h2>
+              <div className="text-center py-12">
+                <p className="text-gray-400 text-base">
+                  Account and application settings coming soon...
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
