@@ -1,99 +1,104 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 
-export default function Scripts() {
-  const router = useRouter();
+function ScriptsContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const keysystemId = searchParams.get('id');
   
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userProfile, setUserProfile] = useState(null);
-  const [keysystem, setKeysystem] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [keysystem, setKeysystem] = useState(null);
   const [showAddCheckpointModal, setShowAddCheckpointModal] = useState(false);
   const [isCreatingCheckpoint, setIsCreatingCheckpoint] = useState(false);
-  const [toast, setToast] = useState(null);
   const [checkpointFormData, setCheckpointFormData] = useState({
     type: 'linkvertise',
     redirect_url: ''
   });
-
-  // Configuration for domain - change this for production
-  const DOMAIN = 'https://cryptixmanager.vercel.app';
+  const [toast, setToast] = useState({ message: '', type: '', show: false });
 
   useEffect(() => {
-    if (!keysystemId) {
-      router.push('/dashboard');
-      return;
+    checkAuth();
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated && keysystemId) {
+      fetchKeysystem();
     }
+  }, [isAuthenticated, keysystemId]);
 
-    const token = localStorage.getItem('cryptix_jwt');
-    if (!token) {
-      router.push('/login');
-      return;
-    }
-
-    fetchUserProfile(token);
-  }, [keysystemId, router]);
-
-  const fetchUserProfile = async (token) => {
+  const checkAuth = async () => {
     try {
+      const token = localStorage.getItem('cryptix_jwt');
+      if (!token) {
+        router.push('/login');
+        return;
+      }
+
       const response = await fetch('/api/v1/users/profile', {
-        method: 'GET',
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
+          'Authorization': `Bearer ${token}`
+        }
       });
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          localStorage.removeItem('cryptix_jwt');
-          router.push('/login');
-          return;
-        }
-        throw new Error('Failed to fetch profile');
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        setUserProfile(data.customer);
+      if (response.ok) {
         setIsAuthenticated(true);
-
-        // Find the specific keysystem
-        const foundKeysystem = data.customer.keysystems?.find(ks => ks.id === keysystemId);
-        if (!foundKeysystem) {
-          router.push('/dashboard');
-          return;
-        }
-        setKeysystem(foundKeysystem);
       } else {
-        throw new Error('Failed to fetch profile data');
+        localStorage.removeItem('cryptix_jwt');
+        router.push('/login');
       }
     } catch (error) {
-      console.error('Error fetching profile:', error);
-      setError(error.message);
+      console.error('Auth check failed:', error);
+      router.push('/login');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const fetchKeysystem = async () => {
+    try {
+      const token = localStorage.getItem('cryptix_jwt');
+      const response = await fetch('/api/v1/users/profile', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        const foundKeysystem = data.user.keysystems?.find(ks => ks.id === keysystemId);
+        if (foundKeysystem) {
+          setKeysystem(foundKeysystem);
+        } else {
+          showToast('Keysystem not found');
+          router.push('/dashboard');
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching keysystem:', error);
+      showToast('Error fetching keysystem data');
+    }
+  };
+
   const showToast = (message, type = 'error') => {
-    setToast({ message, type });
-    setTimeout(() => setToast(null), 5000);
+    setToast({ message, type, show: true });
+    setTimeout(() => {
+      setToast(prev => ({ ...prev, show: false }));
+    }, 3000);
   };
 
   const handleInputChange = (field, value) => {
-    setCheckpointFormData(prev => ({ ...prev, [field]: value }));
+    setCheckpointFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
   const handleCreateCheckpoint = async () => {
-    if (!checkpointFormData.redirect_url) {
+    if (!checkpointFormData.redirect_url.trim()) {
       showToast('Redirect URL is required');
       return;
     }
@@ -232,229 +237,201 @@ export default function Scripts() {
   const checkpoints = keysystem.checkpoints || [];
 
   return (
-    <div className="min-h-screen bg-[#0f1015]">
-      {/* Header */}
-      <div className="pt-8 px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center space-x-4">
-              <button
-                onClick={() => router.push('/dashboard')}
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <h1 className="text-white text-lg font-medium">
-                {keysystem.name} - Script Management
-              </h1>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-[#0f1015] relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 25px 25px, white 2px, transparent 0)`,
+          backgroundSize: '50px 50px'
+        }}></div>
       </div>
 
-      {/* Content */}
-      <div className="px-8 py-6">
-        <div className="max-w-6xl mx-auto space-y-6">
-          {/* Keysystem Information */}
-          <div className="bg-transparent rounded-lg border border-white/10 p-6">
-            <h2 className="text-white text-xl font-semibold mb-4">Script Information</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <tbody>
-                  <tr className="border-b border-white/5">
-                    <td className="py-3 px-4 text-gray-400">Name</td>
-                    <td className="py-3 px-4 text-white font-medium">{keysystem.name}</td>
-                  </tr>
-                  <tr className="border-b border-white/5">
-                    <td className="py-3 px-4 text-gray-400">Status</td>
-                    <td className="py-3 px-4">
-                      <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                        keysystem.active 
-                          ? 'bg-green-500/20 text-green-400' 
-                          : 'bg-gray-500/20 text-gray-400'
-                      }`}>
-                        {keysystem.active ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-white/5">
-                    <td className="py-3 px-4 text-gray-400">ID</td>
-                    <td className="py-3 px-4 text-gray-300 font-mono text-sm">{keysystem.id}</td>
-                  </tr>
-                  <tr className="border-b border-white/5">
-                    <td className="py-3 px-4 text-gray-400">Max Keys Per Person</td>
-                    <td className="py-3 px-4 text-white">{keysystem.maxKeyPerPerson}</td>
-                  </tr>
-                  <tr className="border-b border-white/5">
-                    <td className="py-3 px-4 text-gray-400">Key Timer</td>
-                    <td className="py-3 px-4 text-white">
-                      {keysystem.permanent ? 'Permanent' : `${keysystem.keyTimer} hours`}
-                    </td>
-                  </tr>
-                  <tr className="border-b border-white/5">
-                    <td className="py-3 px-4 text-gray-400">Key Cooldown</td>
-                    <td className="py-3 px-4 text-white">{keysystem.keyCooldown} minutes</td>
-                  </tr>
-                </tbody>
-              </table>
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg ${
+          toast.type === 'success' ? 'bg-green-500/20 border border-green-500/30 text-green-400' : 
+          'bg-red-500/20 border border-red-500/30 text-red-400'
+        } backdrop-blur-md`}>
+          {toast.message}
+        </div>
+      )}
+
+      {/* Main Content */}
+      <div className="relative z-10 container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">Keysystem Configuration</h1>
+              <p className="text-gray-400">Manage your keysystem settings and checkpoints</p>
+            </div>
+            
+            <button
+              onClick={() => router.push('/dashboard')}
+              className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              <span>Back to Dashboard</span>
+            </button>
+          </div>
+
+          {/* Keysystem Info */}
+          <div className="bg-black/20 backdrop-blur-md rounded-lg border border-white/10 p-6 mb-8">
+            <h2 className="text-xl font-semibold text-white mb-4">Keysystem Details</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-gray-400 text-sm mb-1">Name</label>
+                <p className="text-white font-medium">{keysystem.name}</p>
+              </div>
+              
+              <div>
+                <label className="block text-gray-400 text-sm mb-1">Status</label>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  keysystem.active ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+                }`}>
+                  {keysystem.active ? 'Active' : 'Inactive'}
+                </span>
+              </div>
+              
+              <div>
+                <label className="block text-gray-400 text-sm mb-1">Max Keys Per Person</label>
+                <p className="text-white font-medium">{keysystem.maxKeyPerPerson}</p>
+              </div>
+              
+              <div>
+                <label className="block text-gray-400 text-sm mb-1">Key Duration</label>
+                <p className="text-white font-medium">{keysystem.keyValidTime} minutes</p>
+              </div>
+              
+              <div>
+                <label className="block text-gray-400 text-sm mb-1">Created</label>
+                <p className="text-white font-medium">
+                  {new Date(keysystem.createdAt).toLocaleDateString()}
+                </p>
+              </div>
+              
+              <div>
+                <label className="block text-gray-400 text-sm mb-1">Total Checkpoints</label>
+                <p className="text-white font-medium">{checkpoints.length}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Important Notes */}
+          <div className="mb-6 space-y-3">
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
+              <p className="text-yellow-400 text-sm">
+                <strong>Linkvertise Note:</strong> Always enable anti-bypassing in Linkvertise and add its token in your profile settings or else the callback will not work and your users will not be able to complete checkpoints and generate/renew keys.
+              </p>
+            </div>
+            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+              <p className="text-red-400 text-sm">
+                <strong>Custom Links Note:</strong> Custom link providers don't support anti-bypassing and can be easily bypassed. NOT RECOMMENDED.
+              </p>
             </div>
           </div>
 
           {/* Checkpoints Section */}
-          <div className="bg-transparent rounded-lg border border-white/10 p-6">
+          <div className="bg-black/20 backdrop-blur-md rounded-lg border border-white/10 p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-white text-xl font-semibold">
-                Add Checkpoints ({checkpoints.length}/10)
-              </h2>
-              {checkpoints.length < 10 && (
-                <button
-                  onClick={() => setShowAddCheckpointModal(true)}
-                  className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-                >
-                  Add Checkpoint
-                </button>
-              )}
-            </div>
-
-            {/* Keysystem URL Display */}
-            {checkpoints.length > 0 && (
-              <div className="mb-6 bg-green-500/10 border border-green-500/30 rounded-lg p-4">
-                <p className="text-green-400 text-sm mb-2">
-                  <strong>Your Keysystem URL (Share This With User's To Generate Keys):</strong>
-                </p>
-                <p className="text-white font-mono text-sm break-all bg-black/30 rounded px-3 py-2">
-                  {DOMAIN}/ads/get_key?id={keysystemId}
-                </p>
-              </div>
-            )}
-
-            {/* Important Notes */}
-            <div className="mb-6 space-y-3">
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                <p className="text-yellow-400 text-sm">
-                  <strong>Linkvertise Note:</strong> Always enable anti-bypassing in Linkvertise and add its token in your profile settings or else the callback will not work and your users will not be able to complete checkpoints and generate/renew keys.
-                </p>
-              </div>
-              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
-                <p className="text-red-400 text-sm">
-                  <strong>Custom Links Note:</strong> Custom link providers don't support anti-bypassing and can be easily bypassed. NOT RECOMMENDED.
-                </p>
-              </div>
+              <h2 className="text-xl font-semibold text-white">Checkpoints</h2>
+              <button
+                onClick={() => setShowAddCheckpointModal(true)}
+                className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded flex items-center space-x-2 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Add Checkpoint</span>
+              </button>
             </div>
 
             {checkpoints.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-400 text-base mb-4">
-                  No checkpoints added yet. Add checkpoints to complete keysystem setup.
-                </p>
+                <div className="w-16 h-16 bg-gray-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-white text-lg font-medium mb-2">No Checkpoints</h3>
+                <p className="text-gray-400 mb-4">Get started by adding your first checkpoint</p>
                 <button
                   onClick={() => setShowAddCheckpointModal(true)}
-                  className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+                  className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-6 py-2 rounded transition-colors"
                 >
-                  Add First Checkpoint
+                  Add Your First Checkpoint
                 </button>
               </div>
             ) : (
-              <div className="flex flex-col items-center space-y-6">
-                <div className="text-center mb-4">
-                  <h3 className="text-white font-medium mb-2">Checkpoint Flow</h3>
-                  <p className="text-gray-400 text-sm">Users will complete checkpoints in this order</p>
-                </div>
-                
-                <div className="flex flex-col items-center space-y-4 w-full max-w-2xl">
-                  {checkpoints.map((checkpoint, index) => (
-                    <div key={index} className="w-full">
-                      {/* Checkpoint Card */}
-                      <div className={`relative bg-gradient-to-r p-4 rounded-lg border ${
-                        index === 0 
-                          ? 'from-blue-500/20 to-blue-600/20 border-blue-500/30' 
-                          : 'from-gray-600/20 to-gray-700/20 border-gray-600/30'
-                      }`}>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                              checkpoint.type === 'linkvertise' ? 'bg-blue-500 text-white' :
-                              checkpoint.type === 'lootlabs' ? 'bg-green-500 text-white' :
-                              checkpoint.type === 'workink' ? 'bg-purple-500 text-white' :
-                              'bg-gray-500 text-white'
-                            }`}>
-                              {index + 1}
-                            </div>
-                            <div>
-                              <h4 className="text-white font-medium">
-                                {checkpoint.type.charAt(0).toUpperCase() + checkpoint.type.slice(1)}
-                                {index === 0 && <span className="ml-2 text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">PERMANENT</span>}
-                              </h4>
-                              <p className="text-gray-400 text-xs truncate max-w-xs">
-                                {checkpoint.redirect_url}
-                              </p>
-                            </div>
-                          </div>
-                          
-                          {index > 0 && (
-                            <div className="flex items-center space-x-2">
-                              {index > 1 && (
-                                <button
-                                  onClick={() => moveCheckpoint(index, index - 1)}
-                                  className="text-gray-400 hover:text-white transition-colors p-1"
-                                  title="Move Up"
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                  </svg>
-                                </button>
-                              )}
-                              {index < checkpoints.length - 1 && (
-                                <button
-                                  onClick={() => moveCheckpoint(index, index + 1)}
-                                  className="text-gray-400 hover:text-white transition-colors p-1"
-                                  title="Move Down"
-                                >
-                                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                </button>
-                              )}
-                              <button
-                                onClick={() => handleDeleteCheckpoint(index)}
-                                className="text-red-400 hover:text-red-300 transition-colors p-1"
-                                title="Delete"
-                              >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                              </button>
-                            </div>
-                          )}
+              <div className="space-y-4">
+                {checkpoints.map((checkpoint, index) => (
+                  <div
+                    key={index}
+                    className="bg-gray-800/50 rounded-lg border border-gray-600/30 p-4 hover:border-gray-500/50 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                          checkpoint.type === 'linkvertise' ? 'bg-blue-500 text-white' :
+                          checkpoint.type === 'lootlabs' ? 'bg-green-500 text-white' :
+                          checkpoint.type === 'workink' ? 'bg-purple-500 text-white' :
+                          'bg-gray-500 text-white'
+                        }`}>
+                          {index + 1}
+                        </div>
+                        <div>
+                          <h4 className="text-white font-medium">
+                            {checkpoint.type.charAt(0).toUpperCase() + checkpoint.type.slice(1)}
+                            {index === 0 && <span className="ml-2 text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded">PERMANENT</span>}
+                          </h4>
+                          <p className="text-gray-400 text-xs truncate max-w-xs">
+                            {checkpoint.redirect_url}
+                          </p>
                         </div>
                       </div>
                       
-                      {/* Arrow pointing to next checkpoint */}
-                      {index < checkpoints.length - 1 && (
-                        <div className="flex justify-center py-2">
-                          <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
+                      {index > 0 && (
+                        <div className="flex items-center space-x-2">
+                          {index > 1 && (
+                            <button
+                              onClick={() => moveCheckpoint(index, index - 1)}
+                              className="text-gray-400 hover:text-white transition-colors p-1"
+                              title="Move Up"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                              </svg>
+                            </button>
+                          )}
+                          
+                          {index < checkpoints.length - 1 && (
+                            <button
+                              onClick={() => moveCheckpoint(index, index + 1)}
+                              className="text-gray-400 hover:text-white transition-colors p-1"
+                              title="Move Down"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                              </svg>
+                            </button>
+                          )}
+                          
+                          <button
+                            onClick={() => handleDeleteCheckpoint(index)}
+                            className="text-red-400 hover:text-red-300 transition-colors p-1"
+                            title="Delete Checkpoint"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                          </button>
                         </div>
                       )}
                     </div>
-                  ))}
-                  
-                  {/* Success indicator */}
-                  <div className="w-full">
-                    <div className="bg-gradient-to-r from-green-500/20 to-green-600/20 border border-green-500/30 p-4 rounded-lg text-center">
-                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <h4 className="text-green-400 font-medium">Key Generated</h4>
-                      <p className="text-green-400/80 text-sm">User receives their key</p>
-                    </div>
                   </div>
-                </div>
+                ))}
               </div>
             )}
           </div>
@@ -547,28 +524,22 @@ export default function Scripts() {
           </div>
         </div>
       )}
-
-      {/* Toast Notification */}
-      {toast && (
-        <div className="fixed top-4 right-4 z-50">
-          <div className={`bg-black/80 backdrop-blur-md border rounded-lg px-4 py-3 max-w-sm ${
-            toast.type === 'success' ? 'border-green-500/30 text-green-400' : 'border-red-500/30 text-red-400'
-          }`}>
-            <div className="flex items-center space-x-2">
-              {toast.type === 'success' ? (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              )}
-              <span className="text-sm">{toast.message}</span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
+  );
+}
+
+export default function ScriptsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
+          <h1 className="text-2xl font-bold text-white mb-2">Loading...</h1>
+          <p className="text-gray-400">Please wait...</p>
+        </div>
+      </div>
+    }>
+      <ScriptsContent />
+    </Suspense>
   );
 }
