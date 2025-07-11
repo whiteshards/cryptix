@@ -62,7 +62,7 @@ export async function POST(request) {
     // Generate unique keysystem ID
     const keysystemId = `ks_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
 
-    // Create keysystem object
+    // Create keysystem object with automatic first checkpoint
     const newKeysystem = {
       id: keysystemId,
       name: sanitizedName,
@@ -71,7 +71,16 @@ export async function POST(request) {
       permanent: permanentKeys,
       keyCooldown: cooldown,
       active: true,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      checkpoints: [
+        {
+          type: 'linkvertise',
+          redirect_url: 'https://link-center.net/668076/ICI7OLuYECdE',
+          callback_url: '/cb/recbmain',
+          permanent: true,
+          order: 0
+        }
+      ]
     };
 
     // Add keysystem to user's keysystems array
