@@ -1,0 +1,93 @@
+The provided documentation outlines the Linkvertise Anti-Bypass feature, its workflow, and the necessary steps for implementation and verification.
+
+Overview and Purpose
+The Anti-Bypass feature is designed to verify if a visitor arrived at a website via a Linkvertise target-link. This feature extends the target link by adding a 
+
+?hash parameter.
+
+Important Notes:
+
+This feature is only functional for "Target-Links," not "Paste-Links".
+
+It affects all links.
+
+The backend must be fully built out before activation, or visitors may not be able to access the target.
+
+Technical Implementation
+The anti-bypassing feature modifies a target link, such as 
+
+https://yourlink.com/abcdef , by appending a hash parameter. The resulting link format is 
+
+
+https://yourlink.com/abcdef?hash=[hash_value].
+
+The hash value is generated once a visitor completes the ad-step and is redirected to the target page. At that moment, the hash is stored on the Linkvertise side for 10 seconds.
+
+
+
+A publisher can use a pre-generated authentication token to send a POST request to an API endpoint to verify if the visitor arrived through the Linkvertise target-link.
+
+
+
+API Endpoint and Example Request:
+
+
+API Endpoint: publisher.linkvertise.com/api/v1/anti_bypassing.
+
+
+
+Request Type: POST.
+
+
+Authentication Token Example: 12cfd687bc39171533f0eb5b0d9bbf708412cb62502693cb8b15ca39d81777c9.
+
+
+Example Request: publisher.linkvertise.com/api/v1/anti_bypassing?token=12cfd687bc39171533f0eb5b0d9bbf708412cb62502693cb8b15ca39d81777c9&hash=f836af77649b195e92aaf46fd7aa397993a6fe985a03289f98beae12c267f9f3.
+
+Workflow and User Flow
+The documentation includes a user-flow visualization. The process involves Linkvertise-Code and the publisher's custom backend logic:
+
+
+
+User Interaction (Linkvertise-Code):
+
+The user requests the Detail Page and completes the ads.
+
+
+A new extended target URL is generated with a random hash.
+
+The hash is stored in the Linkvertise hash storage handler for 10 seconds.
+
+Verification (Custom Backend Logic):
+
+The user requests the publisher's site, arriving with the hash in the URL.
+
+The publisher's custom backend logic extracts the hash from the user request and uses the personal API token.
+
+The backend sends a request to the Linkvertise-Code (specifically the hash storage handler) to validate the hash.
+
+
+API Request Parameters and Responses
+To validate a hash, the POST request requires two mandatory parameters:
+
+
+token: A 64-character string value.
+
+
+hash: A 64-character string value.
+
+The Linkvertise API returns specific responses based on the provided parameters:
+
+
+
+TRUE (if CORRECT_TOKEN and CORRECT_HASH): The hash was found and subsequently deleted. A hash can only be verified once.
+
+
+
+
+FALSE (if CORRECT_TOKEN and WRONG_HASH): The hash could not be found.
+
+
+"Invalid token." (if WRONG_TOKEN): Authentication token is not valid.
+
+The documentation suggests that publishers test the feature and track the number of users coming from Linkvertise before implementing any logic that might prevent visitors from reaching the site.
