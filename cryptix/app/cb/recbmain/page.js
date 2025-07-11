@@ -26,7 +26,13 @@ function RecbMainContent() {
 
   const verifyHash = async () => {
     try {
-      const response = await fetch(`/api/v1/cb/recbmain?hash=${hash}`);
+      const response = await fetch('/api/v1/cb/recbmain', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ hash }),
+      });
       const data = await response.json();
 
       if (data.success) {
