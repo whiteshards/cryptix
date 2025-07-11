@@ -515,7 +515,7 @@ export default function Dashboard() {
                         <tr key={index} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                           <td className="py-3 px-4">
                             <button
-                              onClick={() => router.push(`/dashboard/scripts/${keysystem.id}`)}
+                              onClick={() => router.push(`/dashboard/scripts?id=${keysystem.id}`)}
                               className="text-white font-medium text-sm hover:text-[#6366f1] transition-colors text-left"
                             >
                               {keysystem.name || `Keysystem ${index + 1}`}
