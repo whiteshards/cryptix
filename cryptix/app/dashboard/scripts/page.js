@@ -310,7 +310,7 @@ export default function Scripts() {
             {checkpoints.length > 0 && (
               <div className="mb-6 bg-green-500/10 border border-green-500/30 rounded-lg p-4">
                 <p className="text-green-400 text-sm mb-2">
-                  <strong>Your Keysystem URL:</strong>
+                  <strong>Your Keysystem URL (Share This With User's To Generate Keys):</strong>
                 </p>
                 <p className="text-white font-mono text-sm break-all bg-black/30 rounded px-3 py-2">
                   {DOMAIN}/ads/get_key?id={keysystemId}
