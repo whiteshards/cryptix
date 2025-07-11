@@ -1,0 +1,49 @@
+[16:22:17.668] Running build in Washington, D.C., USA (East) – iad1
+[16:22:17.668] Build machine configuration: 2 cores, 8 GB
+[16:22:17.711] Cloning github.com/whiteshards/cryptix (Branch: main, Commit: 1b45921)
+[16:22:18.308] Cloning completed: 597.000ms
+[16:22:19.481] Restored build cache from previous deployment (FBF7VbqwbUaNr8LGy9Bcvz5Xu1Hs)
+[16:22:19.829] Running "vercel build"
+[16:22:20.260] Vercel CLI 44.3.0
+[16:22:20.899] Installing dependencies...
+[16:22:21.885] 
+[16:22:21.886] up to date in 702ms
+[16:22:21.886] 
+[16:22:21.887] 20 packages are looking for funding
+[16:22:21.887]   run `npm fund` for details
+[16:22:21.916] Detected Next.js version: 15.3.4
+[16:22:21.919] Running "npm run build"
+[16:22:22.033] 
+[16:22:22.033] > cryptix@0.1.0 build
+[16:22:22.033] > next build
+[16:22:22.033] 
+[16:22:22.807]    ▲ Next.js 15.3.4
+[16:22:22.808]    - Environments: .env.local
+[16:22:22.808] 
+[16:22:22.881]    Creating an optimized production build ...
+[16:22:25.750] Failed to compile.
+[16:22:25.751] 
+[16:22:25.752] ./app/dashboard/scripts/[id]/page.js
+[16:22:25.752] Error:   [31mx[0m Expression expected
+[16:22:25.753]     ,-[[36;1;4m/vercel/path0/cryptix/app/dashboard/scripts/[id]/page.js[0m:8:1]
+[16:22:25.753]  [2m 5[0m | import { useRouter } from 'next/navigation';
+[16:22:25.753]  [2m 6[0m | 
+[16:22:25.753]  [2m 7[0m | export default function ScriptPage({ params }) {
+[16:22:25.753]  [2m 8[0m |   const router = useRouter();
+[16:22:25.753]     : [35;1m  ^^^^^[0m
+[16:22:25.753]  [2m 9[0m |   const { id } = params;
+[16:22:25.753]  [2m10[0m |   
+[16:22:25.753]  [2m11[0m |   const [isAuthenticated, setIsAuthenticated] = useState(false);
+[16:22:25.753]     `----
+[16:22:25.753] 
+[16:22:25.753] Caused by:
+[16:22:25.753]     Syntax Error
+[16:22:25.753] 
+[16:22:25.753] Import trace for requested module:
+[16:22:25.753] ./app/dashboard/scripts/[id]/page.js
+[16:22:25.756] 
+[16:22:25.797] 
+[16:22:25.798] > Build failed because of webpack errors
+[16:22:25.826] Error: Command "npm run build" exited with 1
+[16:22:26.016] 
+[16:22:28.901] Exiting build container
