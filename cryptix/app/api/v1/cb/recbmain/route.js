@@ -1,10 +1,10 @@
 
 import { NextResponse } from 'next/server';
 
-export async function GET(request) {
+export async function POST(request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const hash = searchParams.get('hash');
+    const body = await request.json();
+    const { hash } = body;
     
     // Check if hash is provided
     if (!hash) {
