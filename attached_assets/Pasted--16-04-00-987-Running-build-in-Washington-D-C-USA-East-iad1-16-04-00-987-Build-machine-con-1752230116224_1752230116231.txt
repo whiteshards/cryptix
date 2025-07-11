@@ -1,0 +1,48 @@
+[16:04:00.987] Running build in Washington, D.C., USA (East) – iad1
+[16:04:00.987] Build machine configuration: 2 cores, 8 GB
+[16:04:01.002] Cloning github.com/whiteshards/cryptix (Branch: main, Commit: ebf84be)
+[16:04:01.574] Cloning completed: 572.000ms
+[16:04:02.880] Restored build cache from previous deployment (3pSJRjNBRNaVRMuHXNzt2GdiweCY)
+[16:04:03.218] Running "vercel build"
+[16:04:03.778] Vercel CLI 44.3.0
+[16:04:04.082] Installing dependencies...
+[16:04:05.063] npm warn deprecated crypto@1.0.1: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
+[16:04:05.117] 
+[16:04:05.118] added 1 package in 771ms
+[16:04:05.118] 
+[16:04:05.118] 20 packages are looking for funding
+[16:04:05.118]   run `npm fund` for details
+[16:04:05.150] Detected Next.js version: 15.3.4
+[16:04:05.152] Running "npm run build"
+[16:04:05.263] 
+[16:04:05.264] > cryptix@0.1.0 build
+[16:04:05.264] > next build
+[16:04:05.264] 
+[16:04:06.030]    ▲ Next.js 15.3.4
+[16:04:06.031]    - Environments: .env.local
+[16:04:06.031] 
+[16:04:06.111]    Creating an optimized production build ...
+[16:04:13.077]  ✓ Compiled successfully in 4.0s
+[16:04:13.081]    Linting and checking validity of types ...
+[16:04:13.196]    Collecting page data ...
+[16:04:14.975]    Generating static pages (0/22) ...
+[16:04:16.279]    Generating static pages (5/22) 
+[16:04:16.280]    Generating static pages (10/22) 
+[16:04:16.280]    Generating static pages (16/22) 
+[16:04:16.426]  ⨯ useSearchParams() should be wrapped in a suspense boundary at page "/dashboard/scripts". Read more: https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout
+[16:04:16.426]     at a (/vercel/path0/cryptix/.next/server/chunks/293.js:5:41926)
+[16:04:16.426]     at f (/vercel/path0/cryptix/.next/server/chunks/293.js:3:19173)
+[16:04:16.426]     at o (/vercel/path0/cryptix/.next/server/app/dashboard/scripts/page.js:1:298)
+[16:04:16.426]     at nF (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:46843)
+[16:04:16.427]     at nH (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:48618)
+[16:04:16.427]     at nW (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:67762)
+[16:04:16.427]     at nz (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:65337)
+[16:04:16.427]     at nB (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:47195)
+[16:04:16.427]     at nH (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:48664)
+[16:04:16.427]     at nH (/vercel/path0/cryptix/node_modules/next/dist/compiled/next-server/app-page.runtime.prod.js:76:64688)
+[16:04:16.427] Error occurred prerendering page "/dashboard/scripts". Read more: https://nextjs.org/docs/messages/prerender-error
+[16:04:16.427] Export encountered an error on /dashboard/scripts/page: /dashboard/scripts, exiting the build.
+[16:04:16.456]  ⨯ Next.js build worker exited with code: 1 and signal: null
+[16:04:16.526] Error: Command "npm run build" exited with 1
+[16:04:17.162] 
+[16:04:20.858] Exiting build container
