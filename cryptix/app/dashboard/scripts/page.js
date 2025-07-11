@@ -22,6 +22,9 @@ export default function Scripts() {
     redirect_url: ''
   });
 
+  // Configuration for domain - change this for production
+  const DOMAIN = 'https://cryptixmanager.vercel.app';
+
   useEffect(() => {
     if (!keysystemId) {
       router.push('/dashboard');
@@ -302,6 +305,18 @@ export default function Scripts() {
                 </button>
               )}
             </div>
+
+            {/* Keysystem URL Display */}
+            {checkpoints.length > 0 && (
+              <div className="mb-6 bg-green-500/10 border border-green-500/30 rounded-lg p-4">
+                <p className="text-green-400 text-sm mb-2">
+                  <strong>Your Keysystem URL:</strong>
+                </p>
+                <p className="text-white font-mono text-sm break-all bg-black/30 rounded px-3 py-2">
+                  {DOMAIN}/ads/get_key?id={keysystemId}
+                </p>
+              </div>
+            )}
 
             {/* Important Notes */}
             <div className="mb-6 space-y-3">
