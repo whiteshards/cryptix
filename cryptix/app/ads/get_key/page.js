@@ -73,16 +73,8 @@ function GetKeyContent() {
   };
 
   const handleCheckpointClick = (checkpoint, index) => {
-    // Remove click functionality from individual checkpoints
-    return;
-  };
-
-  const handleStartCurrentCheckpoint = () => {
-    if (currentStep < (keysystem.checkpoints?.length || 0)) {
-      const currentCheckpoint = keysystem.checkpoints[currentStep];
-      if (currentCheckpoint && currentCheckpoint.redirect_url) {
-        window.open(currentCheckpoint.redirect_url, '_blank');
-      }
+    if (index === currentStep) {
+      window.open(checkpoint.redirect_url, '_blank');
     }
   };
 
@@ -132,7 +124,11 @@ function GetKeyContent() {
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="text-4xl font-bold text-white mb-2">Key System</h1>
+            <p className="text-gray-400">{keysystem.name}</p>
+          </div>
 
           {/* Progress Section */}
           <div className="bg-black/20 backdrop-blur-md rounded-lg border border-white/10 p-6 mb-8">
@@ -150,18 +146,6 @@ function GetKeyContent() {
               ></div>
             </div>
 
-            {/* Start Button for Current Checkpoint */}
-            {currentStep < (keysystem.checkpoints?.length || 0) && (
-              <div className="flex justify-center mb-4">
-                <button
-                  onClick={() => handleStartCurrentCheckpoint()}
-                  className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                >
-                  Start Step {currentStep + 1}
-                </button>
-              </div>
-            )}
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Checkpoints */}
               <div>
@@ -170,13 +154,14 @@ function GetKeyContent() {
                   {keysystem.checkpoints?.map((checkpoint, index) => (
                     <div
                       key={index}
-                      className={`p-4 rounded-lg border transition-all duration-200 ${
+                      className={`p-4 rounded-lg border cursor-pointer transition-all duration-200 ${
                         index < currentStep
                           ? 'bg-green-500/20 border-green-500/30 text-green-400'
                           : index === currentStep
-                          ? 'bg-purple-500/20 border-purple-500/30 text-purple-400'
+                          ? 'bg-purple-500/20 border-purple-500/30 text-purple-400 hover:bg-purple-500/30'
                           : 'bg-gray-600/20 border-gray-600/30 text-gray-400'
                       }`}
+                      onClick={() => handleCheckpointClick(checkpoint, index)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
@@ -193,7 +178,11 @@ function GetKeyContent() {
                             {checkpoint.type.charAt(0).toUpperCase() + checkpoint.type.slice(1)}
                           </span>
                         </div>
-                        
+                        {index === currentStep && (
+                          <button className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                            START
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}

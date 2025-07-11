@@ -14,50 +14,26 @@ export async function GET(request) {
       }, { status: 400 });
     }
 
-    // Get the anti-bypass token from environment variable
-    const antiBypassToken = process.env.LINKVERTISE_ANTIBYPASS_TOKEN;
+    // Get the expected hash from environment variable
+    const expectedHash = process.env.LINKVERTISE_MAIN_ANTIBYPASSING;
     
-    if (!antiBypassToken) {
+    if (!expectedHash) {
       return NextResponse.json({ 
-        error: 'Server configuration error: Anti-bypass token not configured',
+        error: 'Server configuration error',
         success: false 
       }, { status: 500 });
     }
 
-    // Verify hash with Linkvertise API
-    const verificationUrl = `https://publisher.linkvertise.com/api/v1/anti_bypassing?token=${antiBypassToken}&hash=${hash}`;
-    
-    const linkvertiseResponse = await fetch(verificationUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    const verificationResult = await linkvertiseResponse.text();
-    
-    if (verificationResult === 'TRUE') {
-      // Hash is valid, return success
-      return NextResponse.json({ 
-        success: true,
-        message: 'Anti-bypass verification successful'
-      });
-    } else if (verificationResult === 'FALSE') {
+    // Validate hash
+    if (hash !== expectedHash) {
       return NextResponse.json({ 
         error: 'Anti-Bypassed Detected Invalid Request Body. Please complete the checkpoint properly',
         success: false 
       }, { status: 400 });
-    } else if (verificationResult === 'Invalid token.') {
-      return NextResponse.json({ 
-        error: 'Server configuration error: Invalid anti-bypass token',
-        success: false 
-      }, { status: 500 });
-    } else {
-      return NextResponse.json({ 
-        error: 'Anti-bypass verification failed',
-        success: false 
-      }, { status: 400 });
     }
+
+    // Hash is valid, redirect to ads page
+    return NextResponse.redirect(new URL('/ads/get_key', request.url));
 
   } catch (error) {
     console.error('Callback error:', error);
