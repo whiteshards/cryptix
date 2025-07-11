@@ -4,7 +4,7 @@ import clientPromise from '../../../../../../lib/mongodb';
 
 export async function GET(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     
     if (!id) {
       return NextResponse.json({ error: 'Keysystem ID is required' }, { status: 400 });

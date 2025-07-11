@@ -85,19 +85,15 @@ function GetKeyContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0f1015] via-[#1a1b2e] to-[#16213e] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
-          <h1 className="text-2xl font-bold text-white mb-2">Loading...</h1>
-          <p className="text-gray-400">Please wait...</p>
-        </div>
+      <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
+        <div className="text-white">Loading...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0f1015] via-[#1a1b2e] to-[#16213e] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 mx-auto mb-4 flex items-center justify-center">
             <svg className="w-16 h-16 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -116,7 +112,7 @@ function GetKeyContent() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f1015] via-[#1a1b2e] to-[#16213e] relative overflow-hidden">
+    <div className="min-h-screen bg-[#0f1015] relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -145,7 +141,7 @@ function GetKeyContent() {
             
             <div className="w-full bg-gray-700 rounded-full h-2 mb-4">
               <div 
-                className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${((currentStep) / (keysystem.checkpoints?.length || 1)) * 100}%` }}
               ></div>
             </div>
@@ -162,7 +158,7 @@ function GetKeyContent() {
                         index < currentStep
                           ? 'bg-green-500/20 border-green-500/30 text-green-400'
                           : index === currentStep
-                          ? 'bg-blue-500/20 border-blue-500/30 text-blue-400 hover:bg-blue-500/30'
+                          ? 'bg-purple-500/20 border-purple-500/30 text-purple-400 hover:bg-purple-500/30'
                           : 'bg-gray-600/20 border-gray-600/30 text-gray-400'
                       }`}
                       onClick={() => handleCheckpointClick(checkpoint, index)}
@@ -173,7 +169,7 @@ function GetKeyContent() {
                             index < currentStep
                               ? 'bg-green-500 text-white'
                               : index === currentStep
-                              ? 'bg-blue-500 text-white'
+                              ? 'bg-purple-500 text-white'
                               : 'bg-gray-500 text-white'
                           }`}>
                             {index < currentStep ? '✓' : index + 1}
@@ -183,7 +179,7 @@ function GetKeyContent() {
                           </span>
                         </div>
                         {index === currentStep && (
-                          <button className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                          <button className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded text-sm transition-colors">
                             START
                           </button>
                         )}
@@ -259,7 +255,7 @@ function GetKeyContent() {
 export default function GetKeyPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-gradient-to-br from-[#0f1015] via-[#1a1b2e] to-[#16213e] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
           <h1 className="text-2xl font-bold text-white mb-2">Loading...</h1>
