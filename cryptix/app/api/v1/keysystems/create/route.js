@@ -59,8 +59,16 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    // Generate unique keysystem ID
-    const keysystemId = `ks_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    // Generate unique keysystem ID (9 letters only)
+    const generateId = () => {
+      const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      let result = '';
+      for (let i = 0; i < 9; i++) {
+        result += letters.charAt(Math.floor(Math.random() * letters.length));
+      }
+      return result;
+    };
+    const keysystemId = generateId();
 
     // Create mandatory first checkpoint
     const mandatoryCheckpoint = {

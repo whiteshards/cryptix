@@ -313,7 +313,7 @@ export default function Scripts() {
                   <strong>Your Keysystem URL (Share This With User's To Generate Keys):</strong>
                 </p>
                 <p className="text-white font-mono text-sm break-all bg-black/30 rounded px-3 py-2">
-                  {DOMAIN}/ads/get_key?id={keysystemId}
+                  {DOMAIN}/ads/get_key/{keysystemId}
                 </p>
               </div>
             )}
