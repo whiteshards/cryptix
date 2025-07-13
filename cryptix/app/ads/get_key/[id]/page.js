@@ -102,8 +102,18 @@ export default function GetKey() {
       {/* Main Content */}
       <div className="flex items-center justify-center min-h-screen px-4 py-8">
         <div className="w-full max-w-2xl">
-          {/* Main Card */}
-          <div className="bg-[#1a1b2e] rounded-lg border border-white/10 p-6">
+          {/* Main Card with moving star border */}
+          <div className="relative">
+            {/* Animated star border */}
+            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/20 via-blue-400/30 to-blue-500/20 opacity-50 blur-sm animate-pulse"></div>
+            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/10 via-transparent to-blue-500/10" 
+                 style={{ 
+                   animation: 'rotate 8s linear infinite',
+                   background: 'conic-gradient(from 0deg, transparent, #3b82f6, transparent, #60a5fa, transparent)'
+                 }}>
+            </div>
+            
+            <div className="relative bg-[#1a1b2e] rounded-lg border border-white/10 p-6">
             {/* Header */}
             <div className="text-center mb-6">
               <div className="text-gray-400 text-sm">
@@ -114,10 +124,14 @@ export default function GetKey() {
             {/* Progress Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-400">Progress</span>
+                
                 <div className="flex items-center space-x-3">
-                  <span className="text-gray-400">Progress</span>
+                  <span className="text-white">
+                    {currentProgress}/{keysystem.checkpointCount}
+                  </span>
                   
-                  {/* Start Button next to progress */}
+                  {/* Start Button on right side */}
                   {currentProgress === 0 && (
                     <button
                       onClick={handleStartProgress}
@@ -137,9 +151,6 @@ export default function GetKey() {
                     </button>
                   )}
                 </div>
-                <span className="text-white">
-                  {currentProgress}/{keysystem.checkpointCount}
-                </span>
               </div>
               
               {/* Simple Progress Bar */}
@@ -210,8 +221,17 @@ export default function GetKey() {
 
             
           </div>
+          </div>
         </div>
       </div>
+
+      {/* Add rotating animation styles */}
+      <style jsx>{`
+        @keyframes rotate {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      `}</style>
 
       {/* Bottom Right Info */}
       <div className="fixed bottom-4 right-4 bg-black/60 border border-white/20 rounded px-3 py-2 text-xs">
