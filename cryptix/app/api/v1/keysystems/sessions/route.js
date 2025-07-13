@@ -2,8 +2,63 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
 
+// Rate limiting storage (in production, use Redis or similar)
+const rateLimitStore = new Map();
+
+function getRateLimit(ip) {
+  const now = Date.now();
+  const windowStart = Math.floor(now / (60 * 60 * 1000)) * (60 * 60 * 1000); // 1-hour window
+  const key = `${ip}:${windowStart}`;
+  
+  const current = rateLimitStore.get(key) || 0;
+  
+  // Clean up old entries
+  for (const [storeKey] of rateLimitStore) {
+    const [, timestamp] = storeKey.split(':');
+    if (parseInt(timestamp) < windowStart) {
+      rateLimitStore.delete(storeKey);
+    }
+  }
+  
+  return {
+    count: current,
+    key,
+    limit: 5
+  };
+}
+
+function incrementRateLimit(key) {
+  const current = rateLimitStore.get(key) || 0;
+  rateLimitStore.set(key, current + 1);
+}
+
+function getClientIP(request) {
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIp = request.headers.get('x-real-ip');
+  
+  if (forwarded) {
+    return forwarded.split(',')[0].trim();
+  }
+  
+  if (realIp) {
+    return realIp;
+  }
+  
+  return 'unknown';
+}
+
 export async function POST(request) {
   try {
+    // Rate limiting
+    const clientIP = getClientIP(request);
+    const rateLimit = getRateLimit(clientIP);
+    
+    if (rateLimit.count >= rateLimit.limit) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    }
+    
+    incrementRateLimit(rateLimit.key);
+
     const { keysystemId, sessionId } = await request.json();
 
     if (!keysystemId || !sessionId) {
@@ -87,9 +142,17 @@ export async function POST(request) {
 
 export async function GET(request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const keysystemId = searchParams.get('keysystemId');
-    const sessionId = searchParams.get('sessionId');
+    // Rate limiting
+    const clientIP = getClientIP(request);
+    const rateLimit = getRateLimit(clientIP);
+    
+    if (rateLimit.count >= rateLimit.limit) {
+      return NextResponse.json({ error: 'Too many requests' }, { status: 429 });
+    }
+    
+    incrementRateLimit(rateLimit.key);
+
+    const { keysystemId, sessionId } = await request.json();
 
     if (!keysystemId || !sessionId) {
       return NextResponse.json({ error: 'Keysystem ID and session ID are required' }, { status: 400 });
