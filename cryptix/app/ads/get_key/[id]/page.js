@@ -12,6 +12,7 @@ export default function GetKey() {
   const [browserUuid, setBrowserUuid] = useState('');
   const [keysystem, setKeysystem] = useState(null);
   const [userKeys, setUserKeys] = useState([]);
+  const [userSession, setUserSession] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentProgress, setCurrentProgress] = useState(0);
@@ -33,6 +34,13 @@ export default function GetKey() {
     fetchKeysystemData();
   }, [keysystemId]);
 
+  // Check/create session when browserUuid changes
+  useEffect(() => {
+    if (browserUuid && keysystem) {
+      checkOrCreateSession();
+    }
+  }, [browserUuid, keysystem]);
+
   const generateUUID = () => {
     return uuidv4();
   };
@@ -49,6 +57,8 @@ export default function GetKey() {
 
       if (data.success) {
         setKeysystem(data.keysystem);
+        // After getting keysystem data, check/create session
+        await checkOrCreateSession();
       } else {
         throw new Error('Failed to fetch keysystem data');
       }
@@ -57,6 +67,48 @@ export default function GetKey() {
       setError(error.message);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const checkOrCreateSession = async () => {
+    try {
+      if (!browserUuid) return;
+
+      // First check if session exists
+      const checkResponse = await fetch(`/api/v1/keysystems/sessions?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
+      const checkData = await checkResponse.json();
+
+      if (checkData.success && checkData.exists) {
+        // Session exists, use it
+        setUserSession(checkData.session);
+        setUserKeys(checkData.session.keys || []);
+        setCurrentProgress(checkData.session.current_checkpoint || 0);
+      } else {
+        // Session doesn't exist, create it
+        const createResponse = await fetch('/api/v1/keysystems/sessions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            keysystemId: keysystemId,
+            sessionId: browserUuid
+          }),
+        });
+
+        const createData = await createResponse.json();
+
+        if (createData.success) {
+          setUserSession(createData.session);
+          setUserKeys(createData.session.keys || []);
+          setCurrentProgress(createData.session.current_checkpoint || 0);
+        } else {
+          throw new Error(createData.error || 'Failed to create session');
+        }
+      }
+    } catch (error) {
+      console.error('Session management error:', error);
+      setError(error.message);
     }
   };
 
