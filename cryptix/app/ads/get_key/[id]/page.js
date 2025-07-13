@@ -114,25 +114,14 @@ export default function GetKey() {
             {/* Progress Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-400">Progress</span>
-                <span className="text-white">
-                  {currentProgress}/{keysystem.checkpointCount}
-                </span>
-              </div>
-              
-              {/* Progress Bar with integrated button */}
-              <div className="relative">
-                <div className="w-full bg-gray-700/30 rounded h-8 flex items-center px-2">
-                  <div 
-                    className="bg-blue-500 h-4 rounded transition-all duration-300"
-                    style={{ width: `${(currentProgress / keysystem.checkpointCount) * 100}%` }}
-                  ></div>
+                <div className="flex items-center space-x-3">
+                  <span className="text-gray-400">Progress</span>
                   
-                  {/* Start Button integrated in progress bar */}
+                  {/* Start Button next to progress */}
                   {currentProgress === 0 && (
                     <button
                       onClick={handleStartProgress}
-                      className="absolute right-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded text-xs font-medium transition-colors"
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
                     >
                       Start
                     </button>
@@ -142,12 +131,23 @@ export default function GetKey() {
                   {currentProgress === keysystem.checkpointCount && currentProgress > 0 && (
                     <button
                       onClick={handleGetNewKey}
-                      className="absolute right-2 bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded text-xs font-medium transition-colors"
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
                     >
                       Get Key
                     </button>
                   )}
                 </div>
+                <span className="text-white">
+                  {currentProgress}/{keysystem.checkpointCount}
+                </span>
+              </div>
+              
+              {/* Simple Progress Bar */}
+              <div className="w-full bg-gray-700/30 rounded h-2">
+                <div 
+                  className="bg-blue-500 h-2 rounded transition-all duration-300"
+                  style={{ width: `${(currentProgress / keysystem.checkpointCount) * 100}%` }}
+                ></div>
               </div>
 
               {/* Completion Status */}
