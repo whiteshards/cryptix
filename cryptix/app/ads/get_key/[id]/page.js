@@ -165,7 +165,7 @@ export default function GetKey() {
               {currentProgress === keysystem.checkpointCount && currentProgress > 0 && (
                 <div className="text-center">
                   <div className="text-green-400 text-sm">
-                    ✓ All checkpoints completed
+                   All checkpoints completed
                   </div>
                 </div>
               )}
