@@ -74,17 +74,8 @@ export default function GetKey() {
     try {
       if (!browserUuid) return;
 
-      // First check if session exists using POST request
-      const checkResponse = await fetch('/api/v1/keysystems/sessions', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          keysystemId: keysystemId,
-          sessionId: browserUuid
-        }),
-      });
+      // First check if session exists
+      const checkResponse = await fetch(`/api/v1/keysystems/sessions?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
       const checkData = await checkResponse.json();
 
       if (checkData.success && checkData.exists) {
