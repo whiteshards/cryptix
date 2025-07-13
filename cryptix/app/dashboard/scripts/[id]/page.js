@@ -388,7 +388,7 @@ export default function Scripts() {
                           
                           {/* Action Buttons */}
                           <div className="flex items-center space-x-2">
-                            {index > 0 && (
+                            {!checkpoint.mandatory && index > 0 && (
                               <button
                                 onClick={() => moveCheckpoint(index, index - 1)}
                                 className="bg-[#374151] hover:bg-[#4b5563] border border-gray-600 text-gray-300 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
@@ -400,7 +400,7 @@ export default function Scripts() {
                                 <span className="text-xs font-medium">Up</span>
                               </button>
                             )}
-                            {index < checkpoints.length - 1 && (
+                            {!checkpoint.mandatory && index < checkpoints.length - 1 && (
                               <button
                                 onClick={() => moveCheckpoint(index, index + 1)}
                                 className="bg-[#374151] hover:bg-[#4b5563] border border-gray-600 text-gray-300 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
@@ -412,16 +412,23 @@ export default function Scripts() {
                                 <span className="text-xs font-medium">Down</span>
                               </button>
                             )}
-                            <button
-                              onClick={() => handleDeleteCheckpoint(index)}
-                              className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-400 hover:text-red-300 px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
-                              title="Delete"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                              <span className="text-xs font-medium">Delete</span>
-                            </button>
+                            {!checkpoint.mandatory && (
+                              <button
+                                onClick={() => handleDeleteCheckpoint(index)}
+                                className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-400 hover:text-red-300 px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
+                                title="Delete"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                                <span className="text-xs font-medium">Delete</span>
+                              </button>
+                            )}
+                            {checkpoint.mandatory && (
+                              <div className="text-yellow-400 text-xs font-medium px-3 py-2">
+                                Mandatory Checkpoint
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -431,10 +438,17 @@ export default function Scripts() {
                             <span className="text-gray-300 text-sm font-medium">Redirect URL:</span>
                             <p className="text-white font-mono text-sm break-all mt-1">{checkpoint.redirect_url}</p>
                           </div>
-                          <div className="bg-black/20 rounded-lg p-3 border border-white/10">
-                            <span className="text-gray-300 text-sm font-medium">Callback URL:</span>
-                            <p className="text-white font-mono text-sm break-all mt-1">{checkpoint.callback_url}</p>
-                          </div>
+                          {!checkpoint.mandatory && (
+                            <div className="bg-black/20 rounded-lg p-3 border border-white/10">
+                              <span className="text-gray-300 text-sm font-medium">Callback URL:</span>
+                              <p className="text-white font-mono text-sm break-all mt-1">{checkpoint.callback_url}</p>
+                            </div>
+                          )}
+                          {checkpoint.mandatory && (
+                            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
+                              <span className="text-yellow-400 text-sm font-medium">This is a mandatory checkpoint and cannot be modified or deleted.</span>
+                            </div>
+                          )}
                         </div>
                       </div>
 

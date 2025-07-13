@@ -62,6 +62,14 @@ export async function POST(request) {
     // Generate unique keysystem ID
     const keysystemId = `ks_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
 
+    // Create mandatory first checkpoint
+    const mandatoryCheckpoint = {
+      type: 'linkvertise',
+      redirect_url: 'https://rinku.pro/VanbywBb',
+      callback_url: 'https://cryptixmanager.vercel.app/ads/callback/cryprixcheckpointflyinc',
+      mandatory: true
+    };
+
     // Create keysystem object
     const newKeysystem = {
       id: keysystemId,
@@ -71,7 +79,8 @@ export async function POST(request) {
       permanent: permanentKeys,
       keyCooldown: cooldown,
       active: true,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
+      checkpoints: [mandatoryCheckpoint]
     };
 
     // Add keysystem to user's keysystems array

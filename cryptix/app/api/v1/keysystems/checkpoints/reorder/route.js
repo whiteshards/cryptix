@@ -48,6 +48,11 @@ export async function PUT(request) {
       return NextResponse.json({ error: 'Index out of range' }, { status: 400 });
     }
 
+    // Prevent reordering involving mandatory first checkpoint
+    if ((fromIndex === 0 || toIndex === 0) && checkpoints[0]?.mandatory) {
+      return NextResponse.json({ error: 'Cannot reorder mandatory first checkpoint' }, { status: 403 });
+    }
+
     // Reorder checkpoints array
     const [movedCheckpoint] = checkpoints.splice(fromIndex, 1);
     checkpoints.splice(toIndex, 0, movedCheckpoint);

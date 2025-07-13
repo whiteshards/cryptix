@@ -47,6 +47,11 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'Checkpoint index out of range' }, { status: 400 });
     }
 
+    // Prevent deletion of mandatory first checkpoint
+    if (checkpointIndex === 0 && checkpoints[0]?.mandatory) {
+      return NextResponse.json({ error: 'Cannot delete mandatory first checkpoint' }, { status: 403 });
+    }
+
     // Remove checkpoint from array
     checkpoints.splice(checkpointIndex, 1);
 

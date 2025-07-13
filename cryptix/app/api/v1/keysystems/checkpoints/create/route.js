@@ -52,10 +52,10 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Keysystem not found or access denied' }, { status: 404 });
     }
 
-    // Check if checkpoints limit is reached
+    // Check if checkpoints limit is reached (accounting for mandatory first checkpoint)
     const currentCheckpoints = keysystem.checkpoints || [];
     if (currentCheckpoints.length >= 10) {
-      return NextResponse.json({ error: 'Maximum of 10 checkpoints allowed' }, { status: 400 });
+      return NextResponse.json({ error: 'Maximum of 10 checkpoints allowed (including mandatory first checkpoint)' }, { status: 400 });
     }
 
     // Get the current checkpoint index (number of existing checkpoints)
