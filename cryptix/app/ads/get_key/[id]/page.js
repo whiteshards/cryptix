@@ -84,7 +84,53 @@ export default function GetKey() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
-        <div className="text-white text-sm">Loading...</div>
+        <div className="w-full max-w-md px-8">
+          {/* Loading Text */}
+          <div className="text-center mb-8">
+            <div className="text-white text-lg font-medium mb-2 transition-all duration-500 ease-out">
+              Loading Keysystem...
+            </div>
+            <div className="text-gray-400 text-sm">
+              Please wait while we fetch the keysystem data
+            </div>
+          </div>
+
+          {/* Progress Bar Container */}
+          <div className="relative w-full h-2 bg-white/10 rounded-full overflow-hidden">
+            {/* Animated Progress Bar */}
+            <div 
+              className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] rounded-full transition-all duration-500 ease-out animate-pulse"
+              style={{ width: '70%' }}
+            >
+              {/* Shimmer Effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+            </div>
+
+            {/* Progress Glow */}
+            <div 
+              className="absolute top-0 left-0 h-full bg-[#3b82f6]/50 rounded-full blur-sm transition-all duration-500 ease-out"
+              style={{ width: '70%' }}
+            ></div>
+          </div>
+
+          {/* Progress Dots */}
+          <div className="flex justify-center space-x-2 mt-6">
+            <div className="w-2 h-2 bg-[#3b82f6] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+            <div className="w-2 h-2 bg-[#3b82f6] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+            <div className="w-2 h-2 bg-[#3b82f6] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+          </div>
+        </div>
+
+        <style jsx>{`
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+
+          .animate-shimmer {
+            animation: shimmer 2s infinite;
+          }
+        `}</style>
       </div>
     );
   }
@@ -102,18 +148,8 @@ export default function GetKey() {
       {/* Main Content */}
       <div className="flex items-center justify-center min-h-screen px-4 py-8">
         <div className="w-full max-w-2xl">
-          {/* Main Card with moving star border */}
-          <div className="relative">
-            {/* Animated star border */}
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/20 via-blue-400/30 to-blue-500/20 opacity-50 blur-sm animate-pulse"></div>
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/10 via-transparent to-blue-500/10" 
-                 style={{ 
-                   animation: 'rotate 8s linear infinite',
-                   background: 'conic-gradient(from 0deg, transparent, #3b82f6, transparent, #60a5fa, transparent)'
-                 }}>
-            </div>
-            
-            <div className="relative bg-[#1a1b2e] rounded-lg border border-white/10 p-6">
+          {/* Main Card */}
+          <div className="bg-[#1a1b2e] rounded-lg border border-white/10 p-6">
             {/* Header */}
             <div className="text-center mb-6">
               <div className="text-gray-400 text-sm">
@@ -221,17 +257,8 @@ export default function GetKey() {
 
             
           </div>
-          </div>
         </div>
       </div>
-
-      {/* Add rotating animation styles */}
-      <style jsx>{`
-        @keyframes rotate {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-      `}</style>
 
       {/* Bottom Right Info */}
       <div className="fixed bottom-4 right-4 bg-black/60 border border-white/20 rounded px-3 py-2 text-xs">
