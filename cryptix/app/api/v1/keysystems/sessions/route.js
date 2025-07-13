@@ -1,9 +1,35 @@
 
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
+import rateLimit from 'express-rate-limit';
+
+// Rate limiter for session creation - 5 requests per hour
+const sessionCreateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // limit each IP to 5 requests per windowMs
+  message: 'Too many session creation requests, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Helper function to run middleware
+function runMiddleware(req, res, fn) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result) => {
+      if (result instanceof Error) {
+        return reject(result);
+      }
+      return resolve(result);
+    });
+  });
+}
 
 export async function POST(request) {
   try {
+    // Apply rate limiting
+    const res = new Response();
+    await runMiddleware(request, res, sessionCreateLimiter);
+    
     const { keysystemId, sessionId } = await request.json();
 
     if (!keysystemId || !sessionId) {
