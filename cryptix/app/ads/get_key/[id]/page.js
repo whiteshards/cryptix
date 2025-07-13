@@ -106,9 +106,6 @@ export default function GetKey() {
           <div className="bg-[#1a1b2e] rounded-lg border border-white/10 p-6">
             {/* Header */}
             <div className="text-center mb-6">
-              <h1 className="text-white text-xl font-semibold mb-2">
-                {keysystem.name}
-              </h1>
               <div className="text-gray-400 text-sm">
                 {keysystem.checkpointCount} checkpoint{keysystem.checkpointCount !== 1 ? 's' : ''} required
               </div>
@@ -123,49 +120,57 @@ export default function GetKey() {
                 </span>
               </div>
               
-              {/* Simple Progress Bar */}
-              <div className="w-full bg-gray-700/30 rounded h-2">
-                <div 
-                  className="bg-blue-500 h-2 rounded transition-all duration-300"
-                  style={{ width: `${(currentProgress / keysystem.checkpointCount) * 100}%` }}
-                ></div>
-              </div>
+              {/* Progress Bar with integrated button */}
+              <div className="relative">
+                <div className="w-full bg-gray-700/30 rounded h-8 flex items-center px-2">
+                  <div 
+                    className="bg-blue-500 h-4 rounded transition-all duration-300"
+                    style={{ width: `${(currentProgress / keysystem.checkpointCount) * 100}%` }}
+                  ></div>
+                  
+                  {/* Start Button integrated in progress bar */}
+                  {currentProgress === 0 && (
+                    <button
+                      onClick={handleStartProgress}
+                      className="absolute right-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-1 rounded text-xs font-medium transition-colors"
+                    >
+                      Start
+                    </button>
+                  )}
 
-              {/* Action Buttons */}
-              <div className="text-center pt-4">
-                {currentProgress === 0 && (
-                  <button
-                    onClick={handleStartProgress}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded text-sm font-medium transition-colors"
-                  >
-                    Start
-                  </button>
-                )}
-
-                {currentProgress === keysystem.checkpointCount && currentProgress > 0 && (
-                  <div className="space-y-3">
-                    <div className="text-green-400 text-sm">
-                      ✓ All checkpoints completed
-                    </div>
+                  {/* Get Key Button for completed progress */}
+                  {currentProgress === keysystem.checkpointCount && currentProgress > 0 && (
                     <button
                       onClick={handleGetNewKey}
-                      className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded text-sm font-medium transition-colors"
+                      className="absolute right-2 bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded text-xs font-medium transition-colors"
                     >
-                      Get New Key
+                      Get Key
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
+
+              {/* Completion Status */}
+              {currentProgress === keysystem.checkpointCount && currentProgress > 0 && (
+                <div className="text-center">
+                  <div className="text-green-400 text-sm">
+                    ✓ All checkpoints completed
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Keys Table */}
-            {userKeys.length > 0 && (
-              <div className="mt-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-white text-sm font-medium">Your Keys</h2>
-                  <span className="text-gray-400 text-xs">({userKeys.length})</span>
+            {/* Keys Section */}
+            <div className="mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-white text-sm font-medium">Your Keys</h2>
+                <div className="flex items-center space-x-2 text-xs text-gray-400">
+                  <span>({userKeys.length}/{keysystem.maxKeyPerPerson})</span>
+                  <span>Max: {keysystem.maxKeyPerPerson}</span>
                 </div>
-                
+              </div>
+              
+              {userKeys.length > 0 ? (
                 <div className="bg-black/20 rounded border border-white/10 overflow-hidden">
                   {/* Table Header */}
                   <div className="grid grid-cols-3 gap-4 p-3 bg-gray-800/30 border-b border-white/10 text-xs text-gray-400 font-medium">
@@ -191,17 +196,19 @@ export default function GetKey() {
                     </div>
                   ))}
                 </div>
-              </div>
-            )}
-
-            {/* Empty State */}
-            {userKeys.length === 0 && currentProgress === 0 && (
-              <div className="text-center py-8">
-                <div className="text-gray-400 text-sm">
-                  Complete checkpoints to generate keys
+              ) : (
+                <div className="bg-black/20 rounded border border-white/10 p-6 text-center">
+                  <div className="text-gray-400 text-sm">
+                    No keys generated yet
+                  </div>
+                  <div className="text-gray-500 text-xs mt-1">
+                    Complete checkpoints to generate keys
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+
+            
           </div>
         </div>
       </div>
