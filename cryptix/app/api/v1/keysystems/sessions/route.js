@@ -1,34 +1,52 @@
 
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
-import rateLimit from 'express-rate-limit';
 
-// Rate limiter for session creation - 5 requests per hour
-const sessionCreateLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5, // limit each IP to 5 requests per windowMs
-  message: 'Too many session creation requests, please try again later.',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+// In-memory rate limiting storage (for production, use Redis or database)
+const rateLimitMap = new Map();
 
-// Helper function to run middleware
-function runMiddleware(req, res, fn) {
-  return new Promise((resolve, reject) => {
-    fn(req, res, (result) => {
-      if (result instanceof Error) {
-        return reject(result);
-      }
-      return resolve(result);
-    });
-  });
+// Rate limiting function
+function isRateLimited(ip) {
+  const now = Date.now();
+  const windowMs = 60 * 60 * 1000; // 1 hour
+  const maxRequests = 5;
+  
+  if (!rateLimitMap.has(ip)) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+    return false;
+  }
+  
+  const userData = rateLimitMap.get(ip);
+  
+  // Reset if window has passed
+  if (now >= userData.resetTime) {
+    rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
+    return false;
+  }
+  
+  // Check if limit exceeded
+  if (userData.count >= maxRequests) {
+    return true;
+  }
+  
+  // Increment counter
+  userData.count++;
+  return false;
 }
 
 export async function POST(request) {
   try {
-    // Apply rate limiting
-    const res = new Response();
-    await runMiddleware(request, res, sessionCreateLimiter);
+    // Get client IP for rate limiting
+    const forwarded = request.headers.get('x-forwarded-for');
+    const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
+    
+    // Check rate limit
+    if (isRateLimited(ip)) {
+      return NextResponse.json(
+        { error: 'Too many session creation requests, please try again later.' },
+        { status: 429 }
+      );
+    }
     
     const { keysystemId, sessionId } = await request.json();
 
