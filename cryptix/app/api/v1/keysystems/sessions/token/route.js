@@ -1,3 +1,7 @@
+
+import { NextResponse } from 'next/server';
+import clientPromise from '../../../../../lib/mongodb';
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -46,7 +50,35 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-// Check if session exists and doesn't already have a token
+  try {
+    const { keysystemId, sessionId, sessionToken } = await request.json();
+
+    if (!keysystemId || !sessionId || !sessionToken) {
+      return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
+    }
+
+    // Connect to MongoDB
+    const client = await clientPromise;
+    const db = client.db('Cryptix');
+    const collection = db.collection('customers');
+
+    // Find the user who owns this keysystem
+    const user = await collection.findOne({
+      'keysystems.id': keysystemId
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'Keysystem not found' }, { status: 404 });
+    }
+
+    // Find the specific keysystem
+    const keysystem = user.keysystems.find(ks => ks.id === keysystemId);
+
+    if (!keysystem || !keysystem.active) {
+      return NextResponse.json({ error: 'Keysystem not found or not active' }, { status: 404 });
+    }
+
+    // Check if session exists and doesn't already have a token
     const existingSession = keysystem.keys?.[sessionId];
     if (!existingSession) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
@@ -54,7 +86,63 @@ export async function POST(request) {
 
     if (existingSession.session_token) {
       return NextResponse.json({ 
-        success: false, 
-        error: 'Session token already exists for this session'
-      }, { status: 409 });
+        success: true, 
+        token: existingSession.session_token.generated_token,
+        message: 'Session token already exists'
+      });
     }
+
+    // Create new session token object
+    const tokenData = {
+      generated_token: sessionToken,
+      created_at: Date.now()
+    };
+
+    // Update the session with the token
+    const result = await collection.updateOne(
+      { 
+        _id: user._id,
+        'keysystems.id': keysystemId
+      },
+      { 
+        $set: {
+          [`keysystems.$.keys.${sessionId}.session_token`]: tokenData
+        }
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return NextResponse.json({ error: 'Failed to store session token' }, { status: 500 });
+    }
+
+    // Schedule token deletion after 8 minutes (480,000ms)
+    setTimeout(async () => {
+      try {
+        await collection.updateOne(
+          { 
+            _id: user._id,
+            'keysystems.id': keysystemId
+          },
+          { 
+            $unset: {
+              [`keysystems.$.keys.${sessionId}.session_token`]: ""
+            }
+          }
+        );
+        console.log(`Token expired and deleted for session ${sessionId}`);
+      } catch (error) {
+        console.error('Error deleting expired token:', error);
+      }
+    }, 8 * 60 * 1000); // 8 minutes
+
+    return NextResponse.json({
+      success: true,
+      token: sessionToken,
+      message: 'Session token created successfully'
+    });
+
+  } catch (error) {
+    console.error('Session token creation error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

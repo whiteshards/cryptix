@@ -124,7 +124,12 @@ export default function GetKey() {
         const checkResponse = await fetch(`/api/v1/keysystems/sessions/token/check?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
         const checkData = await checkResponse.json();
 
-        if (!checkData.exists) {
+        let tokenToStore = null;
+
+        if (checkData.exists && checkData.token) {
+          // Token already exists, use it
+          tokenToStore = checkData.token;
+        } else {
           // Generate new session token (50 characters, letters and numbers)
           const generateSessionToken = () => {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -153,17 +158,26 @@ export default function GetKey() {
           const data = await response.json();
 
           if (!data.success) {
-            console.error('Failed to store session token:', data.error);
-            // Continue with redirect anyway
+            setError(`Failed to create session token: ${data.error}`);
+            return; // Don't redirect if token creation failed
           }
+
+          tokenToStore = data.token;
         }
+
+        // Store token in localStorage
+        if (tokenToStore) {
+          localStorage.setItem('session_token', tokenToStore);
+        }
+
+        // Redirect to first checkpoint
+        window.open(keysystem.checkpoints[0].redirect_url, '_blank');
+
       } catch (error) {
         console.error('Session token error:', error);
-        // Continue with redirect anyway
+        setError(`Error managing session token: ${error.message}`);
+        return; // Don't redirect if there was an error
       }
-
-      // Redirect to first checkpoint
-      window.open(keysystem.checkpoints[0].redirect_url, '_blank');
     }
   };
 
@@ -226,10 +240,10 @@ export default function GetKey() {
     );
   }
 
-  if (error || !keysystem) {
+  if (!keysystem && !isLoading) {
     return (
       <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
-        <div className="text-red-400 text-sm">{error || 'Keysystem not found'}</div>
+        <div className="text-red-400 text-sm">Keysystem not found</div>
       </div>
     );
   }
@@ -247,6 +261,13 @@ export default function GetKey() {
                 {keysystem.checkpointCount} checkpoint{keysystem.checkpointCount !== 1 ? 's' : ''} required
               </div>
             </div>
+
+            {/* Error Display */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded text-red-400 text-sm">
+                {error}
+              </div>
+            )}
 
             {/* Progress Section */}
             <div className="space-y-4">
