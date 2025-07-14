@@ -49,7 +49,7 @@ export async function POST(request) {
     } else {
       return NextResponse.json({
         success: false,
-        error: 'Unexpected response from Linkvertise API'
+        error: linkvertiseData
       }, { status: 400 });
     }
 
