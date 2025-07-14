@@ -35,6 +35,10 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('keysystems');
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingText, setLoadingText] = useState('Fetching Your Data...');
+  const [lootlabsApiKey, setLootlabsApiKey] = useState('');
+  const [showLootlabsKey, setShowLootlabsKey] = useState(false);
+  const [lootlabsKeyChanged, setLootlabsKeyChanged] = useState(false);
+  const [isSavingLootlabsKey, setIsSavingLootlabsKey] = useState(false);
 
   useEffect(() => {
     // Check authentication and fetch profile
@@ -86,6 +90,7 @@ export default function Dashboard() {
       if (data.success) {
         setUserProfile(data.customer);
         setIsAuthenticated(true);
+        setLootlabsApiKey(data.customer?.integrations?.lootlabs || '');
         setLoadingProgress(100);
         setLoadingText('Initializing Dashboard');
         await new Promise(resolve => setTimeout(resolve, 400));
@@ -341,6 +346,48 @@ export default function Dashboard() {
       showToast(error.message || 'An error occurred while deleting the keysystem');
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleSaveLootlabsKey = async () => {
+    setIsSavingLootlabsKey(true);
+    try {
+      const token = localStorage.getItem('cryptix_jwt');
+      const response = await fetch('/api/v1/users/integrations', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          integration: 'lootlabs',
+          value: lootlabsApiKey
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showToast(data.error || 'Failed to save Lootlabs API key');
+        return;
+      }
+
+      showToast('Lootlabs API key saved successfully!', 'success');
+      setLootlabsKeyChanged(false);
+      
+      // Update the user profile with the new integration
+      setUserProfile(prev => ({
+        ...prev,
+        integrations: {
+          ...prev.integrations,
+          lootlabs: lootlabsApiKey
+        }
+      }));
+
+    } catch (error) {
+      showToast(error.message || 'An error occurred while saving the API key');
+    } finally {
+      setIsSavingLootlabsKey(false);
     }
   };
 
@@ -623,10 +670,82 @@ export default function Dashboard() {
           {activeTab === 'integrations' && (
             <div className="bg-transparent rounded-lg border border-white/10 p-6">
               <h2 className="text-white text-xl font-semibold mb-6">Integrations</h2>
-              <div className="text-center py-12">
-                <p className="text-gray-400 text-base">
-                  Third-party integrations coming soon...
-                </p>
+              
+              {/* Lootlabs Integration */}
+              <div className="space-y-6">
+                <div className="bg-black/20 rounded-lg p-6 border border-white/10">
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-white text-lg font-medium">Lootlabs</h3>
+                      <p className="text-gray-400 text-sm">Configure your Lootlabs API integration</p>
+                    </div>
+                    <div className="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                      <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-white text-sm font-medium mb-2">
+                        API Key
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showLootlabsKey ? "text" : "password"}
+                          value={lootlabsApiKey}
+                          onChange={(e) => {
+                            setLootlabsApiKey(e.target.value);
+                            setLootlabsKeyChanged(true);
+                          }}
+                          placeholder={userProfile?.integrations?.lootlabs ? "••••••••••••••••" : "Enter your Lootlabs API key"}
+                          className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowLootlabsKey(!showLootlabsKey)}
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                        >
+                          {showLootlabsKey ? (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                            </svg>
+                          ) : (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                      <p className="text-gray-400 text-xs mt-1">
+                        Your Lootlabs API key for checkpoint verification
+                      </p>
+                    </div>
+                    
+                    {lootlabsKeyChanged && (
+                      <div className="flex items-center space-x-3">
+                        <button
+                          onClick={handleSaveLootlabsKey}
+                          disabled={isSavingLootlabsKey}
+                          className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isSavingLootlabsKey ? 'Saving...' : 'Save API Key'}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setLootlabsApiKey(userProfile?.integrations?.lootlabs || '');
+                            setLootlabsKeyChanged(false);
+                          }}
+                          className="border border-white/20 text-gray-300 hover:text-white hover:border-white/40 px-4 py-2 rounded text-sm transition-colors"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}
