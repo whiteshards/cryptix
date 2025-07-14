@@ -101,9 +101,10 @@ export async function POST(request) {
 
     // Create mandatory first checkpoint
     const mandatoryCheckpoint = {
-      type: 'linkvertise',
+      type: 'custom',
       redirect_url: mandatoryRedirectUrl,
       callback_url: mandatoryCallbackUrl,
+      callback_token: mandatoryCallbackToken,
       mandatory: true
     };
 
