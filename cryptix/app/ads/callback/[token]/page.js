@@ -183,8 +183,12 @@ export default function CallbackPage() {
 
   const verifyLinkvertiseHash = async (callbackToken) => {
     try {
-      // Get hash from URL
-      const hash = window.location.hash.substring(1); // Remove the # symbol
+      // Get hash from URL - check both query parameter and fragment
+      const urlParams = new URLSearchParams(window.location.search);
+      const hashFromQuery = urlParams.get('hash');
+      const hashFromFragment = window.location.hash.substring(1); // Remove the # symbol
+      
+      const hash = hashFromQuery || hashFromFragment;
       
       if (!hash) {
         return {
