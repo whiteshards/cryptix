@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,7 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 export default function GetKey() {
   const params = useParams();
   const keysystemId = params.id;
-  
+
   const [browserUuid, setBrowserUuid] = useState('');
   const [keysystem, setKeysystem] = useState(null);
   const [userKeys, setUserKeys] = useState([]);
@@ -26,10 +25,10 @@ export default function GetKey() {
       localStorage.setItem('browser_uuid', uuid);
     }
     setBrowserUuid(uuid);
-    
+
     // Set current keysystem ID
     localStorage.setItem('current_id', keysystemId);
-    
+
     // Fetch keysystem data
     fetchKeysystemData();
   }, [keysystemId]);
@@ -62,7 +61,7 @@ export default function GetKey() {
       } else {
         throw new Error('Failed to fetch keysystem data');
       }
-      
+
     } catch (error) {
       setError(error.message);
     } finally {
@@ -118,8 +117,51 @@ export default function GetKey() {
     window.location.reload();
   };
 
-  const handleStartProgress = () => {
+  const handleStartProgress = async () => {
     if (keysystem.checkpoints.length > 0) {
+      try {
+        // Check if session token already exists in database
+        const checkResponse = await fetch(`/api/v1/keysystems/sessions/token/check?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
+        const checkData = await checkResponse.json();
+
+        if (!checkData.exists) {
+          // Generate new session token (50 characters, letters and numbers)
+          const generateSessionToken = () => {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let token = '';
+            for (let i = 0; i < 50; i++) {
+              token += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return token;
+          };
+
+          const sessionToken = generateSessionToken();
+
+          // Store session token in database
+          const response = await fetch('/api/v1/keysystems/sessions/token', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              keysystemId: keysystemId,
+              sessionId: browserUuid,
+              sessionToken: sessionToken
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!data.success) {
+            console.error('Failed to store session token:', data.error);
+            // Continue with redirect anyway
+          }
+        }
+      } catch (error) {
+        console.error('Session token error:', error);
+        // Continue with redirect anyway
+      }
+
       // Redirect to first checkpoint
       window.open(keysystem.checkpoints[0].redirect_url, '_blank');
     }
@@ -210,12 +252,12 @@ export default function GetKey() {
             <div className="space-y-4">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-400">Progress</span>
-                
+
                 <div className="flex items-center space-x-3">
                   <span className="text-white">
                     {currentProgress}/{keysystem.checkpointCount}
                   </span>
-                  
+
                   {/* Start Button on right side */}
                   {currentProgress === 0 && (
                     <button
@@ -237,7 +279,7 @@ export default function GetKey() {
                   )}
                 </div>
               </div>
-              
+
               {/* Simple Progress Bar */}
               <div className="w-full bg-gray-700/30 rounded h-2">
                 <div 
@@ -265,7 +307,7 @@ export default function GetKey() {
                   <span>Max: {keysystem.maxKeyPerPerson}</span>
                 </div>
               </div>
-              
+
               {userKeys.length > 0 ? (
                 <div className="bg-black/20 rounded border border-white/10 overflow-hidden">
                   {/* Table Header */}
@@ -274,7 +316,7 @@ export default function GetKey() {
                     <div>Status</div>
                     <div>Action</div>
                   </div>
-                  
+
                   {/* Table Rows */}
                   {userKeys.map((key, index) => (
                     <div key={index} className="grid grid-cols-3 gap-4 p-3 border-b border-white/5 last:border-b-0 hover:bg-white/5 transition-colors text-sm">
@@ -304,7 +346,7 @@ export default function GetKey() {
               )}
             </div>
 
-            
+
           </div>
         </div>
       </div>
