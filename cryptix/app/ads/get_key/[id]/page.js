@@ -16,6 +16,18 @@ export default function GetKey() {
   const [error, setError] = useState(null);
   const [currentProgress, setCurrentProgress] = useState(0);
   const [completedCheckpoints, setCompletedCheckpoints] = useState([]);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [urlError, setUrlError] = useState('');
+
+  // Check for error in URL parameters
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorParam = urlParams.get('error');
+    if (errorParam) {
+      setUrlError(decodeURIComponent(errorParam));
+      setShowErrorModal(true);
+    }
+  }, []);
 
   // Generate or get browser UUID
   useEffect(() => {
@@ -371,6 +383,45 @@ export default function GetKey() {
           </div>
         </div>
       </div>
+
+      {/* Error Modal */}
+      {showErrorModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-[#1a1b2e] rounded-lg border border-red-500/30 p-6 max-w-md w-full mx-4">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center space-x-2">
+                <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h3 className="text-red-400 font-medium">Error</h3>
+              </div>
+              <button
+                onClick={() => setShowErrorModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="mb-6">
+              <p className="text-gray-300 text-sm leading-relaxed">
+                {urlError}
+              </p>
+            </div>
+            
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowErrorModal(false)}
+                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom Right Info */}
       <div className="fixed bottom-4 right-4 bg-black/60 border border-white/20 rounded px-3 py-2 text-xs">
