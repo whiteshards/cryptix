@@ -61,7 +61,8 @@ export async function GET(request) {
     return NextResponse.json({
       success: true,
       exists: !!hasToken,
-      token: hasToken ? existingSession.session_token.generated_token : null
+      token: hasToken ? existingSession.session_token.generated_token : null,
+      session_token: hasToken ? existingSession.session_token : null
     });
 
   } catch (error) {

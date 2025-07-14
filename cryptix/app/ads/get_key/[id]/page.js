@@ -133,7 +133,7 @@ export default function GetKey() {
     if (keysystem.checkpoints.length > 0) {
       try {
         // Check if session token already exists in database
-        const checkResponse = await fetch(`/api/v1/keysystems/sessions/token/check?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
+        const checkResponse = await fetch(`/api/v1/keysystems/sessions/token?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
         const checkData = await checkResponse.json();
 
         let tokenToStore = null;
