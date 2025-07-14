@@ -13,6 +13,7 @@ export default function CallbackPage() {
     const processCallback = async () => {
       try {
         const callbackToken = params.token;
+        const hashh = params.hash;
         
         if (!callbackToken) {
           redirectWithError('Invalid callback token');
@@ -66,7 +67,7 @@ export default function CallbackPage() {
           }
         } else {
           // For Linkvertise, verify the hash parameter
-          const hashVerification = await verifyLinkvertiseHash(callbackToken);
+          const hashVerification = await verifyLinkvertiseHash(hashh);
           if (!hashVerification.valid) {
             redirectWithError(hashVerification.error);
             return;
