@@ -13,7 +13,7 @@ export default function CallbackPage() {
     const processCallback = async () => {
       try {
         const callbackToken = params.token;
-        #const hashh = params.hash;
+        
         
         if (!callbackToken) {
           redirectWithError('Invalid callback token');
