@@ -1,0 +1,60 @@
+[14:21:31.593] Running build in Washington, D.C., USA (East) – iad1
+[14:21:31.594] Build machine configuration: 2 cores, 8 GB
+[14:21:31.656] Cloning github.com/whiteshards/cryptix (Branch: main, Commit: 52c5287)
+[14:21:33.197] Cloning completed: 1.540s
+[14:21:33.884] Restored build cache from previous deployment (BEKvmMVGrfHNBYHCmFsDytnsBHeH)
+[14:21:34.222] Running "vercel build"
+[14:21:34.664] Vercel CLI 44.4.1
+[14:21:34.976] Installing dependencies...
+[14:21:36.031] 
+[14:21:36.032] up to date in 803ms
+[14:21:36.032] 
+[14:21:36.033] 32 packages are looking for funding
+[14:21:36.033]   run `npm fund` for details
+[14:21:36.061] Detected Next.js version: 15.3.4
+[14:21:36.064] Running "npm run build"
+[14:21:36.175] 
+[14:21:36.176] > cryptix@0.1.0 build
+[14:21:36.176] > next build
+[14:21:36.176] 
+[14:21:36.935]    ▲ Next.js 15.3.4
+[14:21:36.936]    - Environments: .env.local
+[14:21:36.936] 
+[14:21:37.015]    Creating an optimized production build ...
+[14:21:40.353] Failed to compile.
+[14:21:40.353] 
+[14:21:40.354] ./app/api/v1/keysystems/sessions/token/check/route.js
+[14:21:40.354] Module parse failed: Identifier 'NextResponse' has already been declared (73:9)
+[14:21:40.354] File was processed with these loaders:
+[14:21:40.354]  * ./node_modules/next/dist/build/webpack/loaders/next-flight-loader/index.js
+[14:21:40.354]  * ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+[14:21:40.354] You may need an additional loader to handle the result of these loaders.
+[14:21:40.354] |     }
+[14:21:40.354] | }
+[14:21:40.354] > import { NextResponse } from 'next/server';
+[14:21:40.355] | import clientPromise from '../../../../../../../lib/mongodb';
+[14:21:40.355] | export async function GET(request) {
+[14:21:40.355] 
+[14:21:40.355] Import trace for requested module:
+[14:21:40.355] ./app/api/v1/keysystems/sessions/token/check/route.js
+[14:21:40.355] 
+[14:21:40.355] ./app/api/v1/keysystems/sessions/token/route.js
+[14:21:40.355] Module parse failed: Identifier 'NextResponse' has already been declared (174:9)
+[14:21:40.355] File was processed with these loaders:
+[14:21:40.355]  * ./node_modules/next/dist/build/webpack/loaders/next-flight-loader/index.js
+[14:21:40.356]  * ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js
+[14:21:40.356] You may need an additional loader to handle the result of these loaders.
+[14:21:40.356] |     }
+[14:21:40.356] | }
+[14:21:40.356] > import { NextResponse } from 'next/server';
+[14:21:40.356] | import clientPromise from '../../../../../../lib/mongodb';
+[14:21:40.356] | export async function POST(request) {
+[14:21:40.356] 
+[14:21:40.356] Import trace for requested module:
+[14:21:40.356] ./app/api/v1/keysystems/sessions/token/route.js
+[14:21:40.357] 
+[14:21:40.389] 
+[14:21:40.390] > Build failed because of webpack errors
+[14:21:40.426] Error: Command "npm run build" exited with 1
+[14:21:40.634] 
+[14:21:43.337] Exiting build container
