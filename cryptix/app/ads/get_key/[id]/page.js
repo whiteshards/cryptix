@@ -198,6 +198,75 @@ export default function GetKey() {
     }
   };
 
+  const handleNextCheckpoint = async () => {
+    if (currentProgress < keysystem.checkpoints.length) {
+      try {
+        const nextCheckpoint = keysystem.checkpoints[currentProgress];
+        
+        // Only generate session token for non-linkvertise checkpoints
+        if (nextCheckpoint.type !== 'linkvertise') {
+          // Check if session token already exists in database
+          const checkResponse = await fetch(`/api/v1/keysystems/sessions/token/check?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
+          const checkData = await checkResponse.json();
+
+          let tokenToStore = null;
+
+          if (checkData.exists && checkData.token) {
+            // Token already exists, use it
+            tokenToStore = checkData.token;
+          } else {
+            // Generate new session token (50 characters, letters and numbers)
+            const generateSessionToken = () => {
+              const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+              let token = '';
+              for (let i = 0; i < 50; i++) {
+                token += chars.charAt(Math.floor(Math.random() * chars.length));
+              }
+              return token;
+            };
+
+            const sessionToken = generateSessionToken();
+
+            // Store session token in database
+            const response = await fetch('/api/v1/keysystems/sessions/token', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                keysystemId: keysystemId,
+                sessionId: browserUuid,
+                sessionToken: sessionToken
+              }),
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+              setError(`Failed to create session token: ${data.error}`);
+              return; // Don't redirect if token creation failed
+            }
+
+            tokenToStore = data.token;
+          }
+
+          // Store token in localStorage
+          if (tokenToStore) {
+            localStorage.setItem('session_token', tokenToStore);
+          }
+        }
+
+        // Redirect to next checkpoint
+        window.open(nextCheckpoint.redirect_url, '_blank');
+
+      } catch (error) {
+        console.error('Session token error:', error);
+        setError(`Error managing session token: ${error.message}`);
+        return; // Don't redirect if there was an error
+      }
+    }
+  };
+
   const handleGetNewKey = () => {
     // Logic for generating a new key
     console.log('Getting new key...');
@@ -303,6 +372,16 @@ export default function GetKey() {
                       className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
                     >
                       Start
+                    </button>
+                  )}
+
+                  {/* Next Checkpoint Button for intermediate progress */}
+                  {currentProgress > 0 && currentProgress < keysystem.checkpointCount && (
+                    <button
+                      onClick={handleNextCheckpoint}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
+                    >
+                      Next Checkpoint
                     </button>
                   )}
 
