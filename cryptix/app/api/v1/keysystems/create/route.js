@@ -70,11 +70,40 @@ export async function POST(request) {
     };
     const keysystemId = generateId();
 
+    // Generate callback token for mandatory checkpoint
+    const generateToken = () => {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+      let token = '';
+      for (let i = 0; i < 48; i++) {
+        token += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return token;
+    };
+
+    const mandatoryCallbackToken = generateToken();
+    const mandatoryCallbackUrl = `https://cryptixmanager.vercel.app/ads/callback/${mandatoryCallbackToken}`;
+
+    // Create Rinku shortened link for mandatory checkpoint
+    let mandatoryRedirectUrl;
+    try {
+      const rinkuResponse = await fetch(`https://rinku.pro/api?api=f7ef24b42f579355d9e2ae7b6af7de40cecfeeac&url=${encodeURIComponent(mandatoryCallbackUrl)}&alias=${keysystemId}_mandatory`);
+      const rinkuData = await rinkuResponse.json();
+      
+      if (rinkuData.status === 'success') {
+        mandatoryRedirectUrl = rinkuData.shortenedUrl;
+      } else {
+        throw new Error('Failed to create Rinku link');
+      }
+    } catch (error) {
+      console.error('Rinku API error:', error);
+      return NextResponse.json({ error: 'Failed to create mandatory checkpoint link' }, { status: 500 });
+    }
+
     // Create mandatory first checkpoint
     const mandatoryCheckpoint = {
       type: 'linkvertise',
-      redirect_url: 'https://rinku.pro/VanbywBb',
-      callback_url: 'https://cryptixmanager.vercel.app/ads/callback/cryprixcheckpointflyinc',
+      redirect_url: mandatoryRedirectUrl,
+      callback_url: mandatoryCallbackUrl,
       mandatory: true
     };
 
