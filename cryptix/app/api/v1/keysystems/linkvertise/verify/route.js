@@ -3,10 +3,10 @@ import { NextResponse } from 'next/server';
 
 export async function POST(request) {
   try {
-    const { token, hash } = await request.json();
+    const { hash } = await request.json();
 
-    if (!token || !hash) {
-      return NextResponse.json({ error: 'Token and hash are required' }, { status: 400 });
+    if (!hash) {
+      return NextResponse.json({ error: 'hash are required' }, { status: 400 });
     }
 
     const linkvertiseApiToken = process.env.LINKVERTISE;
