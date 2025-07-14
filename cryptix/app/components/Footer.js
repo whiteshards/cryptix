@@ -69,7 +69,7 @@ export default function Footer() {
 
           {/* Copyright */}
           <div className="text-center text-gray-400 text-sm">
-            <p>&copy; 2024 Cryptix. All rights reserved.</p>
+            <p>&copy; 2025 Cryptix. All rights reserved.</p>
           </div>
         </div>
       </div>

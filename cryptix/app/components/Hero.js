@@ -40,7 +40,7 @@ export default function Hero() {
           {/* Badge */}
           <div className={`mb-6 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium text-gray-400 uppercase tracking-wider">
-              MONETIZE YOUR SCRIPTS TODAY
+              #1 KEY WHITELIST SERVICE
             </span>
           </div>
 
