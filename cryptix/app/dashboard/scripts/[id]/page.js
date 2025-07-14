@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -8,7 +7,7 @@ export default function Scripts() {
   const router = useRouter();
   const params = useParams();
   const keysystemId = params.id;
-  
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [keysystem, setKeysystem] = useState(null);
@@ -385,7 +384,7 @@ export default function Scripts() {
                               </span>
                             </div>
                           </div>
-                          
+
                           {/* Action Buttons */}
                           <div className="flex items-center space-x-2">
                             {!checkpoint.mandatory && index > 0 && (
@@ -525,10 +524,8 @@ export default function Scripts() {
                     onChange={(e) => handleInputChange('type', e.target.value)}
                     className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white focus:border-[#6366f1] focus:outline-none transition-colors"
                   >
-                    <option value="linkvertise">Linkvertise</option>
-                    <option value="lootlabs">LootLabs</option>
-                    <option value="workink">Work.ink</option>
                     <option value="custom">Custom</option>
+                    <option value="linkvertise">Linkvertise</option>
                   </select>
                 </div>
 

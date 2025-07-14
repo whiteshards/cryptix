@@ -132,58 +132,63 @@ export default function GetKey() {
   const handleStartProgress = async () => {
     if (keysystem.checkpoints.length > 0) {
       try {
-        // Check if session token already exists in database
-        const checkResponse = await fetch(`/api/v1/keysystems/sessions/token/check?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
-        const checkData = await checkResponse.json();
+        const firstCheckpoint = keysystem.checkpoints[0];
+        
+        // Only generate session token for non-linkvertise checkpoints
+        if (firstCheckpoint.type !== 'linkvertise') {
+          // Check if session token already exists in database
+          const checkResponse = await fetch(`/api/v1/keysystems/sessions/token/check?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
+          const checkData = await checkResponse.json();
 
-        let tokenToStore = null;
+          let tokenToStore = null;
 
-        if (checkData.exists && checkData.token) {
-          // Token already exists, use it
-          tokenToStore = checkData.token;
-        } else {
-          // Generate new session token (50 characters, letters and numbers)
-          const generateSessionToken = () => {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            let token = '';
-            for (let i = 0; i < 50; i++) {
-              token += chars.charAt(Math.floor(Math.random() * chars.length));
+          if (checkData.exists && checkData.token) {
+            // Token already exists, use it
+            tokenToStore = checkData.token;
+          } else {
+            // Generate new session token (50 characters, letters and numbers)
+            const generateSessionToken = () => {
+              const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+              let token = '';
+              for (let i = 0; i < 50; i++) {
+                token += chars.charAt(Math.floor(Math.random() * chars.length));
+              }
+              return token;
+            };
+
+            const sessionToken = generateSessionToken();
+
+            // Store session token in database
+            const response = await fetch('/api/v1/keysystems/sessions/token', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                keysystemId: keysystemId,
+                sessionId: browserUuid,
+                sessionToken: sessionToken
+              }),
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+              setError(`Failed to create session token: ${data.error}`);
+              return; // Don't redirect if token creation failed
             }
-            return token;
-          };
 
-          const sessionToken = generateSessionToken();
-
-          // Store session token in database
-          const response = await fetch('/api/v1/keysystems/sessions/token', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              keysystemId: keysystemId,
-              sessionId: browserUuid,
-              sessionToken: sessionToken
-            }),
-          });
-
-          const data = await response.json();
-
-          if (!data.success) {
-            setError(`Failed to create session token: ${data.error}`);
-            return; // Don't redirect if token creation failed
+            tokenToStore = data.token;
           }
 
-          tokenToStore = data.token;
-        }
-
-        // Store token in localStorage
-        if (tokenToStore) {
-          localStorage.setItem('session_token', tokenToStore);
+          // Store token in localStorage
+          if (tokenToStore) {
+            localStorage.setItem('session_token', tokenToStore);
+          }
         }
 
         // Redirect to first checkpoint
-        window.open(keysystem.checkpoints[0].redirect_url, '_blank');
+        window.open(firstCheckpoint.redirect_url, '_blank');
 
       } catch (error) {
         console.error('Session token error:', error);

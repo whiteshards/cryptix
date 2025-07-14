@@ -28,8 +28,8 @@ export default function CallbackPage() {
 
         const { keysystem, checkpoint, checkpointIndex } = checkpointData;
 
-        // Step 2: Only process custom type checkpoints for now
-        if (checkpoint.type !== 'custom') {
+        // Step 2: Process custom and linkvertise type checkpoints
+        if (checkpoint.type !== 'custom' && checkpoint.type !== 'linkvertise') {
           redirectWithError('Checkpoint type not supported yet');
           return;
         }
@@ -57,11 +57,20 @@ export default function CallbackPage() {
           return;
         }
 
-        // Step 6: Anti-bypass checks
-        const antiBypassCheck = await performAntiBypassChecks(keysystem.id, browserUuid);
-        if (!antiBypassCheck.valid) {
-          redirectWithError(antiBypassCheck.error);
-          return;
+        // Step 6: Anti-bypass checks (skip for linkvertise)
+        if (checkpoint.type !== 'linkvertise') {
+          const antiBypassCheck = await performAntiBypassChecks(keysystem.id, browserUuid);
+          if (!antiBypassCheck.valid) {
+            redirectWithError(antiBypassCheck.error);
+            return;
+          }
+        } else {
+          // For Linkvertise, verify the hash parameter
+          const hashVerification = await verifyLinkvertiseHash(callbackToken);
+          if (!hashVerification.valid) {
+            redirectWithError(hashVerification.error);
+            return;
+          }
         }
 
         // Step 7: All checks passed - update progress and cleanup
@@ -167,6 +176,49 @@ export default function CallbackPage() {
       return {
         valid: false,
         error: 'Anti-bypass check failed'
+      };
+    }
+  };
+
+  const verifyLinkvertiseHash = async (callbackToken) => {
+    try {
+      // Get hash from URL
+      const hash = window.location.hash.substring(1); // Remove the # symbol
+      
+      if (!hash) {
+        return {
+          valid: false,
+          error: 'Hash parameter missing from Linkvertise callback'
+        };
+      }
+
+      // Verify hash with Linkvertise API
+      const response = await fetch('/api/v1/keysystems/linkvertise/verify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: callbackToken,
+          hash: hash
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        return {
+          valid: false,
+          error: data.error || 'Linkvertise verification failed'
+        };
+      }
+
+      return { valid: true };
+    } catch (error) {
+      console.error('Linkvertise verification error:', error);
+      return {
+        valid: false,
+        error: 'Linkvertise verification failed'
       };
     }
   };
