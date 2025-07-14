@@ -58,14 +58,24 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Maximum of 10 checkpoints allowed (including mandatory first checkpoint)' }, { status: 400 });
     }
 
-    // Get the current checkpoint index (number of existing checkpoints)
-    const checkpointIndex = currentCheckpoints.length;
+    // Generate a 48-character unique token
+    const generateToken = () => {
+      const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+      let token = '';
+      for (let i = 0; i < 48; i++) {
+        token += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return token;
+    };
+
+    const callbackToken = generateToken();
 
     // Create checkpoint object
     const newCheckpoint = {
       type: type,
       redirect_url: redirect_url,
-      callback_url: `https://cryptixmanager.vercel.app/sys/callback/${keysystemId}_${checkpointIndex}`
+      callback_url: `https://cryptixmanager.vercel.app/ads/callback/${callbackToken}`,
+      callback_token: callbackToken
     };
 
     // Add checkpoint to keysystem
