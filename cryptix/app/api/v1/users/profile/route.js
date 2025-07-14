@@ -32,6 +32,7 @@ export async function GET(request) {
         username: user.username,
         activated: user.activated,
         keysystems: user.keysystems || [],
+        integrations: user.integrations || {},
         createdAt: user.createdAt
       }
     });
