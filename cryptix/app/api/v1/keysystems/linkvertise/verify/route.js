@@ -27,18 +27,29 @@ export async function POST(request) {
       }),
     });
 
-    const linkvertiseData = await linkvertiseResponse.json();
+    const linkvertiseData = await linkvertiseResponse.text();
 
     // Check if the response indicates the hash is valid
-    if (linkvertiseData.token === 'CORRECT_TOKEN' && linkvertiseData.hash === 'CORRECT_HASH' && linkvertiseData.response === true) {
+    // According to Linkvertise docs: TRUE = valid, FALSE = invalid hash, "Invalid token." = invalid token
+    if (linkvertiseData === 'TRUE') {
       return NextResponse.json({
         success: true,
         message: 'Hash verified successfully'
       });
+    } else if (linkvertiseData === 'FALSE') {
+      return NextResponse.json({
+        success: false,
+        error: 'Hash could not be found or has expired'
+      }, { status: 400 });
+    } else if (linkvertiseData === 'Invalid token.') {
+      return NextResponse.json({
+        success: false,
+        error: 'Linkvertise authentication token is invalid'
+      }, { status: 401 });
     } else {
       return NextResponse.json({
         success: false,
-        error: 'Invalid hash or authentication token'
+        error: 'Unexpected response from Linkvertise API'
       }, { status: 400 });
     }
 
