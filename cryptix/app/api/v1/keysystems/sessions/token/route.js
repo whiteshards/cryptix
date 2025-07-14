@@ -167,3 +167,77 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+import { NextResponse } from 'next/server';
+import clientPromise from '../../../../../../lib/mongodb';
+
+export async function POST(request) {
+  try {
+    const {
+      keysystemId,
+      sessionId,
+      sessionToken
+    } = await request.json();
+
+    if (!keysystemId || !sessionId || !sessionToken) {
+      return NextResponse.json({ error: 'Keysystem ID, session ID, and session token are required' }, { status: 400 });
+    }
+
+    // Connect to MongoDB
+    const client = await clientPromise;
+    const db = client.db('Cryptix');
+    const collection = db.collection('customers');
+
+    // Find the user who owns this keysystem
+    const user = await collection.findOne({
+      'keysystems.id': keysystemId
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'Keysystem not found' }, { status: 404 });
+    }
+
+    // Find the specific keysystem
+    const keysystem = user.keysystems.find(ks => ks.id === keysystemId);
+
+    if (!keysystem || !keysystem.active) {
+      return NextResponse.json({ error: 'Keysystem not found or not active' }, { status: 404 });
+    }
+
+    // Check if session exists
+    if (!keysystem.keys?.[sessionId]) {
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    }
+
+    // Store session token with timestamp
+    const tokenData = {
+      generated_token: sessionToken,
+      created_at: new Date().toISOString()
+    };
+
+    const result = await collection.updateOne(
+      { 
+        _id: user._id,
+        'keysystems.id': keysystemId
+      },
+      { 
+        $set: {
+          [`keysystems.$.keys.${sessionId}.session_token`]: tokenData
+        }
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return NextResponse.json({ error: 'Failed to store session token' }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      token: sessionToken,
+      message: 'Session token stored successfully'
+    });
+
+  } catch (error) {
+    console.error('Store session token error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
