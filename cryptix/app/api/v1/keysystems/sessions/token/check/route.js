@@ -1,5 +1,27 @@
+
 import { NextResponse } from 'next/server';
-import clientPromise from '../../../../../../../lib/mongodb';
+import { MongoClient } from 'mongodb';
+
+const uri = process.env.MONGO_URI;
+const options = {};
+
+let client;
+let clientPromise;
+
+if (!process.env.MONGO_URI) {
+  throw new Error('Please add your Mongo URI to .env.local');
+}
+
+if (process.env.NODE_ENV === 'development') {
+  if (!global._mongoClientPromise) {
+    client = new MongoClient(uri, options);
+    global._mongoClientPromise = client.connect();
+  }
+  clientPromise = global._mongoClientPromise;
+} else {
+  client = new MongoClient(uri, options);
+  clientPromise = client.connect();
+}
 
 export async function GET(request) {
   try {
@@ -8,13 +30,15 @@ export async function GET(request) {
     const sessionId = searchParams.get('sessionId');
 
     if (!keysystemId || !sessionId) {
-      return NextResponse.json({ error: 'Keysystem ID and session ID are required' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
     }
 
+    // Connect to MongoDB
     const client = await clientPromise;
     const db = client.db('Cryptix');
     const collection = db.collection('customers');
 
+    // Find the user who owns this keysystem
     const user = await collection.findOne({
       'keysystems.id': keysystemId
     });
@@ -23,19 +47,21 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Keysystem not found' }, { status: 404 });
     }
 
+    // Find the specific keysystem
     const keysystem = user.keysystems.find(ks => ks.id === keysystemId);
 
     if (!keysystem || !keysystem.active) {
       return NextResponse.json({ error: 'Keysystem not found or not active' }, { status: 404 });
     }
 
-    const session = keysystem.keys?.[sessionId];
-    const sessionToken = session?.session_token;
+    // Check if session exists and has a token
+    const existingSession = keysystem.keys?.[sessionId];
+    const hasToken = existingSession && existingSession.session_token;
 
     return NextResponse.json({
       success: true,
-      exists: !!sessionToken,
-      tokenCreatedAt: sessionToken?.created_at || null
+      exists: !!hasToken,
+      token: hasToken ? existingSession.session_token.generated_token : null
     });
 
   } catch (error) {
