@@ -74,8 +74,7 @@ export async function POST(request) {
     const newCheckpoint = {
       type: type,
       redirect_url: redirect_url,
-      callback_url: `https://cryptixmanager.vercel.app/ads/callback/${callbackToken}`,
-      callback_token: callbackToken
+      callback_url: `https://cryptixmanager.vercel.app/ads/callback/${callbackToken}`
     };
 
     // Add checkpoint to keysystem
