@@ -8,17 +8,27 @@ export default function CallbackPage() {
   const params = useParams();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
+  const [loadingText, setLoadingText] = useState('Initializing...');
+  const [checkpointInfo, setCheckpointInfo] = useState(null);
 
   useEffect(() => {
     const processCallback = async () => {
       try {
         const callbackToken = params.token;
         
+        setLoadingProgress(10);
+        setLoadingText('Validating callback token...');
+        await new Promise(resolve => setTimeout(resolve, 200));
         
         if (!callbackToken) {
           redirectWithError('Invalid callback token');
           return;
         }
+
+        setLoadingProgress(20);
+        setLoadingText('Finding checkpoint...');
+        await new Promise(resolve => setTimeout(resolve, 300));
 
         // Step 1: Find the checkpoint and keysystem by callback token
         const checkpointData = await findCheckpointByToken(callbackToken);
@@ -29,11 +39,27 @@ export default function CallbackPage() {
 
         const { keysystem, checkpoint, checkpointIndex } = checkpointData;
 
+        // Set checkpoint info for display
+        setCheckpointInfo({
+          keysystemName: keysystem.name,
+          checkpointType: checkpoint.type,
+          checkpointIndex: checkpointIndex + 1,
+          totalCheckpoints: keysystem.checkpoints?.length || 1
+        });
+
+        setLoadingProgress(35);
+        setLoadingText(`Processing ${checkpoint.type} checkpoint...`);
+        await new Promise(resolve => setTimeout(resolve, 300));
+
         // Step 2: Process custom and linkvertise type checkpoints
         if (checkpoint.type !== 'custom' && checkpoint.type !== 'linkvertise') {
           redirectWithError('Checkpoint type not supported yet');
           return;
         }
+
+        setLoadingProgress(50);
+        setLoadingText('Validating session...');
+        await new Promise(resolve => setTimeout(resolve, 200));
 
         // Step 3: Get browser UUID and session data
         const browserUuid = localStorage.getItem('browser_uuid');
@@ -44,12 +70,20 @@ export default function CallbackPage() {
           return;
         }
 
+        setLoadingProgress(65);
+        setLoadingText('Verifying user session...');
+        await new Promise(resolve => setTimeout(resolve, 250));
+
         // Step 4: Get user session from database
         const sessionData = await getUserSession(keysystem.id, browserUuid);
         if (!sessionData) {
           redirectWithError('Session not found');
           return;
         }
+
+        setLoadingProgress(75);
+        setLoadingText('Checking checkpoint integrity...');
+        await new Promise(resolve => setTimeout(resolve, 200));
 
         // Step 5: Check checkpoint integrity
         const integrityCheck = validateCheckpointIntegrity(sessionData, checkpointIndex);
@@ -58,14 +92,22 @@ export default function CallbackPage() {
           return;
         }
 
+        setLoadingProgress(85);
+        
         // Step 6: Anti-bypass checks (skip for linkvertise)
         if (checkpoint.type !== 'linkvertise') {
+          setLoadingText('Running anti-bypass checks...');
+          await new Promise(resolve => setTimeout(resolve, 300));
+          
           const antiBypassCheck = await performAntiBypassChecks(keysystem.id, browserUuid);
           if (!antiBypassCheck.valid) {
             redirectWithError(antiBypassCheck.error);
             return;
           }
         } else {
+          setLoadingText('Verifying Linkvertise hash...');
+          await new Promise(resolve => setTimeout(resolve, 300));
+          
           // For Linkvertise, verify the hash parameter
           const hashVerification = await verifyLinkvertiseHash(callbackToken);
           if (!hashVerification.valid) {
@@ -74,11 +116,19 @@ export default function CallbackPage() {
           }
         }
 
+        setLoadingProgress(95);
+        setLoadingText('Updating progress...');
+        await new Promise(resolve => setTimeout(resolve, 200));
+
         // Step 7: All checks passed - update progress and cleanup
         await updateCheckpointProgress(keysystem.id, browserUuid, checkpointIndex);
         
         // Clean up session token
         localStorage.removeItem('session_token');
+        
+        setLoadingProgress(100);
+        setLoadingText('Checkpoint completed successfully!');
+        await new Promise(resolve => setTimeout(resolve, 500));
         
         // Redirect back to get_key page
         router.push(`/ads/get_key/${keysystem.id}`);
@@ -259,6 +309,78 @@ export default function CallbackPage() {
     }
   };
 
-  // No UI - just processing
-  return null;
+  // Loading UI
+  return (
+    <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
+      <div className="w-full max-w-md px-8">
+        {/* Header Info */}
+        {checkpointInfo && (
+          <div className="text-center mb-8">
+            <div className="text-white text-xl font-medium mb-2">
+              {checkpointInfo.keysystemName}
+            </div>
+            <div className="text-gray-400 text-sm mb-1">
+              Processing {checkpointInfo.checkpointType} checkpoint
+            </div>
+            <div className="text-gray-500 text-xs">
+              Step {checkpointInfo.checkpointIndex} of {checkpointInfo.totalCheckpoints}
+            </div>
+          </div>
+        )}
+
+        {/* Loading Text */}
+        <div className="text-center mb-8">
+          <div className="text-white text-lg font-medium mb-2 transition-all duration-500 ease-out">
+            {loadingText}
+          </div>
+          <div className="text-gray-400 text-sm">
+            Please wait while we process your checkpoint
+          </div>
+        </div>
+
+        {/* Progress Bar Container */}
+        <div className="relative w-full h-2 bg-white/10 rounded-full overflow-hidden">
+          {/* Animated Progress Bar */}
+          <div 
+            className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-full transition-all duration-500 ease-out"
+            style={{ width: `${loadingProgress}%` }}
+          >
+            {/* Shimmer Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+          </div>
+
+          {/* Progress Glow */}
+          <div 
+            className="absolute top-0 left-0 h-full bg-[#6366f1]/50 rounded-full blur-sm transition-all duration-500 ease-out"
+            style={{ width: `${loadingProgress}%` }}
+          ></div>
+        </div>
+
+        {/* Progress Percentage */}
+        <div className="text-center mt-4">
+          <span className="text-gray-300 text-sm font-mono transition-all duration-300">
+            {loadingProgress}%
+          </span>
+        </div>
+
+        {/* Progress Dots */}
+        <div className="flex justify-center space-x-2 mt-6">
+          <div className="w-2 h-2 bg-[#6366f1] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+          <div className="w-2 h-2 bg-[#6366f1] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+          <div className="w-2 h-2 bg-[#6366f1] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+
+        .animate-shimmer {
+          animation: shimmer 2s infinite;
+        }
+      `}</style>
+    </div>
+  );
 }
