@@ -10,37 +10,15 @@ export async function POST(request) {
     }
 
     const token = authHeader.substring(7);
-    const {
-      keysystemId,
-      type,
-      redirect_url
-    } = await request.json();
+    const { keysystemId, type, redirect_url } = await request.json();
 
     // Validation
     if (!keysystemId || !type || !redirect_url) {
-      return NextResponse.json({ error: 'Keysystem ID, type, and redirect URL are required' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Validate type
-    const allowedTypes = ['linkvertise', 'lootlabs', 'workink', 'custom'];
-    if (!allowedTypes.includes(type)) {
+    if (!['custom', 'linkvertise', 'lootlabs', 'workink'].includes(type)) {
       return NextResponse.json({ error: 'Invalid checkpoint type' }, { status: 400 });
-    }
-
-    // Check for lootlabs integration if type is lootlabs
-    if (type === 'lootlabs') {
-      if (!user.integrations?.lootlabs) {
-        return NextResponse.json({ 
-          error: 'Lootlabs API key required. Please add your Lootlabs API key in your profile integrations.' 
-        }, { status: 400 });
-      }
-    }
-
-    // Validate URL format
-    try {
-      new URL(redirect_url);
-    } catch {
-      return NextResponse.json({ error: 'Invalid redirect URL format' }, { status: 400 });
     }
 
     // Connect to MongoDB
@@ -54,19 +32,23 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    // Find the keysystem and verify ownership
+    // Check if user has lootlabs integration for lootlabs checkpoints
+    if (type === 'lootlabs' && !user.integrations?.lootlabs) {
+      return NextResponse.json({ error: 'Lootlabs API key required in integrations' }, { status: 400 });
+    }
+
+    // Find the keysystem
     const keysystem = user.keysystems?.find(ks => ks.id === keysystemId);
     if (!keysystem) {
-      return NextResponse.json({ error: 'Keysystem not found or access denied' }, { status: 404 });
+      return NextResponse.json({ error: 'Keysystem not found' }, { status: 404 });
     }
 
-    // Check if checkpoints limit is reached (accounting for mandatory first checkpoint)
-    const currentCheckpoints = keysystem.checkpoints || [];
-    if (currentCheckpoints.length >= 10) {
-      return NextResponse.json({ error: 'Maximum of 10 checkpoints allowed (including mandatory first checkpoint)' }, { status: 400 });
+    // Check checkpoint limit (max 10)
+    if (keysystem.checkpoints && keysystem.checkpoints.length >= 10) {
+      return NextResponse.json({ error: 'Maximum checkpoints limit reached (10)' }, { status: 400 });
     }
 
-    // Generate a 48-character unique token
+    // Generate callback token
     const generateToken = () => {
       const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
       let token = '';
