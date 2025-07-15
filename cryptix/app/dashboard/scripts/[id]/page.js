@@ -376,7 +376,7 @@ export default function Scripts() {
                               <h3 className="text-white font-semibold text-lg">Checkpoint {index + 1}</h3>
                               <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
                                 checkpoint.type === 'linkvertise' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                                checkpoint.type === 'lootlabs' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                                checkpoint.type === 'lootlabs' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
                                 checkpoint.type === 'workink' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
                                 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
                               }`}>
@@ -513,6 +513,15 @@ export default function Scripts() {
                 </p>
               </div>
 
+              {/* Lootlabs Integration Note */}
+              {checkpointFormData.type === 'lootlabs' && !userProfile?.integrations?.lootlabs && (
+                <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                  <p className="text-red-400 text-sm">
+                    <strong>Lootlabs API Key Required:</strong> You need to add your Lootlabs API key in your profile integrations before creating Lootlabs checkpoints.
+                  </p>
+                </div>
+              )}
+
               <div className="space-y-4">
                 {/* Type Selection */}
                 <div>
@@ -526,6 +535,12 @@ export default function Scripts() {
                   >
                     <option value="custom">Custom</option>
                     <option value="linkvertise">Linkvertise</option>
+                    <option 
+                      value="lootlabs" 
+                      disabled={!userProfile?.integrations?.lootlabs}
+                    >
+                      Lootlabs {!userProfile?.integrations?.lootlabs && '(Requires API Key)'}
+                    </option>
                   </select>
                 </div>
 
@@ -539,7 +554,8 @@ export default function Scripts() {
                     value={checkpointFormData.redirect_url}
                     onChange={(e) => handleInputChange('redirect_url', e.target.value)}
                     placeholder="https://example.com/your-link"
-                    className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                    disabled={checkpointFormData.type === 'lootlabs' && !userProfile?.integrations?.lootlabs}
+                    className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                   <p className="text-gray-400 text-xs mt-1">
                     The URL where users will be redirected to complete this checkpoint
@@ -556,7 +572,7 @@ export default function Scripts() {
                 </button>
                 <button
                   onClick={handleCreateCheckpoint}
-                  disabled={isCreatingCheckpoint}
+                  disabled={isCreatingCheckpoint || (checkpointFormData.type === 'lootlabs' && !userProfile?.integrations?.lootlabs)}
                   className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreatingCheckpoint ? 'Creating...' : 'Create Checkpoint'}

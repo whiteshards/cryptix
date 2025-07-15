@@ -1,11 +1,10 @@
-
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../../lib/mongodb';
 
 export async function POST(request) {
   try {
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Authorization token required' }, { status: 401 });
     }
@@ -26,6 +25,15 @@ export async function POST(request) {
     const allowedTypes = ['linkvertise', 'lootlabs', 'workink', 'custom'];
     if (!allowedTypes.includes(type)) {
       return NextResponse.json({ error: 'Invalid checkpoint type' }, { status: 400 });
+    }
+
+    // Check for lootlabs integration if type is lootlabs
+    if (type === 'lootlabs') {
+      if (!user.integrations?.lootlabs) {
+        return NextResponse.json({ 
+          error: 'Lootlabs API key required. Please add your Lootlabs API key in your profile integrations.' 
+        }, { status: 400 });
+      }
     }
 
     // Validate URL format
