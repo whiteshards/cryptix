@@ -26,6 +26,7 @@ export async function POST(request) {
 
     // Check if user has LootLabs integration
     if (!user.integrations || !user.integrations.lootlabs || user.integrations.lootlabs.trim() === '') {
+      console.error('LootLabs API key is missing');
       return NextResponse.json({ error: 'Misconfigured keysystem. Please add a valid LootLabs API key to the owner\'s account of the keysystem.' }, { status: 400 });
     }
 
@@ -33,6 +34,7 @@ export async function POST(request) {
     const keysystem = user.keysystems.find(ks => ks.id === keysystemId);
 
     if (!keysystem || !keysystem.active) {
+      
       return NextResponse.json({ error: 'Keysystem not found or not active' }, { status: 404 });
     }
 
