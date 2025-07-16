@@ -102,7 +102,7 @@ export async function POST(request) {
 
     } catch (error) {
       console.error('LootLabs API error:', error);
-      return NextResponse.json({ error: lootlabsData }, { status: 500 });
+      return NextResponse.json({ error: lootlabsData.message }, { status: 500 });
     }
 
   } catch (error) {
