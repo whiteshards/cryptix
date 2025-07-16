@@ -79,15 +79,14 @@ export async function POST(request) {
       console.log('Making LootLabs API request with URL:', callbackUrl);
       console.log('Using API token:', user.integrations.lootlabs ? 'Present' : 'Missing');
 
-      const lootlabsResponse = await fetch('https://creators.lootlabs.gg/api/public/url_encryptor', {
-        method: 'POST',
+      // Use GET request with query parameters
+      const apiUrl = `https://creators.lootlabs.gg/api/public/url_encryptor?destination_url=${encodeURIComponent(callbackUrl)}&api_token=${user.integrations.lootlabs}`;
+      
+      const lootlabsResponse = await fetch(apiUrl, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          destination_url: callbackUrl,
-          api_token: user.integrations.lootlabs
-        }),
       });
 
       if (!lootlabsResponse.ok) {
