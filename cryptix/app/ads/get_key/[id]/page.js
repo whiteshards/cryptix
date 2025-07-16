@@ -137,8 +137,8 @@ export default function GetKey() {
       try {
         const firstCheckpoint = keysystem.checkpoints[0];
         
-        // Only generate session token for non-linkvertise checkpoints
-        if (firstCheckpoint.type !== 'linkvertise') {
+        // Generate session token for custom and lootlabs checkpoints
+        if (firstCheckpoint.type === 'custom' || firstCheckpoint.type === 'lootlabs') {
           // Check if session token already exists in database
           const checkResponse = await fetch(`/api/v1/keysystems/sessions/token/check?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
           const checkData = await checkResponse.json();
@@ -194,8 +194,41 @@ export default function GetKey() {
         // Small delay to show loading state
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Redirect to first checkpoint
-        window.open(firstCheckpoint.redirect_url, '_blank');
+        // Handle LootLabs checkpoint differently
+        if (firstCheckpoint.type === 'lootlabs') {
+          try {
+            const response = await fetch('/api/v1/keysystems/lootlabs/generate-url', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                keysystemId: keysystemId,
+                sessionId: browserUuid,
+                checkpointIndex: 0
+              }),
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+              setError(data.error || 'Failed to generate LootLabs URL');
+              setIsGeneratingToken(false);
+              return;
+            }
+
+            // Redirect to LootLabs URL
+            window.open(data.lootlabsUrl, '_blank');
+          } catch (error) {
+            console.error('LootLabs URL generation error:', error);
+            setError('Misconfigured keysystem. Please add a valid LootLabs API key to the owner\'s account of the keysystem.');
+            setIsGeneratingToken(false);
+            return;
+          }
+        } else {
+          // Redirect to first checkpoint for other types
+          window.open(firstCheckpoint.redirect_url, '_blank');
+        }
 
       } catch (error) {
         console.error('Session token error:', error);
@@ -213,8 +246,8 @@ export default function GetKey() {
       try {
         const nextCheckpoint = keysystem.checkpoints[currentProgress];
         
-        // Only generate session token for non-linkvertise checkpoints
-        if (nextCheckpoint.type !== 'linkvertise') {
+        // Generate session token for custom and lootlabs checkpoints
+        if (nextCheckpoint.type === 'custom' || nextCheckpoint.type === 'lootlabs') {
           // Check if session token already exists in database
           const checkResponse = await fetch(`/api/v1/keysystems/sessions/token/check?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
           const checkData = await checkResponse.json();
@@ -270,8 +303,41 @@ export default function GetKey() {
         // Small delay to show loading state
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        // Redirect to next checkpoint
-        window.open(nextCheckpoint.redirect_url, '_blank');
+        // Handle LootLabs checkpoint differently
+        if (nextCheckpoint.type === 'lootlabs') {
+          try {
+            const response = await fetch('/api/v1/keysystems/lootlabs/generate-url', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                keysystemId: keysystemId,
+                sessionId: browserUuid,
+                checkpointIndex: currentProgress
+              }),
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+              setError(data.error || 'Failed to generate LootLabs URL');
+              setIsGeneratingToken(false);
+              return;
+            }
+
+            // Redirect to LootLabs URL
+            window.open(data.lootlabsUrl, '_blank');
+          } catch (error) {
+            console.error('LootLabs URL generation error:', error);
+            setError('Misconfigured keysystem. Please add a valid LootLabs API key to the owner\'s account of the keysystem.');
+            setIsGeneratingToken(false);
+            return;
+          }
+        } else {
+          // Redirect to next checkpoint for other types
+          window.open(nextCheckpoint.redirect_url, '_blank');
+        }
 
       } catch (error) {
         console.error('Session token error:', error);

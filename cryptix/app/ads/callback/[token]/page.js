@@ -51,8 +51,8 @@ export default function CallbackPage() {
         setLoadingText(`Processing ${checkpoint.type} checkpoint...`);
         await new Promise(resolve => setTimeout(resolve, 300));
 
-        // Step 2: Process custom and linkvertise type checkpoints
-        if (checkpoint.type !== 'custom' && checkpoint.type !== 'linkvertise') {
+        // Step 2: Process supported checkpoint types
+        if (!['custom', 'linkvertise', 'lootlabs'].includes(checkpoint.type)) {
           redirectWithError('Checkpoint type not supported yet');
           return;
         }
@@ -95,7 +95,7 @@ export default function CallbackPage() {
         setLoadingProgress(85);
         
         // Step 6: Anti-bypass checks (skip for linkvertise)
-        if (checkpoint.type !== 'linkvertise') {
+        if (checkpoint.type === 'custom' || checkpoint.type === 'lootlabs') {
           setLoadingText('Running anti-bypass checks...');
           await new Promise(resolve => setTimeout(resolve, 300));
           
@@ -104,7 +104,7 @@ export default function CallbackPage() {
             redirectWithError(antiBypassCheck.error);
             return;
           }
-        } else {
+        } else if (checkpoint.type === 'linkvertise') {
           setLoadingText('Verifying Linkvertise hash...');
           await new Promise(resolve => setTimeout(resolve, 300));
           
@@ -126,6 +126,11 @@ export default function CallbackPage() {
         // Clean up session token
         localStorage.removeItem('session_token');
         
+        // Clean up LootLabs callback URL if this was a LootLabs checkpoint
+        if (checkpoint.type === 'lootlabs') {
+          await cleanupLootLabsCallback(keysystem.id, browserUuid, checkpointIndex);
+        }
+        
         setLoadingProgress(100);
         setLoadingText('Checkpoint completed successfully!');
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -144,13 +149,25 @@ export default function CallbackPage() {
 
   const findCheckpointByToken = async (callbackToken) => {
     try {
-      // Search through all keysystems to find the checkpoint with this token
+      // First try to find regular checkpoint
       const response = await fetch(`/api/v1/keysystems/checkpoints/find-by-token?token=${callbackToken}`);
       const data = await response.json();
       
       if (data.success) {
         return data;
       }
+
+      // If not found, try LootLabs callback with session ID
+      const browserUuid = localStorage.getItem('browser_uuid');
+      if (browserUuid) {
+        const lootlabsResponse = await fetch(`/api/v1/keysystems/lootlabs/callback?callbackToken=${callbackToken}&sessionId=${browserUuid}`);
+        const lootlabsData = await lootlabsResponse.json();
+        
+        if (lootlabsData.success) {
+          return lootlabsData;
+        }
+      }
+
       return null;
     } catch (error) {
       console.error('Error finding checkpoint:', error);
@@ -296,6 +313,28 @@ export default function CallbackPage() {
       return data.success;
     } catch (error) {
       console.error('Error updating progress:', error);
+      return false;
+    }
+  };
+
+  const cleanupLootLabsCallback = async (keysystemId, sessionId, checkpointIndex) => {
+    try {
+      const response = await fetch('/api/v1/keysystems/lootlabs/cleanup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keysystemId,
+          sessionId,
+          checkpointIndex
+        }),
+      });
+
+      const data = await response.json();
+      return data.success;
+    } catch (error) {
+      console.error('Error cleaning up LootLabs callback:', error);
       return false;
     }
   };
