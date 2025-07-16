@@ -64,7 +64,8 @@ export async function POST(request) {
     const newCheckpoint = {
       type: type,
       redirect_url: redirect_url,
-      callback_url: `https://cryptixmanager.vercel.app/ads/callback/${callbackToken}`,
+      callback_url: type === 'lootlabs' ? undefined : `https://cryptixmanager.vercel.app/ads/callback/${callbackToken}`,
+      callback_urls: type === 'lootlabs' ? {} : undefined,
       callback_token: callbackToken
     };
 

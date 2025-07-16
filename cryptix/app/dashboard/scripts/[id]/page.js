@@ -440,7 +440,13 @@ export default function Scripts() {
                           {!checkpoint.mandatory && (
                             <div className="bg-black/20 rounded-lg p-3 border border-white/10">
                               <span className="text-gray-300 text-sm font-medium">Callback URL:</span>
-                              <p className="text-white font-mono text-sm break-all mt-1">{checkpoint.callback_url}</p>
+                              {checkpoint.type === 'lootlabs' ? (
+                                <p className="text-yellow-400 text-sm mt-1">
+                                  Lootlabs Anti-Bypass Requires Dynamic URL Generation
+                                </p>
+                              ) : (
+                                <p className="text-white font-mono text-sm break-all mt-1">{checkpoint.callback_url}</p>
+                              )}
                             </div>
                           )}
                           {checkpoint.mandatory && (
