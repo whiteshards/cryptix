@@ -18,6 +18,7 @@ export default function GetKey() {
   const [completedCheckpoints, setCompletedCheckpoints] = useState([]);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [urlError, setUrlError] = useState('');
+  const [isGeneratingToken, setIsGeneratingToken] = useState(false);
 
   // Check for error in URL parameters
   useEffect(() => {
@@ -131,6 +132,8 @@ export default function GetKey() {
 
   const handleStartProgress = async () => {
     if (keysystem.checkpoints.length > 0) {
+      setIsGeneratingToken(true);
+      
       try {
         const firstCheckpoint = keysystem.checkpoints[0];
         
@@ -175,6 +178,7 @@ export default function GetKey() {
 
             if (!data.success) {
               setError(`Failed to create session token: ${data.error}`);
+              setIsGeneratingToken(false);
               return; // Don't redirect if token creation failed
             }
 
@@ -187,19 +191,25 @@ export default function GetKey() {
           }
         }
 
+        // Small delay to show loading state
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         // Redirect to first checkpoint
         window.open(firstCheckpoint.redirect_url, '_blank');
 
       } catch (error) {
         console.error('Session token error:', error);
         setError(`Error managing session token: ${error.message}`);
-        return; // Don't redirect if there was an error
+      } finally {
+        setIsGeneratingToken(false);
       }
     }
   };
 
   const handleNextCheckpoint = async () => {
     if (currentProgress < keysystem.checkpoints.length) {
+      setIsGeneratingToken(true);
+      
       try {
         const nextCheckpoint = keysystem.checkpoints[currentProgress];
         
@@ -244,6 +254,7 @@ export default function GetKey() {
 
             if (!data.success) {
               setError(`Failed to create session token: ${data.error}`);
+              setIsGeneratingToken(false);
               return; // Don't redirect if token creation failed
             }
 
@@ -256,13 +267,17 @@ export default function GetKey() {
           }
         }
 
+        // Small delay to show loading state
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         // Redirect to next checkpoint
         window.open(nextCheckpoint.redirect_url, '_blank');
 
       } catch (error) {
         console.error('Session token error:', error);
         setError(`Error managing session token: ${error.message}`);
-        return; // Don't redirect if there was an error
+      } finally {
+        setIsGeneratingToken(false);
       }
     }
   };
@@ -369,9 +384,13 @@ export default function GetKey() {
                   {currentProgress === 0 && (
                     <button
                       onClick={handleStartProgress}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
+                      disabled={isGeneratingToken}
+                      className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white px-3 py-1 rounded text-xs font-medium transition-colors flex items-center space-x-1"
                     >
-                      Start
+                      {isGeneratingToken && (
+                        <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin"></div>
+                      )}
+                      <span>{isGeneratingToken ? 'Starting...' : 'Start'}</span>
                     </button>
                   )}
 
@@ -379,9 +398,13 @@ export default function GetKey() {
                   {currentProgress > 0 && currentProgress < keysystem.checkpointCount && (
                     <button
                       onClick={handleNextCheckpoint}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
+                      disabled={isGeneratingToken}
+                      className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white px-3 py-1 rounded text-xs font-medium transition-colors flex items-center space-x-1"
                     >
-                      Next Checkpoint
+                      {isGeneratingToken && (
+                        <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin"></div>
+                      )}
+                      <span>{isGeneratingToken ? 'Redirecting...' : 'Next Checkpoint'}</span>
                     </button>
                   )}
 
@@ -507,6 +530,44 @@ export default function GetKey() {
         </div>
       )}
 
+      {/* Loading Overlay for Token Generation */}
+      {isGeneratingToken && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-[#1a1b2e] rounded-lg border border-white/10 p-8 max-w-md w-full mx-4">
+            <div className="text-center">
+              <div className="text-white text-lg font-medium mb-4">
+                Please wait a moment while we redirect you
+              </div>
+              
+              {/* Loading Animation */}
+              <div className="relative w-full h-2 bg-white/10 rounded-full overflow-hidden mb-4">
+                <div 
+                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] rounded-full transition-all duration-500 ease-out animate-pulse"
+                  style={{ width: '70%' }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+                </div>
+                <div 
+                  className="absolute top-0 left-0 h-full bg-[#3b82f6]/50 rounded-full blur-sm transition-all duration-500 ease-out"
+                  style={{ width: '70%' }}
+                ></div>
+              </div>
+
+              {/* Progress Dots */}
+              <div className="flex justify-center space-x-2">
+                <div className="w-2 h-2 bg-[#3b82f6] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-2 h-2 bg-[#3b82f6] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-2 h-2 bg-[#3b82f6] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+              </div>
+              
+              <div className="text-gray-400 text-sm mt-4">
+                Preparing your session...
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bottom Right Info */}
       <div className="fixed bottom-4 right-4 bg-black/60 border border-white/20 rounded px-3 py-2 text-xs">
         <div className="flex items-center space-x-2">
@@ -521,6 +582,17 @@ export default function GetKey() {
           </button>
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+
+        .animate-shimmer {
+          animation: shimmer 2s infinite;
+        }
+      `}</style>
     </div>
   );
 }
