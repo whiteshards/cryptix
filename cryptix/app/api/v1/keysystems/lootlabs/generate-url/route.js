@@ -25,7 +25,7 @@ export async function POST(request) {
     }
 
     // Check if user has LootLabs integration
-    if (!user.integrations?.lootlabs) {
+    if (!user.integrations || !user.integrations.lootlabs || user.integrations.lootlabs.trim() === '') {
       return NextResponse.json({ error: 'Misconfigured keysystem. Please add a valid LootLabs API key to the owner\'s account of the keysystem.' }, { status: 400 });
     }
 
@@ -74,6 +74,9 @@ export async function POST(request) {
 
     // Get encrypted URL from LootLabs API
     try {
+      console.log('Making LootLabs API request with URL:', callbackUrl);
+      console.log('Using API token:', user.integrations.lootlabs ? 'Present' : 'Missing');
+
       const lootlabsResponse = await fetch('https://creators.lootlabs.gg/api/public/url_encryptor', {
         method: 'POST',
         headers: {
@@ -85,14 +88,21 @@ export async function POST(request) {
         }),
       });
 
+      if (!lootlabsResponse.ok) {
+        console.error('LootLabs API HTTP error:', lootlabsResponse.status, lootlabsResponse.statusText);
+        throw new Error(`LootLabs API HTTP error: ${lootlabsResponse.status}`);
+      }
+
       const lootlabsData = await lootlabsResponse.json();
+      console.log('LootLabs API response:', lootlabsData);
 
       if (lootlabsData.type !== 'created' && lootlabsData.type !== 'fetched') {
-        throw new Error('LootLabs API error: ' + lootlabsData.message);
+        console.error('LootLabs API returned error type:', lootlabsData);
+        throw new Error('LootLabs API error: ' + (lootlabsData.message || 'Unknown error'));
       }
 
       // Construct the final LootLabs URL
-      const lootlabsUrl = `${checkpoint.redirect_url}&data=${lootlabsData.message}`;
+      const lootlabsUrl = `${checkpoint.redirect_url}&data=${encodeURIComponent(lootlabsData.message)}`;
 
       return NextResponse.json({
         success: true,
