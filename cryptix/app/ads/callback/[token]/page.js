@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
@@ -16,11 +15,11 @@ export default function CallbackPage() {
     const processCallback = async () => {
       try {
         const callbackToken = params.token;
-        
+
         setLoadingProgress(10);
         setLoadingText('Validating callback token...');
         await new Promise(resolve => setTimeout(resolve, 200));
-        
+
         if (!callbackToken) {
           redirectWithError('Invalid callback token');
           return;
@@ -64,7 +63,7 @@ export default function CallbackPage() {
         // Step 3: Get browser UUID and session data
         const browserUuid = localStorage.getItem('browser_uuid');
         const currentKeysystemId = localStorage.getItem('current_id');
-        
+
         if (!browserUuid || currentKeysystemId !== keysystem.id) {
           redirectWithError('Invalid session or wrong keysystem');
           return;
@@ -93,12 +92,12 @@ export default function CallbackPage() {
         }
 
         setLoadingProgress(85);
-        
+
         // Step 6: Anti-bypass checks (skip for linkvertise)
         if (checkpoint.type === 'custom' || checkpoint.type === 'lootlabs') {
           setLoadingText('Running anti-bypass checks...');
           await new Promise(resolve => setTimeout(resolve, 300));
-          
+
           const antiBypassCheck = await performAntiBypassChecks(keysystem.id, browserUuid);
           if (!antiBypassCheck.valid) {
             redirectWithError(antiBypassCheck.error);
@@ -107,7 +106,7 @@ export default function CallbackPage() {
         } else if (checkpoint.type === 'linkvertise') {
           setLoadingText('Verifying Linkvertise hash...');
           await new Promise(resolve => setTimeout(resolve, 300));
-          
+
           // For Linkvertise, verify the hash parameter
           const hashVerification = await verifyLinkvertiseHash(callbackToken);
           if (!hashVerification.valid) {
@@ -122,19 +121,19 @@ export default function CallbackPage() {
 
         // Step 7: All checks passed - update progress and cleanup
         await updateCheckpointProgress(keysystem.id, browserUuid, checkpointIndex);
-        
+
         // Clean up session token
         localStorage.removeItem('session_token');
-        
+
         // Clean up LootLabs callback URL if this was a LootLabs checkpoint
         if (checkpoint.type === 'lootlabs') {
           await cleanupLootLabsCallback(keysystem.id, browserUuid, checkpointIndex);
         }
-        
+
         setLoadingProgress(100);
         setLoadingText('Checkpoint completed successfully!');
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Redirect back to get_key page
         router.push(`/ads/get_key/${keysystem.id}`);
 
@@ -152,7 +151,7 @@ export default function CallbackPage() {
       // First try to find regular checkpoint
       const response = await fetch(`/api/v1/keysystems/checkpoints/find-by-token?token=${callbackToken}`);
       const data = await response.json();
-      
+
       if (data.success) {
         return data;
       }
@@ -162,7 +161,7 @@ export default function CallbackPage() {
       if (browserUuid) {
         const lootlabsResponse = await fetch(`/api/v1/keysystems/lootlabs/callback?callbackToken=${callbackToken}&sessionId=${browserUuid}`);
         const lootlabsData = await lootlabsResponse.json();
-        
+
         if (lootlabsData.success) {
           return lootlabsData;
         }
@@ -179,7 +178,7 @@ export default function CallbackPage() {
     try {
       const response = await fetch(`/api/v1/keysystems/sessions?keysystemId=${keysystemId}&sessionId=${sessionId}`);
       const data = await response.json();
-      
+
       if (data.success && data.exists) {
         return data.session;
       }
@@ -192,7 +191,7 @@ export default function CallbackPage() {
 
   const validateCheckpointIntegrity = (sessionData, checkpointIndex) => {
     const currentProgress = sessionData.current_checkpoint || 0;
-    
+
     // Check if user is trying to skip checkpoints
     if (checkpointIndex !== currentProgress) {
       return {
@@ -200,7 +199,7 @@ export default function CallbackPage() {
         error: 'Skipped or Re-did the same checkpoint'
       };
     }
-    
+
     return { valid: true };
   };
 
@@ -218,7 +217,7 @@ export default function CallbackPage() {
       // Check session token in database and get creation time
       const response = await fetch(`/api/v1/keysystems/sessions/token?keysystemId=${keysystemId}&sessionId=${sessionId}`);
       const data = await response.json();
-      
+
       if (!data.success || !data.exists) {
         return {
           valid: false,
@@ -254,9 +253,9 @@ export default function CallbackPage() {
       const urlParams = new URLSearchParams(window.location.search);
       const hashFromQuery = urlParams.get('hash');
       const hashFromFragment = window.location.hash.substring(1); // Remove the # symbol
-      
+
       const hash = hashFromQuery || hashFromFragment;
-      
+
       if (!hash) {
         return {
           valid: false,

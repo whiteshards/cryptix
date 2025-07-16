@@ -54,6 +54,17 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Keysystem is not active' }, { status: 403 });
     }
 
+    // Get the user's session to validate session token
+    const sessionsCollection = db.collection('sessions');
+    const session = await sessionsCollection.findOne({
+      keysystem_id: targetKeysystem.id,
+      session_id: sessionId
+    });
+
+    if (!session) {
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    }
+
     return NextResponse.json({
       success: true,
       keysystem: {
@@ -63,7 +74,8 @@ export async function GET(request) {
       },
       checkpoint: targetCheckpoint,
       checkpointIndex: checkpointIndex,
-      validToken: true
+      validToken: true,
+      sessionToken: session.session_token
     });
 
   } catch (error) {

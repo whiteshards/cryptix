@@ -102,7 +102,7 @@ export async function POST(request) {
 
     } catch (error) {
       console.error('LootLabs API error:', error);
-      return NextResponse.json({ error: lootlabsData.message }, { status: 500 });
+      return NextResponse.json({ error: 'Misconfigured keysystem. Please add a valid LootLabs API key to the owner\'s account of the keysystem.' }, { status: 500 });
     }
 
   } catch (error) {
