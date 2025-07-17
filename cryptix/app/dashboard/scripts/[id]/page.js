@@ -281,52 +281,7 @@ export default function Scripts() {
               <div className="text-gray-300 font-mono text-xs break-all">{keysystem.id}</div>
             </div>
 
-            {/* Callback URLs Section */}
-            <div className="space-y-3">
-              <h3 className="text-white text-sm font-medium">Callback URLs by Type</h3>
-              
-              {/* Linkvertise Callback */}
-              <div className="bg-blue-500/10 border border-blue-500/30 rounded-md p-3">
-                <div className="flex items-center space-x-2 mb-2">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  <span className="text-blue-400 text-xs font-medium">Linkvertise Callback</span>
-                </div>
-                <div className="text-gray-300 font-mono text-xs bg-black/30 rounded px-2 py-1 break-all">
-                  {DOMAIN}/ads/callback/[STATIC_TOKEN]
-                </div>
-                <p className="text-blue-300 text-xs mt-1 opacity-75">
-                  Static token generated per checkpoint
-                </p>
-              </div>
-
-              {/* LootLabs Dynamic Callback */}
-              <div className="bg-orange-500/10 border border-orange-500/30 rounded-md p-3">
-                <div className="flex items-center space-x-2 mb-2">
-                  <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
-                  <span className="text-orange-400 text-xs font-medium">LootLabs Dynamic Callback</span>
-                </div>
-                <div className="text-gray-300 font-mono text-xs bg-black/30 rounded px-2 py-1 break-all">
-                  {DOMAIN}/ads/callback/[DYNAMIC_TOKEN]
-                </div>
-                <p className="text-orange-300 text-xs mt-1 opacity-75">
-                  Dynamic token generated per session/user
-                </p>
-              </div>
-
-              {/* Custom Link Callback */}
-              <div className="bg-gray-500/10 border border-gray-500/30 rounded-md p-3">
-                <div className="flex items-center space-x-2 mb-2">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                  <span className="text-gray-400 text-xs font-medium">Custom Link Callback</span>
-                </div>
-                <div className="text-gray-300 font-mono text-xs bg-black/30 rounded px-2 py-1 break-all">
-                  {DOMAIN}/ads/callback/[STATIC_TOKEN]
-                </div>
-                <p className="text-gray-300 text-xs mt-1 opacity-75">
-                  Static token (no anti-bypass protection)
-                </p>
-              </div>
-            </div>
+            
           </div>
 
           {/* Checkpoints Section */}
