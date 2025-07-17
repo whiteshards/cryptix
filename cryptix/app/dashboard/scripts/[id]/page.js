@@ -245,100 +245,89 @@ export default function Scripts() {
       <div className="px-8 py-6">
         <div className="max-w-6xl mx-auto space-y-6">
           {/* Keysystem Information */}
-          <div className="bg-transparent rounded-lg border border-white/10 p-6">
-            <h2 className="text-white text-xl font-semibold mb-4">Script Information</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <tbody>
-                  <tr className="border-b border-white/5">
-                    <td className="py-3 px-4 text-gray-400">Name</td>
-                    <td className="py-3 px-4 text-white font-medium">{keysystem.name}</td>
-                  </tr>
-                  <tr className="border-b border-white/5">
-                    <td className="py-3 px-4 text-gray-400">Status</td>
-                    <td className="py-3 px-4">
-                      <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                        keysystem.active 
-                          ? 'bg-green-500/20 text-green-400' 
-                          : 'bg-gray-500/20 text-gray-400'
-                      }`}>
-                        {keysystem.active ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-white/5">
-                    <td className="py-3 px-4 text-gray-400">ID</td>
-                    <td className="py-3 px-4 text-gray-300 font-mono text-sm">{keysystem.id}</td>
-                  </tr>
-                  <tr className="border-b border-white/5">
-                    <td className="py-3 px-4 text-gray-400">Max Keys Per Person</td>
-                    <td className="py-3 px-4 text-white">{keysystem.maxKeyPerPerson}</td>
-                  </tr>
-                  <tr className="border-b border-white/5">
-                    <td className="py-3 px-4 text-gray-400">Key Timer</td>
-                    <td className="py-3 px-4 text-white">
-                      {keysystem.permanent ? 'Permanent' : `${keysystem.keyTimer} hours`}
-                    </td>
-                  </tr>
-                  <tr className="border-b border-white/5">
-                    <td className="py-3 px-4 text-gray-400">Key Cooldown</td>
-                    <td className="py-3 px-4 text-white">{keysystem.keyCooldown} minutes</td>
-                  </tr>
-                </tbody>
-              </table>
+          <div className="bg-transparent rounded-lg border border-white/10 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-white text-lg font-semibold">Script Info</h2>
+              <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                keysystem.active 
+                  ? 'bg-green-500/20 text-green-400' 
+                  : 'bg-gray-500/20 text-gray-400'
+              }`}>
+                {keysystem.active ? 'Active' : 'Inactive'}
+              </span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+              <div className="bg-black/20 rounded-md p-3 border border-white/5">
+                <div className="text-gray-400 text-xs mb-1">Name</div>
+                <div className="text-white font-medium truncate">{keysystem.name}</div>
+              </div>
+              <div className="bg-black/20 rounded-md p-3 border border-white/5">
+                <div className="text-gray-400 text-xs mb-1">Max Keys</div>
+                <div className="text-white font-medium">{keysystem.maxKeyPerPerson}</div>
+              </div>
+              <div className="bg-black/20 rounded-md p-3 border border-white/5">
+                <div className="text-gray-400 text-xs mb-1">Timer</div>
+                <div className="text-white font-medium">
+                  {keysystem.permanent ? 'Permanent' : `${keysystem.keyTimer}h`}
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 bg-black/20 rounded-md p-3 border border-white/5">
+              <div className="text-gray-400 text-xs mb-1">Script ID</div>
+              <div className="text-gray-300 font-mono text-xs break-all">{keysystem.id}</div>
             </div>
           </div>
 
           {/* Checkpoints Section */}
-          <div className="bg-transparent rounded-lg border border-white/10 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-white text-xl font-semibold">
-                Add Checkpoints ({checkpoints.length}/10)
+          <div className="bg-transparent rounded-lg border border-white/10 p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-white text-lg font-semibold">
+                Checkpoints ({checkpoints.length}/10)
               </h2>
               {checkpoints.length < 10 && (
                 <button
                   onClick={() => setShowAddCheckpointModal(true)}
-                  className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+                  className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
                 >
-                  Add Checkpoint
+                  Add
                 </button>
               )}
             </div>
 
             {/* Keysystem URL Display */}
             {checkpoints.length > 0 && (
-              <div className="mb-6 bg-green-500/10 border border-green-500/30 rounded-lg p-4">
-                <p className="text-green-400 text-sm mb-2">
-                  <strong>Your Keysystem URL (Share This With User's To Generate Keys):</strong>
+              <div className="mb-4 bg-green-500/10 border border-green-500/30 rounded-md p-3">
+                <p className="text-green-400 text-xs mb-1 font-medium">
+                  Keysystem URL:
                 </p>
-                <p className="text-white font-mono text-sm break-all bg-black/30 rounded px-3 py-2">
+                <p className="text-white font-mono text-xs break-all bg-black/30 rounded px-2 py-1">
                   {DOMAIN}/ads/get_key/{keysystemId}
                 </p>
               </div>
             )}
 
             {/* Important Notes */}
-            <div className="mb-6 space-y-3">
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
-                <p className="text-yellow-400 text-sm">
-                  <strong>Linkvertise Note:</strong> Always enable anti-bypassing in Linkvertise and add its token in your profile settings or else the callback will not work and your users will not be able to complete checkpoints and generate/renew keys.
+            <div className="mb-4 space-y-2">
+              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-md p-2">
+                <p className="text-yellow-400 text-xs">
+                  <strong>Linkvertise:</strong> Enable anti-bypassing and add token in profile settings.
                 </p>
               </div>
-              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
-                <p className="text-red-400 text-sm">
-                  <strong>Custom Links Note:</strong> Custom link providers don't support anti-bypassing and can be easily bypassed. NOT RECOMMENDED.
+              <div className="bg-red-500/10 border border-red-500/30 rounded-md p-2">
+                <p className="text-red-400 text-xs">
+                  <strong>Custom Links:</strong> No anti-bypass support. Not recommended.
                 </p>
               </div>
             </div>
 
             {checkpoints.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-gray-400 text-base mb-4">
-                  No checkpoints added yet. Add checkpoints to complete keysystem setup.
+              <div className="text-center py-8">
+                <p className="text-gray-400 text-sm mb-3">
+                  No checkpoints added yet.
                 </p>
                 <button
                   onClick={() => setShowAddCheckpointModal(true)}
-                  className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+                  className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
                 >
                   Add First Checkpoint
                 </button>
@@ -346,39 +335,39 @@ export default function Scripts() {
             ) : (
               <div className="relative">
                 {/* Flowchart Container */}
-                <div className="flex flex-col items-center space-y-6">
+                <div className="flex flex-col items-center space-y-3">
                   {/* Start Node */}
                   <div className="relative">
-                    <div className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-full px-6 py-3 shadow-lg">
-                      <span className="text-white font-semibold">User Starts Key Generation</span>
+                    <div className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-full px-4 py-2 shadow-md">
+                      <span className="text-white font-medium text-sm">Start</span>
                     </div>
                     {/* Downward Arrow */}
                     <div className="absolute left-1/2 transform -translate-x-1/2 top-full">
-                      <div className="w-0.5 h-8 bg-gradient-to-b from-[#6366f1] to-[#8b5cf6]"></div>
-                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
-                        <div className="w-0 h-0 border-l-2 border-r-2 border-t-4 border-l-transparent border-r-transparent border-t-[#8b5cf6]"></div>
+                      <div className="w-0.5 h-4 bg-gradient-to-b from-[#6366f1] to-[#8b5cf6]"></div>
+                      <div className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2">
+                        <div className="w-0 h-0 border-l-1 border-r-1 border-t-2 border-l-transparent border-r-transparent border-t-[#8b5cf6]"></div>
                       </div>
                     </div>
                   </div>
 
                   {/* Checkpoints */}
                   {checkpoints.map((checkpoint, index) => (
-                    <div key={index} className="relative w-full max-w-2xl">
+                    <div key={index} className="relative w-full max-w-lg">
                       {/* Checkpoint Card */}
-                      <div className="relative bg-gradient-to-br from-[#1e1b4b] to-[#312e81] rounded-xl p-6 border border-[#6366f1]/30 shadow-xl">
+                      <div className="relative bg-gradient-to-br from-[#1e1b4b]/80 to-[#312e81]/80 rounded-lg p-3 border border-[#6366f1]/20 shadow-md">
                         {/* Checkpoint Header */}
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center space-x-4">
-                            <div className="bg-[#6366f1] rounded-full w-8 h-8 flex items-center justify-center">
-                              <span className="text-white font-bold text-sm">{index + 1}</span>
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center space-x-2">
+                            <div className="bg-[#6366f1] rounded-full w-6 h-6 flex items-center justify-center">
+                              <span className="text-white font-bold text-xs">{index + 1}</span>
                             </div>
                             <div>
-                              <h3 className="text-white font-semibold text-lg">Checkpoint {index + 1}</h3>
-                              <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                                checkpoint.type === 'linkvertise' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                                checkpoint.type === 'lootlabs' ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' :
-                                checkpoint.type === 'workink' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
-                                'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                              <h3 className="text-white font-medium text-sm">Step {index + 1}</h3>
+                              <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
+                                checkpoint.type === 'linkvertise' ? 'bg-blue-500/20 text-blue-400' :
+                                checkpoint.type === 'lootlabs' ? 'bg-orange-500/20 text-orange-400' :
+                                checkpoint.type === 'workink' ? 'bg-purple-500/20 text-purple-400' :
+                                'bg-gray-500/20 text-gray-400'
                               }`}>
                                 {checkpoint.type.toUpperCase()}
                               </span>
@@ -386,72 +375,52 @@ export default function Scripts() {
                           </div>
 
                           {/* Action Buttons */}
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-1">
                             {!checkpoint.mandatory && index > 0 && (
                               <button
                                 onClick={() => moveCheckpoint(index, index - 1)}
-                                className="bg-[#374151] hover:bg-[#4b5563] border border-gray-600 text-gray-300 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
+                                className="bg-[#374151] hover:bg-[#4b5563] text-gray-300 hover:text-white p-1 rounded transition-all duration-200"
                                 title="Move Up"
                               >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
                                 </svg>
-                                <span className="text-xs font-medium">Up</span>
                               </button>
                             )}
                             {!checkpoint.mandatory && index < checkpoints.length - 1 && (
                               <button
                                 onClick={() => moveCheckpoint(index, index + 1)}
-                                className="bg-[#374151] hover:bg-[#4b5563] border border-gray-600 text-gray-300 hover:text-white px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
+                                className="bg-[#374151] hover:bg-[#4b5563] text-gray-300 hover:text-white p-1 rounded transition-all duration-200"
                                 title="Move Down"
                               >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                 </svg>
-                                <span className="text-xs font-medium">Down</span>
                               </button>
                             )}
                             {!checkpoint.mandatory && (
                               <button
                                 onClick={() => handleDeleteCheckpoint(index)}
-                                className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-400 hover:text-red-300 px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2"
+                                className="bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 p-1 rounded transition-all duration-200"
                                 title="Delete"
                               >
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
-                                <span className="text-xs font-medium">Delete</span>
                               </button>
-                            )}
-                            {checkpoint.mandatory && (
-                              <div className="text-yellow-400 text-xs font-medium px-3 py-2">
-                                Mandatory Checkpoint
-                              </div>
                             )}
                           </div>
                         </div>
 
                         {/* Checkpoint Details */}
-                        <div className="space-y-3">
-                          <div className="bg-black/20 rounded-lg p-3 border border-white/10">
-                            <span className="text-gray-300 text-sm font-medium">Redirect URL:</span>
-                            <p className="text-white font-mono text-sm break-all mt-1">{checkpoint.redirect_url}</p>
+                        <div className="space-y-2">
+                          <div className="bg-black/20 rounded-md p-2 border border-white/5">
+                            <span className="text-gray-300 text-xs font-medium">URL:</span>
+                            <p className="text-white font-mono text-xs break-all mt-0.5">{checkpoint.redirect_url}</p>
                           </div>
-                          {!checkpoint.mandatory && (
-                            <div className="bg-black/20 rounded-lg p-3 border border-white/10">
-                              <span className="text-gray-300 text-sm font-medium">Callback URL:</span>
-                              {checkpoint.type === 'lootlabs' ? (
-                                <p className="text-yellow-400 text-sm mt-1">
-                                  Lootlabs Anti-Bypass Requires Dynamic URL Generation
-                                </p>
-                              ) : (
-                                <p className="text-white font-mono text-sm break-all mt-1">{checkpoint.callback_url}</p>
-                              )}
-                            </div>
-                          )}
                           {checkpoint.mandatory && (
-                            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3">
-                              <span className="text-yellow-400 text-sm font-medium">This is a mandatory checkpoint and cannot be modified or deleted.</span>
+                            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-md p-2">
+                              <span className="text-yellow-400 text-xs">Mandatory - Cannot be modified</span>
                             </div>
                           )}
                         </div>
@@ -460,9 +429,9 @@ export default function Scripts() {
                       {/* Connecting Arrow (except for last checkpoint) */}
                       {index < checkpoints.length - 1 && (
                         <div className="absolute left-1/2 transform -translate-x-1/2 top-full z-10">
-                          <div className="w-0.5 h-8 bg-gradient-to-b from-[#6366f1] to-[#8b5cf6]"></div>
-                          <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
-                            <div className="w-0 h-0 border-l-2 border-r-2 border-t-4 border-l-transparent border-r-transparent border-t-[#8b5cf6]"></div>
+                          <div className="w-0.5 h-4 bg-gradient-to-b from-[#6366f1] to-[#8b5cf6]"></div>
+                          <div className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2">
+                            <div className="w-0 h-0 border-l-1 border-r-1 border-t-2 border-l-transparent border-r-transparent border-t-[#8b5cf6]"></div>
                           </div>
                         </div>
                       )}
@@ -471,14 +440,14 @@ export default function Scripts() {
 
                   {/* Final Arrow and End Node */}
                   <div className="relative">
-                    <div className="absolute left-1/2 transform -translate-x-1/2 -top-8">
-                      <div className="w-0.5 h-8 bg-gradient-to-b from-[#6366f1] to-[#10b981]"></div>
-                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2">
-                        <div className="w-0 h-0 border-l-2 border-r-2 border-t-4 border-l-transparent border-r-transparent border-t-[#10b981]"></div>
+                    <div className="absolute left-1/2 transform -translate-x-1/2 -top-4">
+                      <div className="w-0.5 h-4 bg-gradient-to-b from-[#6366f1] to-[#10b981]"></div>
+                      <div className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2">
+                        <div className="w-0 h-0 border-l-1 border-r-1 border-t-2 border-l-transparent border-r-transparent border-t-[#10b981]"></div>
                       </div>
                     </div>
-                    <div className="bg-gradient-to-r from-[#10b981] to-[#059669] rounded-full px-6 py-3 shadow-lg">
-                      <span className="text-white font-semibold">User Generates Key</span>
+                    <div className="bg-gradient-to-r from-[#10b981] to-[#059669] rounded-full px-4 py-2 shadow-md">
+                      <span className="text-white font-medium text-sm">Complete</span>
                     </div>
                   </div>
                 </div>
