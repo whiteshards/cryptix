@@ -71,7 +71,7 @@ export async function POST(request) {
         callback_urls: {} // This will be populated dynamically per session
       };
     } else {
-      // Other checkpoint types use callback_token
+      // Other checkpoint types (custom, linkvertise, workink) use callback_token
       const callbackUrl = `https://cryptixmanager.vercel.app/ads/callback/${callbackToken}`;
       newCheckpoint = {
         type: type,
