@@ -19,7 +19,7 @@ export default function CallbackPage() {
         const referrer = document.referrer;
         console.log(referrer)
         setLoadingProgress(10);
-        setLoadingText('Validating callback token...');
+        setLoadingText();
         await new Promise(resolve => setTimeout(resolve, 200));
 
         if (!callbackToken) {
