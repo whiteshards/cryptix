@@ -103,7 +103,7 @@ export async function POST(request) {
       }
 
       // Construct the final LootLabs URL
-      const lootlabsUrl = `${checkpoint.redirect_url}&data=${encodeURIComponent(lootlabsData.message)}`;
+      const lootlabsUrl = `${checkpoint.redirect_url}&data=${lootlabsData.message}`;
 
       return NextResponse.json({
         success: true,
