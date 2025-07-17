@@ -374,7 +374,7 @@ export default function Dashboard() {
 
       showToast('Lootlabs API key saved successfully!', 'success');
       setLootlabsKeyChanged(false);
-      
+
       // Update the user profile with the new integration
       setUserProfile(prev => ({
         ...prev,
@@ -433,7 +433,7 @@ export default function Dashboard() {
                 onClick={() => setActiveTab('keysystems')}
                 className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                   activeTab === 'keysystems'
-                    ? 'border-[#6366f1] text-white'
+                    ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
                 }`}
               >
@@ -443,7 +443,7 @@ export default function Dashboard() {
                 onClick={() => setActiveTab('statistics')}
                 className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                   activeTab === 'statistics'
-                    ? 'border-[#6366f1] text-white'
+                    ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
                 }`}
               >
@@ -453,7 +453,7 @@ export default function Dashboard() {
                 onClick={() => setActiveTab('keys')}
                 className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                   activeTab === 'keys'
-                    ? 'border-[#6366f1] text-white'
+                    ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
                 }`}
               >
@@ -463,7 +463,7 @@ export default function Dashboard() {
                 onClick={() => setActiveTab('store')}
                 className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                   activeTab === 'store'
-                    ? 'border-[#6366f1] text-white'
+                    ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
                 }`}
               >
@@ -473,7 +473,7 @@ export default function Dashboard() {
                 onClick={() => setActiveTab('api')}
                 className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                   activeTab === 'api'
-                    ? 'border-[#6366f1] text-white'
+                    ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
                 }`}
               >
@@ -483,7 +483,7 @@ export default function Dashboard() {
                 onClick={() => setActiveTab('integrations')}
                 className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                   activeTab === 'integrations'
-                    ? 'border-[#6366f1] text-white'
+                    ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
                 }`}
               >
@@ -493,7 +493,7 @@ export default function Dashboard() {
                 onClick={() => setActiveTab('documentation')}
                 className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                   activeTab === 'documentation'
-                    ? 'border-[#6366f1] text-white'
+                    ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
                 }`}
               >
@@ -503,7 +503,7 @@ export default function Dashboard() {
                 onClick={() => setActiveTab('settings')}
                 className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
                   activeTab === 'settings'
-                    ? 'border-[#6366f1] text-white'
+                    ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
                 }`}
               >
@@ -659,7 +659,7 @@ export default function Dashboard() {
           {activeTab === 'integrations' && (
             <div className="bg-transparent rounded-lg border border-white/10 p-6">
               <h2 className="text-white text-xl font-semibold mb-6">Integrations</h2>
-              
+
               {/* Lootlabs Integration */}
               <div className="space-y-6">
                 <div className="bg-black/20 rounded-lg p-6 border border-white/10">
@@ -674,7 +674,7 @@ export default function Dashboard() {
                       </svg>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <label className="block text-white text-sm font-medium mb-2">
@@ -689,7 +689,7 @@ export default function Dashboard() {
                             setLootlabsKeyChanged(true);
                           }}
                           placeholder={userProfile?.integrations?.lootlabs ? "••••••••••••••••" : "Enter your Lootlabs API key"}
-                          className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors pr-10"
+                          className="w-full bg-[#2a2a2a] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors pr-10"
                         />
                         <button
                           type="button"
@@ -712,7 +712,7 @@ export default function Dashboard() {
                         Your Lootlabs API key for checkpoint verification
                       </p>
                     </div>
-                    
+
                     {lootlabsKeyChanged && (
                       <div className="flex items-center space-x-3">
                         <button
@@ -793,7 +793,7 @@ export default function Dashboard() {
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
                       placeholder="Enter keysystem name"
-                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                      className="w-full bg-[#2a2a2a] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors"
                     />
                   </div>
 
@@ -806,7 +806,7 @@ export default function Dashboard() {
                       type="number"
                       value={formData.maxKeyPerPerson}
                       onChange={(e) => handleInputChange('maxKeyPerPerson', e.target.value)}
-                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                      className="w-full bg-[#2a2a2a] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors"
                     />
                     <p className="text-gray-400 text-xs mt-1">This is the number of individual keys a person can create in one session</p>
                   </div>
@@ -846,8 +846,8 @@ export default function Dashboard() {
                       value={formData.keyTimer}
                       onChange={(e) => handleInputChange('keyTimer', e.target.value)}
                       disabled={formData.permanentKeys}
-                      className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors ${
-                        formData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2d47]'
+                      className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors ${
+                        formData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2a2a]'
                       }`}
                     />
                   </div>
@@ -861,7 +861,7 @@ export default function Dashboard() {
                       type="number"
                       value={formData.keyCooldown}
                       onChange={(e) => handleInputChange('keyCooldown', e.target.value)}
-                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                      className="w-full bg-[#2a2a2a] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors"
                     />
                     <p className="text-gray-400 text-xs mt-1">
                       This will be counted in minutes and its used to determine how much cooldown the user needs to go through before completing the checkpoints again
@@ -880,7 +880,7 @@ export default function Dashboard() {
                 <button
                   onClick={handleCreateKeysystem}
                   disabled={isCreating}
-                  className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-[#1c1c1c] hover:bg-[#2a2a2a] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreating ? 'Creating...' : 'Create'}
                 </button>
@@ -941,7 +941,7 @@ export default function Dashboard() {
                       type="number"
                       value={editFormData.maxKeyPerPerson}
                       onChange={(e) => handleEditInputChange('maxKeyPerPerson', e.target.value)}
-                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                      className="w-full bg-[#2a2a2a] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors"
                     />
                     <p className="text-gray-400 text-xs mt-1">This is the number of individual keys a person can create in one session</p>
                   </div>
@@ -981,8 +981,8 @@ export default function Dashboard() {
                       value={editFormData.keyTimer}
                       onChange={(e) => handleEditInputChange('keyTimer', e.target.value)}
                       disabled={editFormData.permanentKeys}
-                      className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors ${
-                        editFormData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2d47]'
+                      className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors ${
+                        editFormData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2a2a]'
                       }`}
                     />
                   </div>
@@ -996,7 +996,7 @@ export default function Dashboard() {
                       type="number"
                       value={editFormData.keyCooldown}
                       onChange={(e) => handleEditInputChange('keyCooldown', e.target.value)}
-                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                      className="w-full bg-[#2a2a2a] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors"
                     />
                     <p className="text-gray-400 text-xs mt-1">
                       This will be counted in minutes and its used to determine how much cooldown the user needs to go through before completing the checkpoints again
@@ -1015,7 +1015,7 @@ export default function Dashboard() {
                 <button
                   onClick={handleUpdateKeysystem}
                   disabled={isUpdating}
-                  className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-[#1c1c1c] hover:bg-[#2a2a2a] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isUpdating ? 'Updating...' : 'Update'}
                 </button>
@@ -1053,7 +1053,7 @@ export default function Dashboard() {
                 <p className="text-gray-300 mb-2">
                   Are you sure you want to delete the keysystem:
                 </p>
-                <p className="text-white font-medium bg-[#2a2d47] px-3 py-2 rounded border border-white/10">
+                <p className="text-white font-medium bg-[#2a2a2a] px-3 py-2 rounded border border-white/10">
                   {deletingKeysystem.name}
                 </p>
                 <p className="text-red-400 text-sm mt-3">
