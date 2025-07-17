@@ -27,11 +27,6 @@ export default function CallbackPage() {
           redirectWithError('nice bypass.city :0');
           return;
         }
-        
-        if (!currentReferer.includes('linkvertise.com')) {
-          redirectWithError('Anti-Bypass Detected');
-          return;
-        }
 
         setLoadingProgress(10);
         setLoadingText('Processing callback...');
@@ -62,6 +57,25 @@ export default function CallbackPage() {
           checkpointIndex: checkpointIndex + 1,
           totalCheckpoints: keysystem.checkpoints?.length || 1
         });
+
+        // Checkpoint type-specific referer validation
+        if (checkpoint.type === 'linkvertise') {
+          if (!currentReferer.includes('linkvertise.com')) {
+            redirectWithError('Anti-Bypass Detected');
+            return;
+          }
+        } else if (checkpoint.type === 'lootlabs') {
+          const validLootlabsDomains = ['loot-link.com', 'lootdest.org'];
+          const hasValidLootlabsReferer = validLootlabsDomains.some(domain => 
+            currentReferer.includes(domain)
+          );
+          
+          if (!hasValidLootlabsReferer) {
+            redirectWithError('Anti-Bypass Detected');
+            return;
+          }
+        }
+        // Custom checkpoints don't need referer validation (except bypass.city which is already checked)
 
         setLoadingProgress(35);
         setLoadingText(`Processing ${checkpoint.type} checkpoint...`);
