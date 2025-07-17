@@ -662,61 +662,85 @@ export default function GetKey() {
 
               {userKeys.length > 0 ? (
                 <div className="bg-black/20 rounded border border-white/10 overflow-hidden">
-                  {/* Table Header */}
-                  <div className="grid grid-cols-5 gap-4 p-3 bg-gray-800/30 border-b border-white/10 text-xs text-gray-400 font-medium">
-                    <div>Key</div>
-                    <div>Status</div>
-                    <div>Expires In</div>
-                    <div>Created</div>
-                    <div>Actions</div>
+                  {/* Header */}
+                  <div className="px-4 py-3 bg-gray-800/30 border-b border-white/10">
+                    <div className="flex items-center text-xs text-gray-400 font-medium">
+                      <div className="flex-1 min-w-0">Key</div>
+                      <div className="w-20 text-center">Status</div>
+                      <div className="w-24 text-center">Expires In</div>
+                      <div className="w-20 text-center">Created</div>
+                      <div className="w-24 text-center">Actions</div>
+                    </div>
                   </div>
 
-                  {/* Table Rows */}
-                  {userKeys.map((key, index) => (
-                    <div key={index} className="grid grid-cols-5 gap-4 p-3 border-b border-white/5 last:border-b-0 hover:bg-white/5 transition-colors text-sm">
-                      <div className="text-white font-mono truncate text-xs">{key.value}</div>
-                      <div>
-                        <span className={`inline-flex px-2 py-1 rounded text-xs ${
-                          key.status === 'active' 
-                            ? 'bg-green-500/20 text-green-400' 
-                            : 'bg-red-500/20 text-red-400'
-                        }`}>
-                          {key.status === 'active' ? 'Active' : 'Expired'}
-                        </span>
+                  {/* Key Rows */}
+                  <div className="divide-y divide-white/5">
+                    {userKeys.map((key, index) => (
+                      <div key={index} className="px-4 py-3 hover:bg-white/5 transition-colors">
+                        <div className="flex items-center text-sm">
+                          {/* Key Value */}
+                          <div className="flex-1 min-w-0 pr-4">
+                            <div className="text-white font-mono text-xs truncate">
+                              {key.value}
+                            </div>
+                          </div>
+
+                          {/* Status */}
+                          <div className="w-20 flex justify-center">
+                            <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${
+                              key.status === 'active' 
+                                ? 'bg-green-500/20 text-green-400' 
+                                : 'bg-red-500/20 text-red-400'
+                            }`}>
+                              {key.status === 'active' ? 'Active' : 'Expired'}
+                            </span>
+                          </div>
+
+                          {/* Expires In */}
+                          <div className="w-24 text-center">
+                            {key.expires_at ? (
+                              <span className={`font-mono text-xs ${
+                                keyTimers[key.value] === '00:00:00' ? 'text-red-400' : 'text-white'
+                              }`}>
+                                {keyTimers[key.value] || 'Loading...'}
+                              </span>
+                            ) : (
+                              <span className="text-green-400 text-xs font-medium">Permanent</span>
+                            )}
+                          </div>
+
+                          {/* Created Date */}
+                          <div className="w-20 text-center">
+                            <span className="text-gray-400 text-xs">
+                              {new Date(key.created_at).toLocaleDateString('en-US', { 
+                                month: 'short', 
+                                day: 'numeric' 
+                              })}
+                            </span>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="w-24 flex justify-center space-x-2">
+                            <button
+                              onClick={() => handleCopyKey(key.value)}
+                              className="text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors px-1"
+                            >
+                              Copy
+                            </button>
+                            {!cooldownTimeLeft && (key.status === 'expired' || (key.expires_at && keyTimers[key.value] === '00:00:00')) && (
+                              <button
+                                onClick={() => handleRenewKey(key.value)}
+                                disabled={isGeneratingToken}
+                                className="text-green-400 hover:text-green-300 disabled:text-green-600 text-xs font-medium transition-colors px-1"
+                              >
+                                Renew
+                              </button>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        {key.expires_at ? (
-                          <span className={`font-mono text-xs ${
-                            keyTimers[key.value] === '00:00:00' ? 'text-red-400' : 'text-white'
-                          }`}>
-                            {keyTimers[key.value] || 'Calculating...'}
-                          </span>
-                        ) : (
-                          <span className="text-green-400 text-xs">Permanent</span>
-                        )}
-                      </div>
-                      <div className="text-gray-400 text-xs">
-                        {new Date(key.created_at).toLocaleDateString()}
-                      </div>
-                      <div className="flex space-x-2">
-                        <button
-                          onClick={() => handleCopyKey(key.value)}
-                          className="text-blue-400 hover:text-blue-300 text-xs transition-colors"
-                        >
-                          Copy
-                        </button>
-                        {!cooldownTimeLeft && (key.status === 'expired' || (key.expires_at && keyTimers[key.value] === '00:00:00')) && (
-                          <button
-                            onClick={() => handleRenewKey(key.value)}
-                            disabled={isGeneratingToken}
-                            className="text-green-400 hover:text-green-300 disabled:text-green-600 text-xs transition-colors"
-                          >
-                            Renew
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <div className="bg-black/20 rounded border border-white/10 p-6 text-center">
