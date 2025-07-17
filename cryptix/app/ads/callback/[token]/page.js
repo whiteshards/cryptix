@@ -156,14 +156,22 @@ export default function CallbackPage() {
         return data;
       }
 
-      // If not found, try LootLabs callback with session ID
+      // If not found, try LootLabs callback finder
       const browserUuid = localStorage.getItem('browser_uuid');
-      if (browserUuid) {
-        const lootlabsResponse = await fetch(`/api/v1/keysystems/lootlabs/callback?callbackToken=${callbackToken}&sessionId=${browserUuid}`);
-        const lootlabsData = await lootlabsResponse.json();
+      const lootlabsResponse = await fetch(`/api/v1/keysystems/lootlabs/find-callback?token=${callbackToken}${browserUuid ? `&sessionId=${browserUuid}` : ''}`);
+      const lootlabsData = await lootlabsResponse.json();
 
-        if (lootlabsData.success) {
-          return lootlabsData;
+      if (lootlabsData.success) {
+        return lootlabsData;
+      }
+
+      // Fallback to old LootLabs callback method
+      if (browserUuid) {
+        const fallbackResponse = await fetch(`/api/v1/keysystems/lootlabs/callback?callbackToken=${callbackToken}&sessionId=${browserUuid}`);
+        const fallbackData = await fallbackResponse.json();
+
+        if (fallbackData.success) {
+          return fallbackData;
         }
       }
 
