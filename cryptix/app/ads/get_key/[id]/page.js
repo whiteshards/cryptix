@@ -717,8 +717,8 @@ export default function GetKey() {
                   {/* Key Rows */}
                   <div className="divide-y divide-white/5">
                     {userKeys.map((key, index) => (
-                      <div key={index} className="px-4 py-3 hover:bg-white/5 transition-colors">
-                        <div className="flex items-center text-sm">
+                      <div key={index} className="px-4 py-4 hover:bg-white/5 transition-colors">
+                        <div className="flex items-start text-sm">
                           {/* Key Value */}
                           <div className="flex-1 min-w-0 pr-4">
                             <div className="text-white font-mono text-xs truncate">
@@ -761,24 +761,24 @@ export default function GetKey() {
                           </div>
 
                           {/* Actions */}
-                          <div className="w-32 flex justify-center space-x-1">
+                          <div className="w-32 flex flex-col space-y-1">
                             <button
                               onClick={() => handleCopyKey(key.value)}
-                              className="text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors px-1"
+                              className="text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors py-1 px-2 rounded hover:bg-blue-500/10"
                             >
                               Copy
                             </button>
                             {!cooldownTimeLeft && (key.status === 'expired' || (key.expires_at && keyTimers[key.value] === '00:00:00')) && (
                               <button
                                 onClick={() => handleRenewKey(key.value)}
-                                className="text-green-400 hover:text-green-300 text-xs font-medium transition-colors px-1"
+                                className="text-green-400 hover:text-green-300 text-xs font-medium transition-colors py-1 px-2 rounded hover:bg-green-500/10"
                               >
                                 Renew
                               </button>
                             )}
                             <button
                               onClick={() => handleDeleteKey(key.value)}
-                              className="text-red-400 hover:text-red-300 text-xs font-medium transition-colors px-1"
+                              className="text-red-400 hover:text-red-300 text-xs font-medium transition-colors py-1 px-2 rounded hover:bg-red-500/10"
                             >
                               Delete
                             </button>
@@ -885,7 +885,7 @@ export default function GetKey() {
       {/* Toast Notification */}
       {toast && (
         <div className="fixed top-4 right-4 z-50">
-          <div className={`bg-black/80 backdrop-blur-md border rounded-lg px-4 py-3 max-w-sm ${
+          <div className={`bg-[#1a1b2e]/90 backdrop-blur-md border rounded-lg px-4 py-3 max-w-sm ${
             toast.type === 'success' ? 'border-green-500/30 text-green-400' : 'border-red-500/30 text-red-400'
           }`}>
             <div className="flex items-center space-x-2">
