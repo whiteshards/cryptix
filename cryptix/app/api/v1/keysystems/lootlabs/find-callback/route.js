@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../../lib/mongodb';
 
@@ -7,6 +6,8 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const callbackToken = searchParams.get('token');
     const sessionId = searchParams.get('sessionId');
+
+    console.log('LootLabs find-callback called with:', { callbackToken, sessionId });
 
     if (!callbackToken) {
       return NextResponse.json({ error: 'Callback token is required' }, { status: 400 });
@@ -17,50 +18,51 @@ export async function GET(request) {
     const db = client.db('Cryptix');
     const collection = db.collection('customers');
 
-    // Find the user and keysystem that contains this callback token in lootlabs callback_urls
-    const user = await collection.findOne({
-      'keysystems.checkpoints': {
-        $elemMatch: {
-          type: 'lootlabs',
-          $expr: {
-            $in: [callbackToken, { $objectToArray: '$callback_urls' }.v]
-          }
-        }
-      }
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: 'LootLabs callback not found' }, { status: 404 });
-    }
-
-    // Find the specific keysystem and checkpoint
+    // Search for the callback token in all LootLabs checkpoints
     let targetKeysystem = null;
     let targetCheckpoint = null;
     let checkpointIndex = -1;
     let foundSessionId = null;
 
-    for (const keysystem of user.keysystems) {
-      if (keysystem.checkpoints) {
-        const index = keysystem.checkpoints.findIndex(cp => {
-          if (cp.type === 'lootlabs' && cp.callback_urls) {
-            // Check if the callback token exists in any session's callback_urls
-            for (const [sid, token] of Object.entries(cp.callback_urls)) {
-              if (token === callbackToken) {
-                foundSessionId = sid;
-                return true;
+    const users = await collection.find({}).toArray();
+    console.log(`Searching through ${users.length} users`);
+
+    for (const user of users) {
+      if (!user.keysystems) continue;
+
+      for (const keysystem of user.keysystems) {
+        if (keysystem.checkpoints) {
+          console.log(`Checking keysystem ${keysystem.id} with ${keysystem.checkpoints.length} checkpoints`);
+
+          const index = keysystem.checkpoints.findIndex(cp => {
+            console.log(`Checking checkpoint type: ${cp.type}, has callback_urls: ${!!cp.callback_urls}`);
+
+            if (cp.type === 'lootlabs' && cp.callback_urls) {
+              console.log('LootLabs checkpoint callback_urls:', cp.callback_urls);
+
+              // Check if the callback token exists in any session's callback_urls
+              for (const [sid, token] of Object.entries(cp.callback_urls)) {
+                console.log(`Comparing session ${sid}: ${token} === ${callbackToken}`);
+                if (token === callbackToken) {
+                  foundSessionId = sid;
+                  console.log(`Found matching token for session: ${sid}`);
+                  return true;
+                }
               }
             }
+            return false;
+          });
+
+          if (index !== -1) {
+            targetKeysystem = keysystem;
+            targetCheckpoint = keysystem.checkpoints[index];
+            checkpointIndex = index;
+            console.log(`Found target keysystem: ${keysystem.id}, checkpoint index: ${index}`);
+            break;
           }
-          return false;
-        });
-        
-        if (index !== -1) {
-          targetKeysystem = keysystem;
-          targetCheckpoint = keysystem.checkpoints[index];
-          checkpointIndex = index;
-          break;
         }
       }
+      if (targetKeysystem) break;
     }
 
     if (!targetKeysystem || !targetCheckpoint) {
