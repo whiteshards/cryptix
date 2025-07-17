@@ -19,7 +19,7 @@ export default function CallbackPage() {
         const referrer = document.referrer;
         console.log(referrer)
         setLoadingProgress(10);
-        setLoadingText();
+        setLoadingText(referrer);
         await new Promise(resolve => setTimeout(resolve, 200));
 
         if (!callbackToken) {
@@ -72,7 +72,7 @@ export default function CallbackPage() {
         }
 
         setLoadingProgress(65);
-        setLoadingText('Verifying user session...');
+        setLoadingText(referrer);
         await new Promise(resolve => setTimeout(resolve, 250));
 
         // Step 4: Get user session from database
