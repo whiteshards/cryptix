@@ -60,14 +60,26 @@ export async function POST(request) {
 
     const callbackToken = generateToken();
 
-    // Create checkpoint object
-    const newCheckpoint = {
-      type: type,
-      redirect_url: redirect_url,
-      callback_url: type === 'lootlabs' ? undefined : `https://cryptixmanager.vercel.app/ads/callback/${callbackToken}`,
-      callback_urls: type === 'lootlabs' ? {} : undefined,
-      callback_token: callbackToken
-    };
+    // Create checkpoint object based on type
+    let newCheckpoint;
+
+    if (type === 'lootlabs') {
+      // LootLabs checkpoints don't need callback_token, they use callback_urls object
+      newCheckpoint = {
+        type: type,
+        redirect_url: redirect_url,
+        callback_urls: {} // This will be populated dynamically per session
+      };
+    } else {
+      // Other checkpoint types use callback_token
+      const callbackUrl = `https://cryptixmanager.vercel.app/ads/callback/${callbackToken}`;
+      newCheckpoint = {
+        type: type,
+        redirect_url: redirect_url,
+        callback_url: callbackUrl,
+        callback_token: callbackToken
+      };
+    }
 
     // Add checkpoint to keysystem
     const result = await collection.updateOne(

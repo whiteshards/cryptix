@@ -567,6 +567,21 @@ export default function Scripts() {
                     The URL where users will be redirected to complete this checkpoint
                   </p>
                 </div>
+                {/* Callback Token - Hide for LootLabs */}
+                {checkpointFormData.type !== 'lootlabs' && (
+                  <div>
+                    <label className="block text-white text-sm font-medium mb-2">
+                      Callback Token
+                    </label>
+                    <input
+                      type="text"
+                      value={checkpointFormData.callback_token}
+                      onChange={(e) => handleInputChange('callback_token', e.target.value)}
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                      placeholder="Enter callback token"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col sm:flex-row sm:space-x-3 mt-6">
