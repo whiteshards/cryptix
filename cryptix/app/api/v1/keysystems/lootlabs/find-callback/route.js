@@ -7,8 +7,6 @@ export async function GET(request) {
     const callbackToken = searchParams.get('token');
     const sessionId = searchParams.get('sessionId');
 
-    console.log('LootLabs find-callback called with:', { callbackToken, sessionId });
-
     if (!callbackToken) {
       return NextResponse.json({ error: 'Callback token is required' }, { status: 400 });
     }
@@ -25,27 +23,18 @@ export async function GET(request) {
     let foundSessionId = null;
 
     const users = await collection.find({}).toArray();
-    console.log(`Searching through ${users.length} users`);
 
     for (const user of users) {
       if (!user.keysystems) continue;
 
       for (const keysystem of user.keysystems) {
         if (keysystem.checkpoints) {
-          console.log(`Checking keysystem ${keysystem.id} with ${keysystem.checkpoints.length} checkpoints`);
-
           const index = keysystem.checkpoints.findIndex(cp => {
-            console.log(`Checking checkpoint type: ${cp.type}, has callback_urls: ${!!cp.callback_urls}`);
-
             if (cp.type === 'lootlabs' && cp.callback_urls) {
-              console.log('LootLabs checkpoint callback_urls:', cp.callback_urls);
-
               // Check if the callback token exists in any session's callback_urls
               for (const [sid, token] of Object.entries(cp.callback_urls)) {
-                console.log(`Comparing session ${sid}: ${token} === ${callbackToken}`);
                 if (token === callbackToken) {
                   foundSessionId = sid;
-                  console.log(`Found matching token for session: ${sid}`);
                   return true;
                 }
               }
@@ -57,7 +46,6 @@ export async function GET(request) {
             targetKeysystem = keysystem;
             targetCheckpoint = keysystem.checkpoints[index];
             checkpointIndex = index;
-            console.log(`Found target keysystem: ${keysystem.id}, checkpoint index: ${index}`);
             break;
           }
         }
@@ -77,6 +65,18 @@ export async function GET(request) {
     if (sessionId && foundSessionId !== sessionId) {
       return NextResponse.json({ error: 'Session ID mismatch' }, { status: 400 });
     }
+
+    // Clean up the callback token from callback_urls after successful verification
+    await collection.updateOne(
+      { 
+        'keysystems.id': targetKeysystem.id
+      },
+      { 
+        $unset: {
+          [`keysystems.$.checkpoints.${checkpointIndex}.callback_urls.${foundSessionId}`]: ""
+        }
+      }
+    );
 
     return NextResponse.json({
       success: true,

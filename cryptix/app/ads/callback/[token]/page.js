@@ -125,11 +125,6 @@ export default function CallbackPage() {
         // Clean up session token
         localStorage.removeItem('session_token');
 
-        // Clean up LootLabs callback URL if this was a LootLabs checkpoint
-        if (checkpoint.type === 'lootlabs') {
-          await cleanupLootLabsCallback(keysystem.id, browserUuid, checkpointIndex);
-        }
-
         setLoadingProgress(100);
         setLoadingText('Checkpoint completed successfully!');
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -148,26 +143,21 @@ export default function CallbackPage() {
 
   const findCheckpointByToken = async (callbackToken) => {
     try {
-      console.log('Finding checkpoint for token:', callbackToken);
-      
       // First try to find regular checkpoint
       const response = await fetch(`/api/v1/keysystems/checkpoints/find-by-token?token=${callbackToken}`);
       const data = await response.json();
 
-      console.log('Regular checkpoint search result:', data);
       if (data.success) {
         return data;
       }
 
       // If not found, try LootLabs callback finder with session ID
       const browserUuid = localStorage.getItem('browser_uuid');
-      console.log('Browser UUID:', browserUuid);
       
       if (browserUuid) {
         const lootlabsResponse = await fetch(`/api/v1/keysystems/lootlabs/find-callback?token=${callbackToken}&sessionId=${browserUuid}`);
         const lootlabsData = await lootlabsResponse.json();
         
-        console.log('LootLabs callback search result:', lootlabsData);
         if (lootlabsData.success) {
           return lootlabsData;
         }
@@ -176,13 +166,11 @@ export default function CallbackPage() {
         const legacyResponse = await fetch(`/api/v1/keysystems/lootlabs/callback?callbackToken=${callbackToken}&sessionId=${browserUuid}`);
         const legacyData = await legacyResponse.json();
         
-        console.log('Legacy LootLabs callback result:', legacyData);
         if (legacyData.success) {
           return legacyData;
         }
       }
 
-      console.log('No checkpoint found for token:', callbackToken);
       return null;
     } catch (error) {
       console.error('Error finding checkpoint:', error);
