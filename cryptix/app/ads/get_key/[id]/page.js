@@ -410,8 +410,6 @@ export default function GetKey() {
 
   const handleGetNewKey = async () => {
     try {
-      setIsGeneratingToken(true);
-      
       const response = await fetch('/api/v1/keysystems/keys/generate', {
         method: 'POST',
         headers: {
@@ -436,15 +434,11 @@ export default function GetKey() {
     } catch (error) {
       console.error('Key generation error:', error);
       setError('Failed to generate key');
-    } finally {
-      setIsGeneratingToken(false);
     }
   };
 
   const handleRenewKey = async (keyValue) => {
     try {
-      setIsGeneratingToken(true);
-      
       const response = await fetch('/api/v1/keysystems/keys/renew', {
         method: 'POST',
         headers: {
@@ -470,8 +464,6 @@ export default function GetKey() {
     } catch (error) {
       console.error('Key renewal error:', error);
       setError('Failed to renew key');
-    } finally {
-      setIsGeneratingToken(false);
     }
   };
 
@@ -620,13 +612,9 @@ export default function GetKey() {
                   {currentProgress === keysystem.checkpointCount && currentProgress > 0 && !cooldownTimeLeft && (
                     <button
                       onClick={handleGetNewKey}
-                      disabled={isGeneratingToken}
-                      className="bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white px-3 py-1 rounded text-xs font-medium transition-colors flex items-center space-x-1"
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
                     >
-                      {isGeneratingToken && (
-                        <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin"></div>
-                      )}
-                      <span>{isGeneratingToken ? 'Generating...' : 'Get Key'}</span>
+                      Get Key
                     </button>
                   )}
                 </div>
@@ -730,8 +718,7 @@ export default function GetKey() {
                             {!cooldownTimeLeft && (key.status === 'expired' || (key.expires_at && keyTimers[key.value] === '00:00:00')) && (
                               <button
                                 onClick={() => handleRenewKey(key.value)}
-                                disabled={isGeneratingToken}
-                                className="text-green-400 hover:text-green-300 disabled:text-green-600 text-xs font-medium transition-colors px-1"
+                                className="text-green-400 hover:text-green-300 text-xs font-medium transition-colors px-1"
                               >
                                 Renew
                               </button>
