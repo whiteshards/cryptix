@@ -689,7 +689,7 @@ export default function Dashboard() {
                             setLootlabsKeyChanged(true);
                           }}
                           placeholder={userProfile?.integrations?.lootlabs ? "••••••••••••••••" : "Enter your Lootlabs API key"}
-                          className="w-full bg-[#2a2a2a] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors pr-10"
+                          className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors pr-10"
                         />
                         <button
                           type="button"
@@ -793,7 +793,7 @@ export default function Dashboard() {
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
                       placeholder="Enter keysystem name"
-                      className="w-full bg-[#2a2a2a] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors"
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                   </div>
 
@@ -806,7 +806,7 @@ export default function Dashboard() {
                       type="number"
                       value={formData.maxKeyPerPerson}
                       onChange={(e) => handleInputChange('maxKeyPerPerson', e.target.value)}
-                      className="w-full bg-[#2a2a2a] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors"
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                     <p className="text-gray-400 text-xs mt-1">This is the number of individual keys a person can create in one session</p>
                   </div>
@@ -846,8 +846,8 @@ export default function Dashboard() {
                       value={formData.keyTimer}
                       onChange={(e) => handleInputChange('keyTimer', e.target.value)}
                       disabled={formData.permanentKeys}
-                      className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors ${
-                        formData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2a2a]'
+                      className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors ${
+                        formData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2d47]'
                       }`}
                     />
                   </div>
@@ -861,7 +861,7 @@ export default function Dashboard() {
                       type="number"
                       value={formData.keyCooldown}
                       onChange={(e) => handleInputChange('keyCooldown', e.target.value)}
-                      className="w-full bg-[#2a2a2a] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors"
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                     <p className="text-gray-400 text-xs mt-1">
                       This will be counted in minutes and its used to determine how much cooldown the user needs to go through before completing the checkpoints again
@@ -880,7 +880,7 @@ export default function Dashboard() {
                 <button
                   onClick={handleCreateKeysystem}
                   disabled={isCreating}
-                  className="flex-1 bg-[#1c1c1c] hover:bg-[#2a2a2a] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreating ? 'Creating...' : 'Create'}
                 </button>
@@ -941,7 +941,7 @@ export default function Dashboard() {
                       type="number"
                       value={editFormData.maxKeyPerPerson}
                       onChange={(e) => handleEditInputChange('maxKeyPerPerson', e.target.value)}
-                      className="w-full bg-[#2a2a2a] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors"
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                     <p className="text-gray-400 text-xs mt-1">This is the number of individual keys a person can create in one session</p>
                   </div>
@@ -981,8 +981,8 @@ export default function Dashboard() {
                       value={editFormData.keyTimer}
                       onChange={(e) => handleEditInputChange('keyTimer', e.target.value)}
                       disabled={editFormData.permanentKeys}
-                      className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors ${
-                        editFormData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2a2a]'
+                      className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors ${
+                        editFormData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2d47]'
                       }`}
                     />
                   </div>
@@ -996,7 +996,7 @@ export default function Dashboard() {
                       type="number"
                       value={editFormData.keyCooldown}
                       onChange={(e) => handleEditInputChange('keyCooldown', e.target.value)}
-                      className="w-full bg-[#2a2a2a] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#1c1c1c] focus:outline-none transition-colors"
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                     <p className="text-gray-400 text-xs mt-1">
                       This will be counted in minutes and its used to determine how much cooldown the user needs to go through before completing the checkpoints again
@@ -1015,7 +1015,7 @@ export default function Dashboard() {
                 <button
                   onClick={handleUpdateKeysystem}
                   disabled={isUpdating}
-                  className="flex-1 bg-[#1c1c1c] hover:bg-[#2a2a2a] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isUpdating ? 'Updating...' : 'Update'}
                 </button>

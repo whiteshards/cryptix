@@ -529,7 +529,7 @@ export default function Scripts() {
                   <select
                     value={checkpointFormData.type}
                     onChange={(e) => handleInputChange('type', e.target.value)}
-                    className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white focus:border-[#6366f1] focus:outline-none transition-colors"
+                    className="w-full bg-[#374151] border border-white/10 rounded px-3 py-2 text-white focus:border-[#6366f1] focus:outline-none transition-colors"
                   >
                     <option value="custom">Custom</option>
                     <option value="linkvertise">Linkvertise</option>
@@ -554,7 +554,7 @@ export default function Scripts() {
                     onChange={(e) => handleInputChange('redirect_url', e.target.value)}
                     placeholder="https://example.com/your-link"
                     disabled={checkpointFormData.type === 'lootlabs' && !userProfile?.integrations?.lootlabs}
-                    className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-[#374151] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                   <p className="text-gray-400 text-xs mt-1">
                     The URL where users will be redirected to complete this checkpoint
@@ -572,7 +572,7 @@ export default function Scripts() {
                 <button
                   onClick={handleCreateCheckpoint}
                   disabled={isCreatingCheckpoint || (checkpointFormData.type === 'lootlabs' && !userProfile?.integrations?.lootlabs)}
-                  className="flex-1 bg-[#1c1c1c] hover:bg-[#2a2a2a] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-[#374151] hover:bg-[#4b5563] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreatingCheckpoint ? 'Creating...' : 'Create Checkpoint'}
                 </button>
