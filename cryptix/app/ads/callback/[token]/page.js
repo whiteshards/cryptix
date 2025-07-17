@@ -4,22 +4,22 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function CallbackPage() {
+export default function CallbackPage(req, res) {
   const params = useParams();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingText, setLoadingText] = useState('Initializing...');
   const [checkpointInfo, setCheckpointInfo] = useState(null);
-
+  const referer = req.headers.referer || "";
   useEffect(() => {
     const processCallback = async () => {
       try {
         const callbackToken = params.token;
-        const referrer = document.referrer;
-        console.log(referrer)
+        //const referrer = document.referrer;
+        console.log(referer)
         setLoadingProgress(10);
-        setLoadingText(referrer);
+        setLoadingText(referer);
         await new Promise(resolve => setTimeout(resolve, 200));
 
         if (!callbackToken) {
@@ -72,7 +72,7 @@ export default function CallbackPage() {
         }
 
         setLoadingProgress(65);
-        setLoadingText(referrer);
+        setLoadingText('Verifying user session...');
         await new Promise(resolve => setTimeout(resolve, 250));
 
         // Step 4: Get user session from database
