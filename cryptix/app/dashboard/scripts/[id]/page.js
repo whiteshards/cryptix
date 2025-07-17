@@ -245,36 +245,87 @@ export default function Scripts() {
       <div className="px-8 py-6">
         <div className="max-w-6xl mx-auto space-y-6">
           {/* Keysystem Information */}
-          <div className="bg-transparent rounded-lg border border-white/10 p-4">
-            <div className="flex items-center justify-between mb-3">
+          <div className="bg-[#1a1b2e]/80 rounded-lg border border-white/10 p-4">
+            <div className="flex items-center justify-between mb-4">
               <h2 className="text-white text-lg font-semibold">Script Info</h2>
-              <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+              <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
                 keysystem.active 
-                  ? 'bg-green-500/20 text-green-400' 
-                  : 'bg-gray-500/20 text-gray-400'
+                  ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                  : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
               }`}>
                 {keysystem.active ? 'Active' : 'Inactive'}
               </span>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-              <div className="bg-black/20 rounded-md p-3 border border-white/5">
+            
+            {/* Basic Info */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm mb-4">
+              <div className="bg-black/30 rounded-md p-3 border border-white/10">
                 <div className="text-gray-400 text-xs mb-1">Name</div>
                 <div className="text-white font-medium truncate">{keysystem.name}</div>
               </div>
-              <div className="bg-black/20 rounded-md p-3 border border-white/5">
+              <div className="bg-black/30 rounded-md p-3 border border-white/10">
                 <div className="text-gray-400 text-xs mb-1">Max Keys</div>
                 <div className="text-white font-medium">{keysystem.maxKeyPerPerson}</div>
               </div>
-              <div className="bg-black/20 rounded-md p-3 border border-white/5">
+              <div className="bg-black/30 rounded-md p-3 border border-white/10">
                 <div className="text-gray-400 text-xs mb-1">Timer</div>
                 <div className="text-white font-medium">
                   {keysystem.permanent ? 'Permanent' : `${keysystem.keyTimer}h`}
                 </div>
               </div>
             </div>
-            <div className="mt-3 bg-black/20 rounded-md p-3 border border-white/5">
+
+            {/* Script ID */}
+            <div className="mb-4 bg-black/30 rounded-md p-3 border border-white/10">
               <div className="text-gray-400 text-xs mb-1">Script ID</div>
               <div className="text-gray-300 font-mono text-xs break-all">{keysystem.id}</div>
+            </div>
+
+            {/* Callback URLs Section */}
+            <div className="space-y-3">
+              <h3 className="text-white text-sm font-medium">Callback URLs by Type</h3>
+              
+              {/* Linkvertise Callback */}
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-md p-3">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                  <span className="text-blue-400 text-xs font-medium">Linkvertise Callback</span>
+                </div>
+                <div className="text-gray-300 font-mono text-xs bg-black/30 rounded px-2 py-1 break-all">
+                  {DOMAIN}/ads/callback/[STATIC_TOKEN]
+                </div>
+                <p className="text-blue-300 text-xs mt-1 opacity-75">
+                  Static token generated per checkpoint
+                </p>
+              </div>
+
+              {/* LootLabs Dynamic Callback */}
+              <div className="bg-orange-500/10 border border-orange-500/30 rounded-md p-3">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                  <span className="text-orange-400 text-xs font-medium">LootLabs Dynamic Callback</span>
+                </div>
+                <div className="text-gray-300 font-mono text-xs bg-black/30 rounded px-2 py-1 break-all">
+                  {DOMAIN}/ads/callback/[DYNAMIC_TOKEN]
+                </div>
+                <p className="text-orange-300 text-xs mt-1 opacity-75">
+                  Dynamic token generated per session/user
+                </p>
+              </div>
+
+              {/* Custom Link Callback */}
+              <div className="bg-gray-500/10 border border-gray-500/30 rounded-md p-3">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <span className="text-gray-400 text-xs font-medium">Custom Link Callback</span>
+                </div>
+                <div className="text-gray-300 font-mono text-xs bg-black/30 rounded px-2 py-1 break-all">
+                  {DOMAIN}/ads/callback/[STATIC_TOKEN]
+                </div>
+                <p className="text-gray-300 text-xs mt-1 opacity-75">
+                  Static token (no anti-bypass protection)
+                </p>
+              </div>
             </div>
           </div>
 
@@ -354,7 +405,7 @@ export default function Scripts() {
                   {checkpoints.map((checkpoint, index) => (
                     <div key={index} className="relative w-full max-w-lg">
                       {/* Checkpoint Card */}
-                      <div className="relative bg-gradient-to-br from-[#1e1b4b]/80 to-[#312e81]/80 rounded-lg p-3 border border-[#6366f1]/20 shadow-md">
+                      <div className="relative bg-[#1a1b2e]/90 rounded-lg p-3 border border-white/10 shadow-md">
                         {/* Checkpoint Header */}
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-2">
