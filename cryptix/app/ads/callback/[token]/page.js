@@ -1,5 +1,6 @@
 'use client';
 
+import { headers } from 'next/headers';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -28,7 +29,7 @@ export default function CallbackPage() {
         setLoadingProgress(20);
         setLoadingText('Finding checkpoint...');
         await new Promise(resolve => setTimeout(resolve, 300));
-
+        console.log(headers)
         // Step 1: Find the checkpoint and keysystem by callback token
         const checkpointData = await findCheckpointByToken(callbackToken);
         if (!checkpointData) {
