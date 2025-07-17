@@ -711,9 +711,9 @@ export default function GetKey() {
                   {/* Scrollable container for mobile */}
                   <div className="overflow-x-auto">
                     {/* Header */}
-                    <div className="px-4 py-3 bg-gray-800/30 border-b border-white/10 min-w-[600px]">
+                    <div className="px-4 py-3 bg-gray-800/30 border-b border-white/10 min-w-[700px]">
                       <div className="flex items-center text-xs text-gray-400 font-medium">
-                        <div className="w-64 min-w-64">Key</div>
+                        <div className="w-80 min-w-80">Key</div>
                         <div className="w-20 text-center">Status</div>
                         <div className="w-24 text-center">Expires In</div>
                         <div className="w-20 text-center">Created</div>
@@ -724,13 +724,13 @@ export default function GetKey() {
                     {/* Key Rows */}
                     <div className="divide-y divide-white/5">
                       {userKeys.map((key, index) => (
-                        <div key={index} className="px-4 py-4 hover:bg-white/5 transition-colors min-w-[600px]">
+                        <div key={index} className="px-4 py-4 hover:bg-white/5 transition-colors min-w-[700px]">
                           <div className="flex items-start text-sm">
                             {/* Key Value */}
-                            <div className="w-64 min-w-64 pr-4">
+                            <div className="w-80 min-w-80 pr-4">
                               <div 
                                 onClick={() => handleCopyKey(key.value)}
-                                className="text-white font-mono text-xs cursor-pointer hover:bg-white/5 px-2 py-1 rounded transition-colors break-all"
+                                className="text-white font-mono text-xs cursor-pointer hover:bg-white/5 px-2 py-1 rounded transition-colors truncate"
                                 title="Click to copy"
                               >
                                 {key.value}
@@ -865,7 +865,6 @@ export default function GetKey() {
                   className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#3b82f6] to-[#60a5fa] rounded-full transition-all duration-500 ease-out animate-pulse"
                   style={{ width: '70%' }}
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
                 </div>
                 <div 
                   className="absolute top-0 left-0 h-full bg-[#3b82f6]/50 rounded-full blur-sm transition-all duration-500 ease-out"
@@ -925,16 +924,6 @@ export default function GetKey() {
         </div>
       </div>
 
-      <style jsx>{`
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-
-        .animate-shimmer {
-          animation: shimmer 2s infinite;
-        }
-      `}</style>
-    </div>
+      </div>
   );
 }
