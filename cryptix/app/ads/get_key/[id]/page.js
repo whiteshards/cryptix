@@ -21,6 +21,7 @@ export default function GetKey() {
   const [isGeneratingToken, setIsGeneratingToken] = useState(false);
   const [cooldownTimeLeft, setCooldownTimeLeft] = useState(null);
   const [keyTimers, setKeyTimers] = useState({});
+  const [toast, setToast] = useState(null);
 
   // Check for error in URL parameters
   useEffect(() => {
@@ -112,6 +113,16 @@ export default function GetKey() {
       return () => clearInterval(interval);
     }
   }, [userKeys]);
+
+  // Toast auto-dismiss effect
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => {
+        setToast(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   const generateUUID = () => {
     return uuidv4();
@@ -469,8 +480,15 @@ export default function GetKey() {
 
   const handleCopyKey = (keyValue) => {
     navigator.clipboard.writeText(keyValue).then(() => {
-      // You could add a toast notification here
-      console.log('Key copied to clipboard');
+      setToast({
+        type: 'success',
+        message: 'Copied key to your clipboard'
+      });
+    }).catch(() => {
+      setToast({
+        type: 'error',
+        message: 'Failed to copy key'
+      });
     });
   };
 
@@ -823,8 +841,30 @@ export default function GetKey() {
         </div>
       )}
 
+      {/* Toast Notification */}
+      {toast && (
+        <div className="fixed top-4 right-4 z-50">
+          <div className={`bg-black/80 backdrop-blur-md border rounded-lg px-4 py-3 max-w-sm ${
+            toast.type === 'success' ? 'border-green-500/30 text-green-400' : 'border-red-500/30 text-red-400'
+          }`}>
+            <div className="flex items-center space-x-2">
+              {toast.type === 'success' ? (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              )}
+              <span className="text-sm">{toast.message}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Bottom Right Info */}
-      <div className="fixed bottom-4 right-4 bg-black/60 border border-white/20 rounded px-3 py-2 text-xs">
+      <div className="fixed bottom-4 right-4 bg-black/60 border border-white/20 rounded px-3 py-2 text-xs"></div>
         <div className="flex items-center space-x-2">
           <span className="text-gray-400">
             {browserUuid.substring(0, 8)}
