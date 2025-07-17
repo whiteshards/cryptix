@@ -19,6 +19,8 @@ export default function GetKey() {
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [urlError, setUrlError] = useState('');
   const [isGeneratingToken, setIsGeneratingToken] = useState(false);
+  const [cooldownTimeLeft, setCooldownTimeLeft] = useState(null);
+  const [keyTimers, setKeyTimers] = useState({});
 
   // Check for error in URL parameters
   useEffect(() => {
@@ -52,6 +54,64 @@ export default function GetKey() {
       checkOrCreateSession();
     }
   }, [browserUuid, keysystem]);
+
+  // Cooldown timer effect
+  useEffect(() => {
+    if (userSession?.cooldown_till) {
+      const updateCooldown = () => {
+        const now = new Date().getTime();
+        const cooldownTime = new Date(userSession.cooldown_till).getTime();
+        const timeDiff = cooldownTime - now;
+
+        if (timeDiff <= 0) {
+          setCooldownTimeLeft(null);
+          // Refresh session data
+          checkOrCreateSession();
+        } else {
+          const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+          const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+          const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+          setCooldownTimeLeft(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+        }
+      };
+
+      updateCooldown();
+      const interval = setInterval(updateCooldown, 1000);
+      return () => clearInterval(interval);
+    } else {
+      setCooldownTimeLeft(null);
+    }
+  }, [userSession?.cooldown_till]);
+
+  // Key expiration timers effect
+  useEffect(() => {
+    if (userKeys.length > 0) {
+      const updateKeyTimers = () => {
+        const newTimers = {};
+        userKeys.forEach(key => {
+          if (key.expires_at && key.status === 'active') {
+            const now = new Date().getTime();
+            const expiresTime = new Date(key.expires_at).getTime();
+            const timeDiff = expiresTime - now;
+
+            if (timeDiff <= 0) {
+              newTimers[key.value] = '00:00:00';
+            } else {
+              const hours = Math.floor(timeDiff / (1000 * 60 * 60));
+              const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+              const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+              newTimers[key.value] = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+          }
+        });
+        setKeyTimers(newTimers);
+      };
+
+      updateKeyTimers();
+      const interval = setInterval(updateKeyTimers, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [userKeys]);
 
   const generateUUID = () => {
     return uuidv4();
@@ -348,9 +408,78 @@ export default function GetKey() {
     }
   };
 
-  const handleGetNewKey = () => {
-    // Logic for generating a new key
-    console.log('Getting new key...');
+  const handleGetNewKey = async () => {
+    try {
+      setIsGeneratingToken(true);
+      
+      const response = await fetch('/api/v1/keysystems/keys/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keysystemId: keysystemId,
+          sessionId: browserUuid
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        setError(data.error || 'Failed to generate key');
+        return;
+      }
+
+      // Refresh session data
+      await checkOrCreateSession();
+      
+    } catch (error) {
+      console.error('Key generation error:', error);
+      setError('Failed to generate key');
+    } finally {
+      setIsGeneratingToken(false);
+    }
+  };
+
+  const handleRenewKey = async (keyValue) => {
+    try {
+      setIsGeneratingToken(true);
+      
+      const response = await fetch('/api/v1/keysystems/keys/renew', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keysystemId: keysystemId,
+          sessionId: browserUuid,
+          keyValue: keyValue
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        setError(data.error || 'Failed to renew key');
+        return;
+      }
+
+      // Refresh session data
+      await checkOrCreateSession();
+      
+    } catch (error) {
+      console.error('Key renewal error:', error);
+      setError('Failed to renew key');
+    } finally {
+      setIsGeneratingToken(false);
+    }
+  };
+
+  const handleCopyKey = (keyValue) => {
+    navigator.clipboard.writeText(keyValue).then(() => {
+      // You could add a toast notification here
+      console.log('Key copied to clipboard');
+    });
   };
 
   if (isLoading) {
@@ -436,6 +565,19 @@ export default function GetKey() {
               </div>
             )}
 
+            {/* Cooldown Section */}
+            {cooldownTimeLeft && (
+              <div className="mb-4 p-3 bg-orange-500/20 border border-orange-500/30 rounded">
+                <div className="flex items-center justify-between">
+                  <span className="text-orange-400 text-sm">Cooldown Active</span>
+                  <span className="text-orange-300 font-mono text-sm">{cooldownTimeLeft}</span>
+                </div>
+                <p className="text-orange-300/70 text-xs mt-1">
+                  You must wait before creating or renewing keys
+                </p>
+              </div>
+            )}
+
             {/* Progress Section */}
             <div className="space-y-4">
               <div className="flex items-center justify-between text-sm">
@@ -447,7 +589,7 @@ export default function GetKey() {
                   </span>
 
                   {/* Start Button on right side */}
-                  {currentProgress === 0 && (
+                  {currentProgress === 0 && !cooldownTimeLeft && (
                     <button
                       onClick={handleStartProgress}
                       disabled={isGeneratingToken}
@@ -461,7 +603,7 @@ export default function GetKey() {
                   )}
 
                   {/* Next Checkpoint Button for intermediate progress */}
-                  {currentProgress > 0 && currentProgress < keysystem.checkpointCount && (
+                  {currentProgress > 0 && currentProgress < keysystem.checkpointCount && !cooldownTimeLeft && (
                     <button
                       onClick={handleNextCheckpoint}
                       disabled={isGeneratingToken}
@@ -475,12 +617,16 @@ export default function GetKey() {
                   )}
 
                   {/* Get Key Button for completed progress */}
-                  {currentProgress === keysystem.checkpointCount && currentProgress > 0 && (
+                  {currentProgress === keysystem.checkpointCount && currentProgress > 0 && !cooldownTimeLeft && (
                     <button
                       onClick={handleGetNewKey}
-                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs font-medium transition-colors"
+                      disabled={isGeneratingToken}
+                      className="bg-green-600 hover:bg-green-700 disabled:bg-green-800 disabled:cursor-not-allowed text-white px-3 py-1 rounded text-xs font-medium transition-colors flex items-center space-x-1"
                     >
-                      Get Key
+                      {isGeneratingToken && (
+                        <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin"></div>
+                      )}
+                      <span>{isGeneratingToken ? 'Generating...' : 'Get Key'}</span>
                     </button>
                   )}
                 </div>
@@ -517,25 +663,57 @@ export default function GetKey() {
               {userKeys.length > 0 ? (
                 <div className="bg-black/20 rounded border border-white/10 overflow-hidden">
                   {/* Table Header */}
-                  <div className="grid grid-cols-3 gap-4 p-3 bg-gray-800/30 border-b border-white/10 text-xs text-gray-400 font-medium">
+                  <div className="grid grid-cols-5 gap-4 p-3 bg-gray-800/30 border-b border-white/10 text-xs text-gray-400 font-medium">
                     <div>Key</div>
                     <div>Status</div>
-                    <div>Action</div>
+                    <div>Expires In</div>
+                    <div>Created</div>
+                    <div>Actions</div>
                   </div>
 
                   {/* Table Rows */}
                   {userKeys.map((key, index) => (
-                    <div key={index} className="grid grid-cols-3 gap-4 p-3 border-b border-white/5 last:border-b-0 hover:bg-white/5 transition-colors text-sm">
-                      <div className="text-white font-mono truncate">{key.value}</div>
+                    <div key={index} className="grid grid-cols-5 gap-4 p-3 border-b border-white/5 last:border-b-0 hover:bg-white/5 transition-colors text-sm">
+                      <div className="text-white font-mono truncate text-xs">{key.value}</div>
                       <div>
-                        <span className="inline-flex px-2 py-1 rounded text-xs bg-green-500/20 text-green-400">
-                          Active
+                        <span className={`inline-flex px-2 py-1 rounded text-xs ${
+                          key.status === 'active' 
+                            ? 'bg-green-500/20 text-green-400' 
+                            : 'bg-red-500/20 text-red-400'
+                        }`}>
+                          {key.status === 'active' ? 'Active' : 'Expired'}
                         </span>
                       </div>
                       <div>
-                        <button className="text-blue-400 hover:text-blue-300 text-xs transition-colors">
+                        {key.expires_at ? (
+                          <span className={`font-mono text-xs ${
+                            keyTimers[key.value] === '00:00:00' ? 'text-red-400' : 'text-white'
+                          }`}>
+                            {keyTimers[key.value] || 'Calculating...'}
+                          </span>
+                        ) : (
+                          <span className="text-green-400 text-xs">Permanent</span>
+                        )}
+                      </div>
+                      <div className="text-gray-400 text-xs">
+                        {new Date(key.created_at).toLocaleDateString()}
+                      </div>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleCopyKey(key.value)}
+                          className="text-blue-400 hover:text-blue-300 text-xs transition-colors"
+                        >
                           Copy
                         </button>
+                        {!cooldownTimeLeft && (key.status === 'expired' || (key.expires_at && keyTimers[key.value] === '00:00:00')) && (
+                          <button
+                            onClick={() => handleRenewKey(key.value)}
+                            disabled={isGeneratingToken}
+                            className="text-green-400 hover:text-green-300 disabled:text-green-600 text-xs transition-colors"
+                          >
+                            Renew
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
