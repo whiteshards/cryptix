@@ -663,16 +663,12 @@ export default function Dashboard() {
 
               {/* Lootlabs Integration */}
               <div className="space-y-6">
-                <div className="bg-black/20 rounded-lg p-6 border border-white/10">
-                  <div className="flex items-center justify-between mb-4">
+                
+<div className="bg-black/20 rounded-lg p-6 border border-white/10">
+                  <div className="mb-4">
                     <div>
                       <h3 className="text-white text-lg font-medium">Lootlabs</h3>
                       <p className="text-gray-400 text-sm">Configure your Lootlabs API integration</p>
-                    </div>
-                    <div className="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                      <svg className="w-6 h-6 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                      </svg>
                     </div>
                   </div>
 
@@ -773,7 +769,9 @@ export default function Dashboard() {
                           className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
                         >
                           {showLinkvertiseToken ? (
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" fill="none" stroke="This commit removes the icons from the integrations section of the dashboard page.
+```xml
+currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
                             </svg>
                           ) : (
