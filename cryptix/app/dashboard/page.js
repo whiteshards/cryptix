@@ -94,12 +94,13 @@ export default function Dashboard() {
       if (data.success) {
         setUserProfile(data.customer);
         setIsAuthenticated(true);
-        if (userProfile?.integrations?.lootlabs) {
-        setLootlabsApiKey(userProfile.integrations.lootlabs);
-      }
-      if (userProfile?.integrations?.linkvertise) {
-        setLinkvertiseApiToken(userProfile.integrations.linkvertise);
-      }
+        // Set integration values using the fetched data directly
+        if (data.customer?.integrations?.lootlabs) {
+          setLootlabsApiKey(data.customer.integrations.lootlabs);
+        }
+        if (data.customer?.integrations?.linkvertise) {
+          setLinkvertiseApiToken(data.customer.integrations.linkvertise);
+        }
         setLoadingProgress(100);
         setLoadingText('Initializing Dashboard');
         await new Promise(resolve => setTimeout(resolve, 400));
