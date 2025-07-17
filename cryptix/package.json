@@ -13,6 +13,7 @@
     "express-rate-limit": "^7.5.1",
     "mongodb": "^6.3.0",
     "next": "15.3.4",
+    "node-cron": "^4.2.1",
     "ogl": "^1.0.11",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
