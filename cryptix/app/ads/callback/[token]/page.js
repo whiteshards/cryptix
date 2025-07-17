@@ -74,6 +74,11 @@ export default function CallbackPage() {
             redirectWithError('Anti-Bypass Detected');
             return;
           }
+        } else if (checkpoint.type === 'workink') {
+          if (!currentReferer.includes('https://work.ink/')) {
+            redirectWithError('Anti-Bypass Detected');
+            return;
+          }
         }
         // Custom checkpoints don't need referer validation (except bypass.city which is already checked)
 
@@ -142,6 +147,16 @@ export default function CallbackPage() {
           const hashVerification = await verifyLinkvertiseHash(callbackToken);
           if (!hashVerification.valid) {
             redirectWithError(hashVerification.error);
+            return;
+          }
+        } else if (checkpoint.type === 'workink') {
+          setLoadingText('Verifying Workink token...');
+          await new Promise(resolve => setTimeout(resolve, 300));
+
+          // For Workink, verify the token parameter
+          const workinkVerification = await verifyWorkinkToken();
+          if (!workinkVerification.valid) {
+            redirectWithError(workinkVerification.error);
             return;
           }
         }
@@ -325,6 +340,40 @@ export default function CallbackPage() {
       return {
         valid: false,
         error: 'Linkvertise verification failed'
+      };
+    }
+  };
+
+  const verifyWorkinkToken = async () => {
+    try {
+      // Get token from URL parameter
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+
+      if (!token) {
+        return {
+          valid: false,
+          error: 'Token parameter missing from Workink callback'
+        };
+      }
+
+      // Verify token with Workink API
+      const response = await fetch(`https://work.ink/_api/v2/token/isValid/${token}?deleteToken=1`);
+      const data = await response.json();
+
+      if (!data.valid) {
+        return {
+          valid: false,
+          error: 'Invalid Workink token'
+        };
+      }
+
+      return { valid: true };
+    } catch (error) {
+      console.error('Workink verification error:', error);
+      return {
+        valid: false,
+        error: 'Workink verification failed'
       };
     }
   };
