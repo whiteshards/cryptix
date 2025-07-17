@@ -700,6 +700,11 @@ export default function GetKey() {
                   <span>Max: {keysystem.maxKeyPerPerson}</span>
                 </div>
               </div>
+              
+              {/* Info Text */}
+              <div className="mb-3 p-2 bg-blue-500/10 border border-blue-500/20 rounded text-blue-400 text-xs">
+                💡 Click on the key to copy it
+              </div>
 
               {userKeys.length > 0 ? (
                 <div className="bg-black/20 rounded border border-white/10 overflow-hidden">
@@ -710,7 +715,7 @@ export default function GetKey() {
                       <div className="w-20 text-center">Status</div>
                       <div className="w-24 text-center">Expires In</div>
                       <div className="w-20 text-center">Created</div>
-                      <div className="w-32 text-center">Actions</div>
+                      <div className="w-20 text-center">Actions</div>
                     </div>
                   </div>
 
@@ -721,7 +726,11 @@ export default function GetKey() {
                         <div className="flex items-start text-sm">
                           {/* Key Value */}
                           <div className="flex-1 min-w-0 pr-4">
-                            <div className="text-white font-mono text-xs truncate">
+                            <div 
+                              onClick={() => handleCopyKey(key.value)}
+                              className="text-white font-mono text-xs truncate cursor-pointer hover:bg-white/5 px-2 py-1 rounded transition-colors"
+                              title="Click to copy"
+                            >
                               {key.value}
                             </div>
                           </div>
@@ -761,13 +770,7 @@ export default function GetKey() {
                           </div>
 
                           {/* Actions */}
-                          <div className="w-32 flex flex-col space-y-1">
-                            <button
-                              onClick={() => handleCopyKey(key.value)}
-                              className="text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors py-1 px-2 rounded hover:bg-blue-500/10"
-                            >
-                              Copy
-                            </button>
+                          <div className="w-20 flex flex-col space-y-1">
                             {!cooldownTimeLeft && (key.status === 'expired' || (key.expires_at && keyTimers[key.value] === '00:00:00')) && (
                               <button
                                 onClick={() => handleRenewKey(key.value)}
