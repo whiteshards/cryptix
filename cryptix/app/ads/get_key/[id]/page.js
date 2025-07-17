@@ -492,6 +492,41 @@ export default function GetKey() {
     });
   };
 
+  const handleDeleteKey = async (keyValue) => {
+    try {
+      const response = await fetch('/api/v1/keysystems/keys/delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keysystemId: keysystemId,
+          sessionId: browserUuid,
+          keyValue: keyValue
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        setError(data.error || 'Failed to delete key');
+        return;
+      }
+
+      setToast({
+        type: 'success',
+        message: 'Key deleted successfully'
+      });
+
+      // Refresh session data
+      await checkOrCreateSession();
+      
+    } catch (error) {
+      console.error('Key deletion error:', error);
+      setError('Failed to delete key');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
@@ -675,7 +710,7 @@ export default function GetKey() {
                       <div className="w-20 text-center">Status</div>
                       <div className="w-24 text-center">Expires In</div>
                       <div className="w-20 text-center">Created</div>
-                      <div className="w-24 text-center">Actions</div>
+                      <div className="w-32 text-center">Actions</div>
                     </div>
                   </div>
 
@@ -726,7 +761,7 @@ export default function GetKey() {
                           </div>
 
                           {/* Actions */}
-                          <div className="w-24 flex justify-center space-x-2">
+                          <div className="w-32 flex justify-center space-x-1">
                             <button
                               onClick={() => handleCopyKey(key.value)}
                               className="text-blue-400 hover:text-blue-300 text-xs font-medium transition-colors px-1"
@@ -741,6 +776,12 @@ export default function GetKey() {
                                 Renew
                               </button>
                             )}
+                            <button
+                              onClick={() => handleDeleteKey(key.value)}
+                              className="text-red-400 hover:text-red-300 text-xs font-medium transition-colors px-1"
+                            >
+                              Delete
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -864,7 +905,7 @@ export default function GetKey() {
       )}
 
       {/* Bottom Right Info */}
-      <div className="fixed bottom-4 right-4 bg-black/60 border border-white/20 rounded px-3 py-2 text-xs"></div>
+      <div className="fixed bottom-4 right-4 bg-black/60 border border-white/20 rounded px-3 py-2 text-xs">
         <div className="flex items-center space-x-2">
           <span className="text-gray-400">
             {browserUuid.substring(0, 8)}
