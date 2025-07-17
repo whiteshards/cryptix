@@ -137,8 +137,8 @@ export default function GetKey() {
       try {
         const firstCheckpoint = keysystem.checkpoints[0];
         
-        // Generate session token for custom and lootlabs checkpoints
-        if (firstCheckpoint.type === 'custom' || firstCheckpoint.type === 'lootlabs') {
+        // Generate session token for custom, lootlabs, and workink checkpoints
+        if (firstCheckpoint.type === 'custom' || firstCheckpoint.type === 'lootlabs' || firstCheckpoint.type === 'workink') {
           // Check if session token already exists in database
           const checkResponse = await fetch(`/api/v1/keysystems/sessions/token/check?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
           const checkData = await checkResponse.json();
@@ -246,8 +246,8 @@ export default function GetKey() {
       try {
         const nextCheckpoint = keysystem.checkpoints[currentProgress];
         
-        // Generate session token for custom and lootlabs checkpoints
-        if (nextCheckpoint.type === 'custom' || nextCheckpoint.type === 'lootlabs') {
+        // Generate session token for custom, lootlabs, and workink checkpoints
+        if (nextCheckpoint.type === 'custom' || nextCheckpoint.type === 'lootlabs' || nextCheckpoint.type === 'workink') {
           // Check if session token already exists in database
           const checkResponse = await fetch(`/api/v1/keysystems/sessions/token/check?keysystemId=${keysystemId}&sessionId=${browserUuid}`);
           const checkData = await checkResponse.json();
