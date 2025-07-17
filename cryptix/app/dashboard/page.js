@@ -740,11 +740,6 @@ export default function Dashboard() {
                       <h3 className="text-white text-lg font-medium">Linkvertise</h3>
                       <p className="text-gray-400 text-sm">Configure your Linkvertise API integration</p>
                     </div>
-                    <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                      <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.249a4 4 0 005.656 0l4-4a4 4 0 10-5.656-5.656l-1.102 1.101m.758 4.249a4 4 0 01-5.656 0l-4 4a4 4 0 115.656 5.656l1.102-1.101" />
-                      </svg>
-                    </div>
                   </div>
 
                   <div className="space-y-4">
