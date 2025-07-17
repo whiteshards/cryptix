@@ -389,8 +389,8 @@ export default function Scripts() {
                 <div className="flex flex-col items-center space-y-3">
                   {/* Start Node */}
                   <div className="relative">
-                    <div className="bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-full px-4 py-2 shadow-md">
-                      <span className="text-white font-medium text-sm">Start</span>
+                    <div className="bg-[#1a1b2e]/90 border border-[#6366f1]/50 rounded-full px-4 py-2 shadow-md">
+                      <span className="text-[#6366f1] font-medium text-sm">Start</span>
                     </div>
                     {/* Downward Arrow */}
                     <div className="absolute left-1/2 transform -translate-x-1/2 top-full">
@@ -468,6 +468,23 @@ export default function Scripts() {
                           <div className="bg-black/20 rounded-md p-2 border border-white/5">
                             <span className="text-gray-300 text-xs font-medium">URL:</span>
                             <p className="text-white font-mono text-xs break-all mt-0.5">{checkpoint.redirect_url}</p>
+                            
+                            {/* Callback URL for this checkpoint */}
+                            <div className="mt-2 pt-2 border-t border-white/10">
+                              <span className="text-gray-400 text-xs font-medium">Callback URL:</span>
+                              <p className="text-gray-300 font-mono text-xs break-all mt-0.5">
+                                {checkpoint.type === 'lootlabs' 
+                                  ? `${DOMAIN}/ads/callback/[DYNAMIC_TOKEN]`
+                                  : `${DOMAIN}/ads/callback/${checkpoint.callback_token || '[STATIC_TOKEN]'}`
+                                }
+                              </p>
+                              <span className="text-gray-500 text-xs">
+                                {checkpoint.type === 'lootlabs' 
+                                  ? 'Dynamic token per session'
+                                  : 'Static token for this checkpoint'
+                                }
+                              </span>
+                            </div>
                           </div>
                           {checkpoint.mandatory && (
                             <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-md p-2">
@@ -497,8 +514,8 @@ export default function Scripts() {
                         <div className="w-0 h-0 border-l-1 border-r-1 border-t-2 border-l-transparent border-r-transparent border-t-[#10b981]"></div>
                       </div>
                     </div>
-                    <div className="bg-gradient-to-r from-[#10b981] to-[#059669] rounded-full px-4 py-2 shadow-md">
-                      <span className="text-white font-medium text-sm">Complete</span>
+                    <div className="bg-[#1a1b2e]/90 border border-[#10b981]/50 rounded-full px-4 py-2 shadow-md">
+                      <span className="text-[#10b981] font-medium text-sm">Complete</span>
                     </div>
                   </div>
                 </div>
