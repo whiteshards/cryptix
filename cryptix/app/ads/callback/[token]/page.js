@@ -82,7 +82,7 @@ export default function CallbackPage() {
         await new Promise(resolve => setTimeout(resolve, 300));
 
         // Step 2: Process supported checkpoint types
-        if (!['custom', 'linkvertise', 'lootlabs', 'workink'].includes(checkpoint.type)) {
+        if (!['custom', 'linkvertise', 'lootlabs'].includes(checkpoint.type)) {
           redirectWithError('Checkpoint type not supported yet');
           return;
         }
@@ -125,7 +125,7 @@ export default function CallbackPage() {
         setLoadingProgress(85);
 
         // Step 6: Anti-bypass checks (skip for linkvertise)
-        if (checkpoint.type === 'custom' || checkpoint.type === 'lootlabs' || checkpoint.type === 'workink') {
+        if (checkpoint.type === 'custom' || checkpoint.type === 'lootlabs') {
           setLoadingText('Running anti-bypass checks...');
           await new Promise(resolve => setTimeout(resolve, 300));
 

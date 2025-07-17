@@ -533,12 +533,12 @@ export default function Scripts() {
                   >
                     <option value="custom">Custom</option>
                     <option value="linkvertise">Linkvertise</option>
-                    <option value="lootlabs" 
+                    <option 
+                      value="lootlabs" 
                       disabled={!userProfile?.integrations?.lootlabs}
                     >
                       Lootlabs {!userProfile?.integrations?.lootlabs && '(Requires API Key)'}
                     </option>
-                    <option value="workink">Workink</option>
                   </select>
                 </div>
 
