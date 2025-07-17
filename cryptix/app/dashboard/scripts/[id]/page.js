@@ -17,7 +17,7 @@ export default function Scripts() {
   const [isCreatingCheckpoint, setIsCreatingCheckpoint] = useState(false);
   const [toast, setToast] = useState(null);
   const [checkpointFormData, setCheckpointFormData] = useState({
-    type: 'linkvertise',
+    type: 'custom',
     redirect_url: ''
   });
 
@@ -123,7 +123,7 @@ export default function Scripts() {
       showToast('Checkpoint created successfully!', 'success');
       setShowAddCheckpointModal(false);
       setCheckpointFormData({
-        type: 'linkvertise',
+        type: 'custom',
         redirect_url: ''
       });
 
