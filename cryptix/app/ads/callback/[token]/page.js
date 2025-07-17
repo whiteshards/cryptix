@@ -1,6 +1,6 @@
 'use client';
 
-import { headers } from 'next/headers';
+//import { headers } from 'next/headers';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -16,7 +16,8 @@ export default function CallbackPage() {
     const processCallback = async () => {
       try {
         const callbackToken = params.token;
-
+        const referrer = document.referrer;
+        console.log(referrer)
         setLoadingProgress(10);
         setLoadingText('Validating callback token...');
         await new Promise(resolve => setTimeout(resolve, 200));
@@ -29,7 +30,7 @@ export default function CallbackPage() {
         setLoadingProgress(20);
         setLoadingText('Finding checkpoint...');
         await new Promise(resolve => setTimeout(resolve, 300));
-        console.log(headers)
+        //console.log(headers)
         // Step 1: Find the checkpoint and keysystem by callback token
         const checkpointData = await findCheckpointByToken(callbackToken);
         if (!checkpointData) {
