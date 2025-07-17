@@ -21,6 +21,18 @@ export default function CallbackPage() {
       try {
         const callbackToken = params.token;
         console.log(currentReferer);
+        
+        // Check referer validation
+        if (currentReferer.includes('bypass.city')) {
+          redirectWithError('nice bypass.city :0');
+          return;
+        }
+        
+        if (!currentReferer.includes('linkvertise.com')) {
+          redirectWithError('Anti-Bypass Detected');
+          return;
+        }
+
         setLoadingProgress(10);
         setLoadingText('Processing callback...');
         await new Promise(resolve => setTimeout(resolve, 200));
@@ -375,15 +387,7 @@ export default function CallbackPage() {
           </div>
         )}
 
-        {/* Referer Info */}
-        {referer && (
-          <div className="text-center mb-6">
-            <div className="text-gray-400 text-sm mb-1">Referred from:</div>
-            <div className="text-gray-300 text-xs break-all bg-white/5 rounded px-3 py-2 border border-white/10">
-              {referer}
-            </div>
-          </div>
-        )}
+        
 
         {/* Loading Text */}
         <div className="text-center mb-8">
