@@ -195,7 +195,24 @@ export default function GetKey() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try {
+      // Destroy the session in the database
+      await fetch('/api/v1/keysystems/sessions/destroy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keysystemId: keysystemId,
+          sessionId: browserUuid
+        }),
+      });
+    } catch (error) {
+      console.error('Error destroying session:', error);
+    }
+
+    // Clear localStorage regardless of API call result
     localStorage.removeItem('browser_uuid');
     localStorage.removeItem('current_id');
     window.location.reload();
@@ -204,10 +221,10 @@ export default function GetKey() {
   const handleStartProgress = async () => {
     if (keysystem.checkpoints.length > 0) {
       setIsGeneratingToken(true);
-      
+
       try {
         const firstCheckpoint = keysystem.checkpoints[0];
-        
+
         // Generate session token for custom, lootlabs, and workink checkpoints
         if (firstCheckpoint.type === 'custom' || firstCheckpoint.type === 'lootlabs' || firstCheckpoint.type === 'workink') {
           // Check if session token already exists in database
@@ -264,7 +281,7 @@ export default function GetKey() {
 
         // Small delay to show loading state
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Handle LootLabs checkpoint differently
         if (firstCheckpoint.type === 'lootlabs') {
           try {
@@ -313,10 +330,10 @@ export default function GetKey() {
   const handleNextCheckpoint = async () => {
     if (currentProgress < keysystem.checkpoints.length) {
       setIsGeneratingToken(true);
-      
+
       try {
         const nextCheckpoint = keysystem.checkpoints[currentProgress];
-        
+
         // Generate session token for custom, lootlabs, and workink checkpoints
         if (nextCheckpoint.type === 'custom' || nextCheckpoint.type === 'lootlabs' || nextCheckpoint.type === 'workink') {
           // Check if session token already exists in database
@@ -373,7 +390,7 @@ export default function GetKey() {
 
         // Small delay to show loading state
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Handle LootLabs checkpoint differently
         if (nextCheckpoint.type === 'lootlabs') {
           try {
@@ -441,7 +458,7 @@ export default function GetKey() {
 
       // Refresh session data
       await checkOrCreateSession();
-      
+
     } catch (error) {
       console.error('Key generation error:', error);
       setError('Failed to generate key');
@@ -471,7 +488,7 @@ export default function GetKey() {
 
       // Refresh session data
       await checkOrCreateSession();
-      
+
     } catch (error) {
       console.error('Key renewal error:', error);
       setError('Failed to renew key');
@@ -520,7 +537,7 @@ export default function GetKey() {
 
       // Refresh session data
       await checkOrCreateSession();
-      
+
     } catch (error) {
       console.error('Key deletion error:', error);
       setError('Failed to delete key');
@@ -700,7 +717,7 @@ export default function GetKey() {
                   <span>Max: {keysystem.maxKeyPerPerson}</span>
                 </div>
               </div>
-              
+
               {/* Info Text */}
               <div className="mb-3 p-2 bg-blue-500/10 border border-blue-500/20 rounded text-blue-400 text-xs">
                 💡 Click on the key to copy it
@@ -831,13 +848,13 @@ export default function GetKey() {
                 </svg>
               </button>
             </div>
-            
+
             <div className="mb-6">
               <p className="text-gray-300 text-sm leading-relaxed">
                 {urlError}
               </p>
             </div>
-            
+
             <div className="flex justify-end">
               <button
                 onClick={() => setShowErrorModal(false)}
@@ -858,7 +875,7 @@ export default function GetKey() {
               <div className="text-white text-lg font-medium mb-4">
                 Please wait a moment while we redirect you
               </div>
-              
+
               {/* Loading Animation */}
               <div className="relative w-full h-2 bg-white/10 rounded-full overflow-hidden mb-4">
                 <div 
@@ -878,7 +895,7 @@ export default function GetKey() {
                 <div className="w-2 h-2 bg-[#3b82f6] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
                 <div className="w-2 h-2 bg-[#3b82f6] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
               </div>
-              
+
               <div className="text-gray-400 text-sm mt-4">
                 Preparing your session...
               </div>
