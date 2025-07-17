@@ -1,18 +1,33 @@
 
 import { NextResponse } from 'next/server';
+import clientPromise from '../../../../../../lib/mongodb';
 
 export async function POST(request) {
   try {
-    const { hash } = await request.json();
+    const { hash, keysystemId } = await request.json();
 
-    if (!hash) {
-      return NextResponse.json({ error: 'hash are required' }, { status: 400 });
+    if (!hash || !keysystemId) {
+      return NextResponse.json({ error: 'hash and keysystemId are required' }, { status: 400 });
     }
 
-    const linkvertiseApiToken = process.env.LINKVERTISE;
-    
+    // Connect to MongoDB to find the keysystem owner
+    const client = await clientPromise;
+    const db = client.db('Cryptix');
+    const collection = db.collection('customers');
+
+    // Find the user who owns this keysystem
+    const user = await collection.findOne({
+      'keysystems.id': keysystemId
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'Keysystem not found' }, { status: 404 });
+    }
+
+    // Check if user has Linkvertise integration
+    const linkvertiseApiToken = user.integrations?.linkvertise;
     if (!linkvertiseApiToken) {
-      return NextResponse.json({ error: 'Linkvertise API token not configured' }, { status: 500 });
+      return NextResponse.json({ error: 'Linkvertise API token not configured for this keysystem owner' }, { status: 500 });
     }
 
     // Make request to Linkvertise API to verify the hash

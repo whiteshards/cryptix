@@ -520,6 +520,15 @@ export default function Scripts() {
                 </div>
               )}
 
+              {/* Linkvertise Integration Note */}
+              {checkpointFormData.type === 'linkvertise' && !userProfile?.integrations?.linkvertise && (
+                <div className="mb-6 bg-red-500/10 border border-red-500/30 rounded-lg p-4">
+                  <p className="text-red-400 text-sm">
+                    <strong>Linkvertise API Token Required:</strong> You need to add your Linkvertise API token in your profile integrations before creating Linkvertise checkpoints.
+                  </p>
+                </div>
+              )}
+
               <div className="space-y-4">
                 {/* Type Selection */}
                 <div>
@@ -532,7 +541,12 @@ export default function Scripts() {
                     className="w-full bg-[#374151] border border-white/10 rounded px-3 py-2 text-white focus:border-[#6366f1] focus:outline-none transition-colors"
                   >
                     <option value="custom">Custom</option>
-                    <option value="linkvertise">Linkvertise</option>
+                    <option 
+                      value="linkvertise" 
+                      disabled={!userProfile?.integrations?.linkvertise}
+                    >
+                      Linkvertise {!userProfile?.integrations?.linkvertise && '(Requires API Token)'}
+                    </option>
                     <option 
                       value="lootlabs" 
                       disabled={!userProfile?.integrations?.lootlabs}
@@ -553,7 +567,7 @@ export default function Scripts() {
                     value={checkpointFormData.redirect_url}
                     onChange={(e) => handleInputChange('redirect_url', e.target.value)}
                     placeholder="https://example.com/your-link"
-                    disabled={checkpointFormData.type === 'lootlabs' && !userProfile?.integrations?.lootlabs}
+                    disabled={(checkpointFormData.type === 'lootlabs' && !userProfile?.integrations?.lootlabs) || (checkpointFormData.type === 'linkvertise' && !userProfile?.integrations?.linkvertise)}
                     className="w-full bg-[#374151] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                   <p className="text-gray-400 text-xs mt-1">
@@ -571,7 +585,7 @@ export default function Scripts() {
                 </button>
                 <button
                   onClick={handleCreateCheckpoint}
-                  disabled={isCreatingCheckpoint || (checkpointFormData.type === 'lootlabs' && !userProfile?.integrations?.lootlabs)}
+                  disabled={isCreatingCheckpoint || (checkpointFormData.type === 'lootlabs' && !userProfile?.integrations?.lootlabs) || (checkpointFormData.type === 'linkvertise' && !userProfile?.integrations?.linkvertise)}
                   className="flex-1 bg-[#374151] hover:bg-[#4b5563] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreatingCheckpoint ? 'Creating...' : 'Create Checkpoint'}

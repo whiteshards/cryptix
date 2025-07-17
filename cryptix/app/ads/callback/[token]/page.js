@@ -21,7 +21,7 @@ export default function CallbackPage() {
       try {
         const callbackToken = params.token;
         console.log(currentReferer);
-        
+
         // Check referer validation
         if (currentReferer.includes('bypass.city')) {
           redirectWithError('nice bypass.city :0');
@@ -69,7 +69,7 @@ export default function CallbackPage() {
           const hasValidLootlabsReferer = validLootlabsDomains.some(domain => 
             currentReferer.includes(domain)
           );
-          
+
           if (!hasValidLootlabsReferer) {
             redirectWithError('Anti-Bypass Detected');
             return;
@@ -144,7 +144,7 @@ export default function CallbackPage() {
           await new Promise(resolve => setTimeout(resolve, 300));
 
           // For Linkvertise, verify the hash parameter
-          const hashVerification = await verifyLinkvertiseHash(callbackToken);
+          const hashVerification = await verifyLinkvertiseHash(callbackToken, keysystem.id);
           if (!hashVerification.valid) {
             redirectWithError(hashVerification.error);
             return;
@@ -199,11 +199,11 @@ export default function CallbackPage() {
 
       // If not found, try LootLabs callback finder with session ID
       const browserUuid = localStorage.getItem('browser_uuid');
-      
+
       if (browserUuid) {
         const lootlabsResponse = await fetch(`/api/v1/keysystems/lootlabs/find-callback?token=${callbackToken}&sessionId=${browserUuid}`);
         const lootlabsData = await lootlabsResponse.json();
-        
+
         if (lootlabsData.success) {
           return lootlabsData;
         }
@@ -211,7 +211,7 @@ export default function CallbackPage() {
         // Try the legacy LootLabs callback method
         const legacyResponse = await fetch(`/api/v1/keysystems/lootlabs/callback?callbackToken=${callbackToken}&sessionId=${browserUuid}`);
         const legacyData = await legacyResponse.json();
-        
+
         if (legacyData.success) {
           return legacyData;
         }
@@ -297,7 +297,7 @@ export default function CallbackPage() {
     }
   };
 
-  const verifyLinkvertiseHash = async (callbackToken) => {
+  const verifyLinkvertiseHash = async (callbackToken, keysystemId) => {
     try {
       // Get hash from URL - check both query parameter and fragment
       const urlParams = new URLSearchParams(window.location.search);
@@ -321,7 +321,8 @@ export default function CallbackPage() {
         },
         body: JSON.stringify({
           token: callbackToken,
-          hash: hash
+          hash: hash,
+          keysystemId: keysystemId
         }),
       });
 
@@ -450,7 +451,7 @@ export default function CallbackPage() {
           </div>
         )}
 
-        
+
 
         {/* Loading Text */}
         <div className="text-center mb-8">

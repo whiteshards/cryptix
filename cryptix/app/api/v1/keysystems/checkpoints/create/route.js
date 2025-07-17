@@ -37,6 +37,11 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Lootlabs API key required in integrations' }, { status: 400 });
     }
 
+    // Check if user has linkvertise integration for linkvertise checkpoints
+    if (type === 'linkvertise' && !user.integrations?.linkvertise) {
+      return NextResponse.json({ error: 'Linkvertise API token required in integrations' }, { status: 400 });
+    }
+
     // Find the keysystem
     const keysystem = user.keysystems?.find(ks => ks.id === keysystemId);
     if (!keysystem) {
