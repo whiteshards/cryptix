@@ -4,22 +4,25 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function CallbackPage(req, res) {
+export default function CallbackPage() {
   const params = useParams();
   const router = useRouter();
   const [isProcessing, setIsProcessing] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [loadingText, setLoadingText] = useState('Initializing...');
   const [checkpointInfo, setCheckpointInfo] = useState(null);
-  const referer = req.headers.referer || "";
+  const [referer, setReferer] = useState('');
   useEffect(() => {
+    // Get referer from browser
+    const currentReferer = document.referrer || 'Direct access';
+    setReferer(currentReferer);
+
     const processCallback = async () => {
       try {
         const callbackToken = params.token;
-        //const referrer = document.referrer;
-        console.log(referer)
+        console.log(currentReferer);
         setLoadingProgress(10);
-        setLoadingText(referer);
+        setLoadingText('Processing callback...');
         await new Promise(resolve => setTimeout(resolve, 200));
 
         if (!callbackToken) {
@@ -368,6 +371,16 @@ export default function CallbackPage(req, res) {
             </div>
             <div className="text-gray-500 text-xs">
               Step {checkpointInfo.checkpointIndex} of {checkpointInfo.totalCheckpoints}
+            </div>
+          </div>
+        )}
+
+        {/* Referer Info */}
+        {referer && (
+          <div className="text-center mb-6">
+            <div className="text-gray-400 text-sm mb-1">Referred from:</div>
+            <div className="text-gray-300 text-xs break-all bg-white/5 rounded px-3 py-2 border border-white/10">
+              {referer}
             </div>
           </div>
         )}
