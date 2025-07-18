@@ -178,7 +178,7 @@ export default function CallbackPage() {
                       avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
                       embeds: [
                         {
-                          title: "✅ Checkpoint Completed",
+                          title: "Checkpoint Completed",
                           color: 0x00ff00,
                           thumbnail: {
                             url: "https://cryptixmanager.vercel.app/images/thumbnail.gif"

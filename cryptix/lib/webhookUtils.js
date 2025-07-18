@@ -8,7 +8,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
     switch (type) {
       case 'checkpoint_completed':
         embed = {
-          title: '✅ Checkpoint Completed',
+          title: 'Checkpoint Completed',
           color: 0x00ff00,
           thumbnail: {
             url: 'https://cryptixmanager.vercel.app/images/thumbnail.gif'
@@ -97,7 +97,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
 
       case 'key_generated':
         embed = {
-          title: '🔑 Key Generated',
+          title: 'Key Generated',
           color: 0x0099ff,
           thumbnail: {
             url: 'https://cryptixmanager.vercel.app/images/thumbnail.gif'
