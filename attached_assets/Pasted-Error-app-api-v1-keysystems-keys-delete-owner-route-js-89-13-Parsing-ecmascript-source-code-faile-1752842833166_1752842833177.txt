@@ -1,0 +1,24 @@
+Error: ./app/api/v1/keysystems/keys/delete-owner/route.js:89:13
+Parsing ecmascript source code failed
+[0m [90m 87 |[39m             keyFound [33m=[39m [36mtrue[39m[33m;[39m[0m
+[0m [90m 88 |[39m             sessionToUpdate [33m=[39m sessionId[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 89 |[39m             [36mbreak[39m[33m;[39m[0m
+[0m [90m    |[39m             [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 90 |[39m           }[0m
+[0m [90m 91 |[39m         }[0m
+[0m [90m 92 |[39m       }[0m
+
+A 'break' statement can only be used within an enclosing iteration or switch statement
+    at BuildError (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_client_8f19e6fb._.js:11135:41)
+    at react-stack-bottom-frame (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:14911:24)
+    at renderWithHooksAgain (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:6256:24)
+    at renderWithHooks (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:6207:28)
+    at updateFunctionComponent (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:7543:21)
+    at beginWork (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:8142:24)
+    at runWithFiberInDEV (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:3073:74)
+    at performUnitOfWork (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10243:97)
+    at workLoopSync (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10135:40)
+    at renderRootSync (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10118:13)
+    at performWorkOnRoot (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:9853:212)
+    at performWorkOnRootViaSchedulerTask (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10826:9)
+    at MessagePort.performWorkUntilDeadline (https://e1c58914-eeb6-4c67-84fc-9d39d184078e-00-bp0lvcfwchtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:1982:64)
