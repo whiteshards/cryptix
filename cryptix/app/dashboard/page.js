@@ -448,6 +448,58 @@ export default function Dashboard() {
     }
   };
 
+  // Copy key function
+  const handleCopyKey = async (keyValue) => {
+    try {
+      await navigator.clipboard.writeText(keyValue);
+      showToast('Key copied to clipboard!', 'success');
+    } catch (error) {
+      showToast('Failed to copy key', 'error');
+    }
+  };
+
+  // Delete key from dashboard
+  const handleDeleteKeyFromDashboard = async (keyValue) => {
+    if (!selectedKeysystemForKeys) {
+      showToast('No keysystem selected', 'error');
+      return;
+    }
+
+    setIsDeletingKey(true);
+    try {
+      const token = localStorage.getItem('cryptix_jwt');
+      const response = await fetch('/api/v1/keysystems/keys/delete-owner', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keysystemId: selectedKeysystemForKeys,
+          keyValue: keyValue
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showToast(data.error || 'Failed to delete key', 'error');
+        return;
+      }
+
+      showToast('Key deleted successfully!', 'success');
+      
+      // Refresh the keys data
+      await fetchKeysData(selectedKeysystemForKeys, currentKeysPage);
+
+    } catch (error) {
+      console.error('Delete key error:', error);
+      showToast('Failed to delete key', 'error');
+    } finally {
+      setIsDeletingKey(false);
+    }
+  };
+
   // Keys management functions
   const fetchKeysData = async (keysystemId, page = 1) => {
     if (!keysystemId) return;
