@@ -38,6 +38,49 @@ export async function DELETE(request) {
     // Find and remove the key by searching through all sessions
     let keyFound = false;
     let sessionToUpdate = null;
+    
+    // Check if keysystem.keys exists and is an object
+    if (!keysystem.keys || typeof keysystem.keys !== 'object') {
+      return NextResponse.json({ error: 'No sessions found in keysystem' }, { status: 404 });
+    }
+
+    // Search through all sessions to find the key
+    for (const [sessionId, sessionData] of Object.entries(keysystem.keys)) {
+      if (sessionData && sessionData.keys && Array.isArray(sessionData.keys)) {
+        const keyIndex = sessionData.keys.findIndex(key => key.value === keyValue);
+        if (keyIndex !== -1) {
+          keyFound = true;
+          sessionToUpdate = sessionId;
+          break;
+        }
+      }
+    }
+
+    if (!keyFound) {
+      return NextResponse.json({ error: 'Key not found in any session' }, { status: 404 });
+    }
+
+    // Remove the key from the found session
+    const result = await collection.updateOne(
+      { 
+        _id: user._id,
+        'keysystems.id': keysystemId
+      },
+      { 
+        $pull: {
+          [`keysystems.$.keys.${sessionToUpdate}.keys`]: { value: keyValue }
+        }
+      }
+    );
+
+    if (result.modifiedCount === 0) {
+      return NextResponse.json({ error: 'Failed to delete key' }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Key deleted successfully'
+    });
 
     if (keysystem.keys) {
       for (const [sessionId, sessionData] of Object.entries(keysystem.keys)) {
