@@ -83,14 +83,14 @@ export async function POST(request) {
     // Generate new key
     const keyValue = generateKey();
     const now = new Date();
-    const expiresAt = keysystem.permanent ? null : new Date(now.getTime() + (keysystem.keyTimer * 60 * 60 * 1000));
+    const expiresAt = new Date(now.getTime() + (keysystem.keyTimer * 60 * 60 * 1000));
     const cooldownTill = new Date(now.getTime() + (keysystem.keyCooldown * 60 * 1000));
 
     const newKey = {
       value: keyValue,
       hwid: null,
       created_at: now.toISOString(),
-      expires_at: expiresAt ? expiresAt.toISOString() : null,
+      expires_at: expiresAt.toISOString(),
       status: 'active'
     };
 
@@ -115,10 +115,8 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Failed to generate key' }, { status: 500 });
     }
 
-    // Schedule key expiration if not permanent
-    if (!keysystem.permanent && expiresAt) {
-      await jobQueue.scheduleKeyExpiration(keysystemId, sessionId, keyValue, expiresAt);
-    }
+    // Schedule key expiration
+    await jobQueue.scheduleKeyExpiration(keysystemId, sessionId, keyValue, expiresAt);
 
     // Schedule cooldown cleanup
     jobQueue.scheduleCooldownCleanup(keysystemId, sessionId, cooldownTill);

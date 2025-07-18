@@ -1,11 +1,10 @@
-
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
 
 export async function PUT(request) {
   try {
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Authorization token required' }, { status: 401 });
     }
@@ -15,7 +14,6 @@ export async function PUT(request) {
       keysystemId,
       maxKeyPerPerson,
       keyTimer,
-      permanentKeys,
       keyCooldown,
       active
     } = await request.json();
@@ -31,10 +29,10 @@ export async function PUT(request) {
       return NextResponse.json({ error: 'Max key per person must be at least 1' }, { status: 400 });
     }
 
-    
+
 
     const timer = parseInt(keyTimer);
-    if (!permanentKeys && (!timer || timer < 1 || timer > 196)) {
+    if (!timer || timer < 1 || timer > 196) {
       return NextResponse.json({ error: 'Key timer must be between 1 and 196 hours' }, { status: 400 });
     }
 
@@ -63,8 +61,7 @@ export async function PUT(request) {
       { 
         $set: {
           'keysystems.$.maxKeyPerPerson': maxKeys,
-          'keysystems.$.keyTimer': permanentKeys ? 0 : timer,
-          'keysystems.$.permanent': permanentKeys,
+          'keysystems.$.keyTimer': timer,
           'keysystems.$.keyCooldown': cooldown,
           'keysystems.$.active': active !== undefined ? active : true
         }

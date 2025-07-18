@@ -22,13 +22,11 @@ export default function Dashboard() {
     name: '',
     maxKeyPerPerson: 1,
     keyTimer: 12,
-    permanentKeys: false,
     keyCooldown: 10
   });
   const [editFormData, setEditFormData] = useState({
     maxKeyPerPerson: 1,
     keyTimer: 12,
-    permanentKeys: false,
     keyCooldown: 10,
     active: true
   });
@@ -198,27 +196,11 @@ export default function Dashboard() {
   };
 
   const handleInputChange = (field, value) => {
-    if (field === 'permanentKeys') {
-      setFormData(prev => ({ 
-        ...prev, 
-        [field]: value,
-        keyTimer: value ? 0 : 12 
-      }));
-    } else {
-      setFormData(prev => ({ ...prev, [field]: value }));
-    }
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleEditInputChange = (field, value) => {
-    if (field === 'permanentKeys') {
-      setEditFormData(prev => ({ 
-        ...prev, 
-        [field]: value,
-        keyTimer: value ? 0 : 12 
-      }));
-    } else {
-      setEditFormData(prev => ({ ...prev, [field]: value }));
-    }
+    setEditFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleCreateKeysystem = async () => {
@@ -247,7 +229,6 @@ export default function Dashboard() {
         name: '',
         maxKeyPerPerson: 1,
         keyTimer: 12,
-        permanentKeys: false,
         keyCooldown: 10
       });
 
@@ -268,7 +249,6 @@ export default function Dashboard() {
     setEditFormData({
       maxKeyPerPerson: keysystem.maxKeyPerPerson,
       keyTimer: keysystem.keyTimer,
-      permanentKeys: keysystem.permanent,
       keyCooldown: keysystem.keyCooldown,
       active: keysystem.active
     });
@@ -630,7 +610,7 @@ export default function Dashboard() {
                         <div className="flex items-center justify-between text-xs">
                           <span className="text-gray-400">Timer</span>
                           <span className="text-white">
-                            {keysystem.permanent ? 'Permanent' : `${keysystem.keyTimer || 0}h`}
+                            {keysystem.keyTimer || 0}h
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-xs">
@@ -932,28 +912,6 @@ export default function Dashboard() {
 
                 {/* Right Column */}
                 <div className="space-y-4">
-                  {/* Permanent Keys Toggle */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-white text-sm font-medium">
-                        Permanent Keys
-                      </label>
-                      <button
-                        onClick={() => handleInputChange('permanentKeys', !formData.permanentKeys)}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          formData.permanentKeys ? 'bg-[#6366f1]' : 'bg-gray-600'
-                        }`}
-                      >
-                        <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            formData.permanentKeys ? 'translate-x-6' : 'translate-x-1'
-                          }`}
-                        />
-                      </button>
-                    </div>
-                    <p className="text-gray-400 text-xs">If you want to enable permanent keys turn on the toggle above</p>
-                  </div>
-
                   {/* Key Timer */}
                   <div>
                     <label className="block text-white text-sm font-medium mb-2">
@@ -963,10 +921,7 @@ export default function Dashboard() {
                       type="number"
                       value={formData.keyTimer}
                       onChange={(e) => handleInputChange('keyTimer', e.target.value)}
-                      disabled={formData.permanentKeys}
-                      className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors ${
-                        formData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2d47]'
-                      }`}
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                   </div>
 
@@ -1067,28 +1022,6 @@ export default function Dashboard() {
 
                 {/* Right Column */}
                 <div className="space-y-4">
-                  {/* Permanent Keys Toggle */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-white text-sm font-medium">
-                        Permanent Keys
-                      </label>
-                      <button
-                        onClick={() => handleEditInputChange('permanentKeys', !editFormData.permanentKeys)}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          editFormData.permanentKeys ? 'bg-[#6366f1]' : 'bg-gray-600'
-                        }`}
-                      >
-                        <span
-                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                            editFormData.permanentKeys ? 'translate-x-6' : 'translate-x-1'
-                          }`}
-                        />
-                      </button>
-                    </div>
-                    <p className="text-gray-400 text-xs">If you want to enable permanent keys turn on the toggle above</p>
-                  </div>
-
                   {/* Key Timer */}
                   <div>
                     <label className="block text-white text-sm font-medium mb-2">
@@ -1098,10 +1031,7 @@ export default function Dashboard() {
                       type="number"
                       value={editFormData.keyTimer}
                       onChange={(e) => handleEditInputChange('keyTimer', e.target.value)}
-                      disabled={editFormData.permanentKeys}
-                      className={`w-full border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors ${
-                        editFormData.permanentKeys ? 'bg-gray-600/50 cursor-not-allowed' : 'bg-[#2a2d47]'
-                      }`}
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                   </div>
 

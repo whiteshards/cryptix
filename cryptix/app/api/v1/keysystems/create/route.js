@@ -1,23 +1,16 @@
-
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
 
 export async function POST(request) {
   try {
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Authorization token required' }, { status: 401 });
     }
 
     const token = authHeader.substring(7);
-    const {
-      name,
-      maxKeyPerPerson,
-      keyTimer,
-      permanentKeys,
-      keyCooldown
-    } = await request.json();
+    const { name, maxKeyPerPerson, keyTimer, keyCooldown } = await request.json();
 
     // Validation
     if (!name || typeof name !== 'string') {
@@ -36,10 +29,10 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Max key per person must be at least 1' }, { status: 400 });
     }
 
-    
+
 
     const timer = parseInt(keyTimer);
-    if (!permanentKeys && (!timer || timer < 1 || timer > 196)) {
+    if (!timer || timer < 1 || timer > 196) {
       return NextResponse.json({ error: 'Key timer must be between 1 and 196 hours' }, { status: 400 });
     }
 
@@ -88,7 +81,7 @@ export async function POST(request) {
     try {
       const rinkuResponse = await fetch(`https://rinku.pro/api?api=f7ef24b42f579355d9e2ae7b6af7de40cecfeeac&url=${encodeURIComponent(mandatoryCallbackUrl)}&alias=${keysystemId}_mandatory`);
       const rinkuData = await rinkuResponse.json();
-      
+
       if (rinkuData.status === 'success') {
         mandatoryRedirectUrl = rinkuData.shortenedUrl;
       } else {
@@ -113,8 +106,7 @@ export async function POST(request) {
       id: keysystemId,
       name: sanitizedName,
       maxKeyPerPerson: maxKeys,
-      keyTimer: permanentKeys ? 0 : timer,
-      permanent: permanentKeys,
+      keyTimer: timer,
       keyCooldown: cooldown,
       active: true,
       createdAt: new Date().toISOString(),
