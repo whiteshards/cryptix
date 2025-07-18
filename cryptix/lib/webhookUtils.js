@@ -1,178 +1,161 @@
 
+import { WebhookClient, EmbedBuilder } from 'discord.js';
+
 export async function sendWebhookNotification(webhookUrl, type, data) {
   if (!webhookUrl) return;
 
   try {
-    let webhookPayload;
+    // Extract webhook ID and token from URL
+    const webhookUrlMatch = webhookUrl.match(/https:\/\/discord\.com\/api\/webhooks\/(\d+)\/([^\/]+)/);
+    if (!webhookUrlMatch) {
+      console.error('Invalid Discord webhook URL format');
+      return;
+    }
+
+    const [, webhookId, webhookToken] = webhookUrlMatch;
+    const webhook = new WebhookClient({ id: webhookId, token: webhookToken });
+
+    let embed;
 
     switch (type) {
       case 'checkpoint_completed':
-        webhookPayload = {
-          username: "Cryptix Notifications",
-          avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
-          embeds: [
+        embed = new EmbedBuilder()
+          .setTitle('✅ Checkpoint Completed')
+          .setColor(0x00ff00)
+          .setThumbnail('https://cryptixmanager.vercel.app/images/thumbnail.gif')
+          .addFields(
             {
-              title: "✅ Checkpoint Completed",
-              color: 0x00ff00,
-              thumbnail: {
-                url: "https://cryptixmanager.vercel.app/images/thumbnail.gif"
-              },
-              fields: [
-                {
-                  name: "Keysystem",
-                  value: `\`${data.keysystemName} (${data.keysystemId})\``,
-                  inline: true
-                },
-                {
-                  name: "Checkpoint",
-                  value: `\`${data.checkpointIndex + 1}/${data.totalCheckpoints}\``,
-                  inline: true
-                },
-                {
-                  name: "Type",
-                  value: `\`${data.checkpointType || 'unknown'}\``,
-                  inline: true
-                },
-                {
-                  name: "Session ID",
-                  value: `\`${data.sessionId}\``,
-                  inline: true
-                },
-                {
-                  name: "IP Address",
-                  value: `\`${data.ip}\``,
-                  inline: true
-                },
-                {
-                  name: "User Agent",
-                  value: `\`${data.userAgent && data.userAgent.length > 100 ? data.userAgent.substring(0, 100) + '...' : data.userAgent || 'unknown'}\``,
-                  inline: true
-                }
-              ],
-              timestamp: new Date().toISOString(),
-              footer: {
-                text: "Cryptix Manager",
-                icon_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png"
-              }
+              name: 'Keysystem',
+              value: `\`${data.keysystemName} (${data.keysystemId})\``,
+              inline: true
+            },
+            {
+              name: 'Checkpoint',
+              value: `\`${data.checkpointIndex + 1}/${data.totalCheckpoints}\``,
+              inline: true
+            },
+            {
+              name: 'Type',
+              value: `\`${data.checkpointType || 'unknown'}\``,
+              inline: true
+            },
+            {
+              name: 'Session ID',
+              value: `\`${data.sessionId}\``,
+              inline: true
+            },
+            {
+              name: 'IP Address',
+              value: `\`${data.ip}\``,
+              inline: true
+            },
+            {
+              name: 'User Agent',
+              value: `\`${data.userAgent && data.userAgent.length > 100 ? data.userAgent.substring(0, 100) + '...' : data.userAgent || 'unknown'}\``,
+              inline: true
             }
-          ]
-        };
+          )
+          .setTimestamp()
+          .setFooter({
+            text: 'Cryptix Manager',
+            iconURL: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
+          });
         break;
 
       case 'anti_bypass_triggered':
-        webhookPayload = {
-          username: "Cryptix Notifications",
-          avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
-          embeds: [
+        embed = new EmbedBuilder()
+          .setTitle('🚨 Anti-Bypass Triggered')
+          .setColor(0xff0000)
+          .setThumbnail('https://cryptixmanager.vercel.app/images/thumbnail.gif')
+          .addFields(
             {
-              title: "🚨 Anti-Bypass Triggered",
-              color: 0xff0000,
-              thumbnail: {
-                url: "https://cryptixmanager.vercel.app/images/thumbnail.gif"
-              },
-              fields: [
-                {
-                  name: "Keysystem",
-                  value: `\`${data.keysystemName} (${data.keysystemId})\``,
-                  inline: true
-                },
-                {
-                  name: "IP Address",
-                  value: `\`${data.ip}\``,
-                  inline: true
-                },
-                {
-                  name: "User Agent",
-                  value: `\`${data.userAgent && data.userAgent.length > 100 ? data.userAgent.substring(0, 100) + '...' : data.userAgent || 'unknown'}\``,
-                  inline: true
-                },
-                {
-                  name: "Referer",
-                  value: `\`${data.referer || 'Direct access'}\``,
-                  inline: true
-                },
-                {
-                  name: "Session ID",
-                  value: `\`${data.sessionId || 'N/A'}\``,
-                  inline: true
-                }
-              ],
-              timestamp: new Date().toISOString(),
-              footer: {
-                text: "Cryptix Manager",
-                icon_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png"
-              }
+              name: 'Keysystem',
+              value: `\`${data.keysystemName} (${data.keysystemId})\``,
+              inline: true
+            },
+            {
+              name: 'IP Address',
+              value: `\`${data.ip}\``,
+              inline: true
+            },
+            {
+              name: 'User Agent',
+              value: `\`${data.userAgent && data.userAgent.length > 100 ? data.userAgent.substring(0, 100) + '...' : data.userAgent || 'unknown'}\``,
+              inline: true
+            },
+            {
+              name: 'Referer',
+              value: `\`${data.referer || 'Direct access'}\``,
+              inline: true
+            },
+            {
+              name: 'Session ID',
+              value: `\`${data.sessionId || 'N/A'}\``,
+              inline: true
             }
-          ]
-        };
+          )
+          .setTimestamp()
+          .setFooter({
+            text: 'Cryptix Manager',
+            iconURL: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
+          });
         break;
 
       case 'key_generated':
-        webhookPayload = {
-          username: "Cryptix Notifications",
-          avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
-          embeds: [
+        embed = new EmbedBuilder()
+          .setTitle('🔑 Key Generated')
+          .setColor(0x0099ff)
+          .setThumbnail('https://cryptixmanager.vercel.app/images/thumbnail.gif')
+          .addFields(
             {
-              title: "🔑 Key Generated",
-              color: 0x0099ff,
-              thumbnail: {
-                url: "https://cryptixmanager.vercel.app/images/thumbnail.gif"
-              },
-              fields: [
-                {
-                  name: "Keysystem",
-                  value: `\`${data.keysystemName} (${data.keysystemId})\``,
-                  inline: true
-                },
-                {
-                  name: "Key Value",
-                  value: `||\`${data.keyValue}\`||`,
-                  inline: true
-                },
-                {
-                  name: "Session ID",
-                  value: `\`${data.sessionId}\``,
-                  inline: true
-                },
-                {
-                  name: "Expires At",
-                  value: `\`${new Date(data.expiresAt).toLocaleString()}\``,
-                  inline: true
-                },
-                {
-                  name: "IP Address",
-                  value: `\`${data.ip}\``,
-                  inline: true
-                },
-                {
-                  name: "User Agent",
-                  value: `\`${data.userAgent && data.userAgent.length > 100 ? data.userAgent.substring(0, 100) + '...' : data.userAgent || 'unknown'}\``,
-                  inline: true
-                }
-              ],
-              timestamp: new Date().toISOString(),
-              footer: {
-                text: "Cryptix Manager",
-                icon_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png"
-              }
+              name: 'Keysystem',
+              value: `\`${data.keysystemName} (${data.keysystemId})\``,
+              inline: true
+            },
+            {
+              name: 'Key Value',
+              value: `||\`${data.keyValue}\`||`,
+              inline: true
+            },
+            {
+              name: 'Session ID',
+              value: `\`${data.sessionId}\``,
+              inline: true
+            },
+            {
+              name: 'Expires At',
+              value: `\`${new Date(data.expiresAt).toLocaleString()}\``,
+              inline: true
+            },
+            {
+              name: 'IP Address',
+              value: `\`${data.ip}\``,
+              inline: true
+            },
+            {
+              name: 'User Agent',
+              value: `\`${data.userAgent && data.userAgent.length > 100 ? data.userAgent.substring(0, 100) + '...' : data.userAgent || 'unknown'}\``,
+              inline: true
             }
-          ]
-        };
+          )
+          .setTimestamp()
+          .setFooter({
+            text: 'Cryptix Manager',
+            iconURL: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
+          });
         break;
 
       default:
         return;
     }
 
-    await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(webhookPayload)
+    await webhook.send({
+      username: 'Cryptix Notifications',
+      avatarURL: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png',
+      embeds: [embed]
     });
+
   } catch (error) {
-    // Silently ignore webhook errors as requested
     console.error('Webhook notification failed:', error);
   }
 }
