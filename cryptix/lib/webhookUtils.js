@@ -1,12 +1,8 @@
 
-import { Webhook } from 'discord-webhook';
-
 export async function sendWebhookNotification(webhookUrl, type, data) {
   if (!webhookUrl) return;
 
   try {
-    const webhook = new Webhook(webhookUrl);
-
     let embed;
 
     switch (type) {
@@ -150,10 +146,18 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
         return;
     }
 
-    await webhook.send({
+    const webhookPayload = {
       username: 'Cryptix Notifications',
       avatar_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png',
       embeds: [embed]
+    };
+
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(webhookPayload)
     });
 
   } catch (error) {
