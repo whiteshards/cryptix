@@ -42,93 +42,85 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Invalid token or keysystem not found' }, { status: 401 });
     }
 
-    // Get all sessions for this keysystem and aggregate keys
-    const sessionsCollection = db.collection('sessions');
+    // Find the specific keysystem
+    const keysystem = user.keysystems.find(ks => ks.id === keysystemId);
+
+    if (!keysystem) {
+      return NextResponse.json({ error: 'Keysystem not found' }, { status: 404 });
+    }
+
+    // Get all keys from the keysystem.keys object
+    let allKeys = [];
     
-    let matchStage = { keysystem_id: keysystemId };
-    let pipeline = [
-      { $match: matchStage },
-      { $unwind: '$keys' },
-      {
-        $addFields: {
-          'keys.session_id': '$session_id',
-          'keys.hwid': '$hwid',
-          'keys.status': {
-            $cond: {
-              if: { $lt: ['$keys.expires_at', new Date()] },
-              then: 'expired',
-              else: 'active'
-            }
-          }
+    if (keysystem.keys) {
+      // Iterate through all sessions in keysystem.keys
+      Object.entries(keysystem.keys).forEach(([sessionId, sessionData]) => {
+        if (sessionData.keys && Array.isArray(sessionData.keys)) {
+          sessionData.keys.forEach(key => {
+            allKeys.push({
+              ...key,
+              session_id: sessionId,
+              hwid: sessionData.hwid || null,
+              status: new Date(key.expires_at) > new Date() ? 'active' : 'expired'
+            });
+          });
         }
-      },
-      { $replaceRoot: { newRoot: '$keys' } }
-    ];
+      });
+    }
 
     // Apply filters
-    let filterStage = {};
-    
+    let filteredKeys = allKeys;
+
+    // Status filter
     if (filterStatus !== 'all') {
       if (filterStatus === 'active') {
-        filterStage.expires_at = { $gt: new Date() };
+        filteredKeys = filteredKeys.filter(key => new Date(key.expires_at) > new Date());
       } else if (filterStatus === 'expired') {
-        filterStage.expires_at = { $lte: new Date() };
+        filteredKeys = filteredKeys.filter(key => new Date(key.expires_at) <= new Date());
       }
     }
 
+    // Expires soon filter
     if (filterExpires === 'soon') {
       const soonDate = new Date();
       soonDate.setHours(soonDate.getHours() + 24); // Next 24 hours
-      filterStage.expires_at = { 
-        $gt: new Date(), 
-        $lte: soonDate 
-      };
+      filteredKeys = filteredKeys.filter(key => 
+        new Date(key.expires_at) > new Date() && 
+        new Date(key.expires_at) <= soonDate
+      );
     }
 
+    // HWID filter
     if (filterHwid === 'linked') {
-      filterStage.hwid = { $ne: null, $exists: true };
+      filteredKeys = filteredKeys.filter(key => key.hwid && key.hwid !== null);
     } else if (filterHwid === 'not_linked') {
-      filterStage.$or = [
-        { hwid: null },
-        { hwid: { $exists: false } }
-      ];
+      filteredKeys = filteredKeys.filter(key => !key.hwid || key.hwid === null);
     }
 
-    if (Object.keys(filterStage).length > 0) {
-      pipeline.push({ $match: filterStage });
-    }
-
-    // Apply sorting
-    let sortStage = {};
-    if (sortBy === 'recent') {
-      sortStage.created_at = -1;
-    } else if (sortBy === 'oldest') {
-      sortStage.created_at = 1;
-    }
-
-    pipeline.push({ $sort: sortStage });
-
-    // Get total count for pagination
-    const countPipeline = [...pipeline, { $count: 'total' }];
-    const countResult = await sessionsCollection.aggregate(countPipeline).toArray();
-    const totalKeys = countResult.length > 0 ? countResult[0].total : 0;
+    // Sort keys
+    filteredKeys.sort((a, b) => {
+      const dateA = new Date(a.created_at);
+      const dateB = new Date(b.created_at);
+      
+      if (sortBy === 'recent') {
+        return dateB - dateA; // Newest first
+      } else {
+        return dateA - dateB; // Oldest first
+      }
+    });
 
     // Apply pagination
-    pipeline.push({ $skip: skip });
-    pipeline.push({ $limit: pageSize });
-
-    const keys = await sessionsCollection.aggregate(pipeline).toArray();
-
-    const totalPages = Math.ceil(totalKeys / pageSize);
+    const totalKeys = filteredKeys.length;
+    const paginatedKeys = filteredKeys.slice(skip, skip + pageSize);
 
     return NextResponse.json({
       success: true,
-      keys: keys,
+      keys: paginatedKeys,
       pagination: {
         currentPage: page,
-        totalPages: totalPages,
+        totalPages: Math.ceil(totalKeys / pageSize),
         totalKeys: totalKeys,
-        pageSize: pageSize
+        keysPerPage: pageSize
       }
     });
 
