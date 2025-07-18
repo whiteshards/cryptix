@@ -43,6 +43,20 @@ export default function Dashboard() {
   const [linkvertiseApiToken, setLinkvertiseApiToken] = useState('');
   const [linkvertiseTokenChanged, setLinkvertiseTokenChanged] = useState(false);
   const [isSavingLinkvertiseToken, setIsSavingLinkvertiseToken] = useState(false);
+  
+  // Keys management state
+  const [selectedKeysystemForKeys, setSelectedKeysystemForKeys] = useState('');
+  const [keysData, setKeysData] = useState([]);
+  const [keysPagination, setKeysPagination] = useState(null);
+  const [currentKeysPage, setCurrentKeysPage] = useState(1);
+  const [isLoadingKeys, setIsLoadingKeys] = useState(false);
+  const [isDeletingKey, setIsDeletingKey] = useState(false);
+  const [keysFilters, setKeysFilters] = useState({
+    sortBy: 'recent',
+    filterExpires: 'all',
+    filterHwid: 'all',
+    filterStatus: 'all'
+  });
 
   useEffect(() => {
     // Check authentication and fetch profile
@@ -54,6 +68,13 @@ export default function Dashboard() {
 
     fetchUserProfile(token);
   }, [router]);
+
+  // Effect for keys filters
+  useEffect(() => {
+    if (selectedKeysystemForKeys) {
+      fetchKeysData(selectedKeysystemForKeys, currentKeysPage);
+    }
+  }, [keysFilters]);
 
   const fetchUserProfile = async (token) => {
     try {
@@ -427,6 +448,120 @@ export default function Dashboard() {
     }
   };
 
+  // Keys management functions
+  const fetchKeysData = async (keysystemId, page = 1) => {
+    if (!keysystemId) return;
+    
+    setIsLoadingKeys(true);
+    try {
+      const token = localStorage.getItem('cryptix_jwt');
+      const params = new URLSearchParams({
+        keysystemId,
+        page: page.toString(),
+        ...keysFilters
+      });
+
+      const response = await fetch(`/api/v1/keysystems/keys/list?${params}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showToast(data.error || 'Failed to fetch keys');
+        return;
+      }
+
+      setKeysData(data.keys || []);
+      setKeysPagination(data.pagination);
+
+    } catch (error) {
+      showToast(error.message || 'An error occurred while fetching keys');
+    } finally {
+      setIsLoadingKeys(false);
+    }
+  };
+
+  const handleKeysFilterChange = (filterName, value) => {
+    setKeysFilters(prev => ({
+      ...prev,
+      [filterName]: value
+    }));
+    setCurrentKeysPage(1);
+    
+    // Fetch data with new filter
+    if (selectedKeysystemForKeys) {
+      setTimeout(() => {
+        fetchKeysData(selectedKeysystemForKeys, 1);
+      }, 100);
+    }
+  };
+
+  const handleKeysPageChange = (newPage) => {
+    setCurrentKeysPage(newPage);
+    fetchKeysData(selectedKeysystemForKeys, newPage);
+  };
+
+  const handleDeleteKeyFromDashboard = async (keyValue) => {
+    if (!confirm('Are you sure you want to delete this key?')) return;
+    
+    setIsDeletingKey(true);
+    try {
+      const token = localStorage.getItem('cryptix_jwt');
+      const response = await fetch('/api/v1/keysystems/keys/delete-owner', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keysystemId: selectedKeysystemForKeys,
+          keyValue: keyValue
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showToast(data.error || 'Failed to delete key');
+        return;
+      }
+
+      showToast('Key deleted successfully!', 'success');
+      
+      // Refresh the keys data
+      fetchKeysData(selectedKeysystemForKeys, currentKeysPage);
+
+    } catch (error) {
+      showToast(error.message || 'An error occurred while deleting the key');
+    } finally {
+      setIsDeletingKey(false);
+    }
+  };
+
+  const getTimeLeft = (expiresAt) => {
+    if (!expiresAt) return 'N/A';
+    
+    const now = new Date();
+    const expiry = new Date(expiresAt);
+    const diff = expiry.getTime() - now.getTime();
+    
+    if (diff <= 0) return 'Expired';
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (hours > 24) {
+      const days = Math.floor(hours / 24);
+      return `${days}d ${hours % 24}h`;
+    }
+    
+    return `${hours}h ${minutes}m`;
+  };
+
   return (
     <div className="min-h-screen bg-[#0f1015]">
       {/* Profile Section (Navbar) */}
@@ -662,11 +797,242 @@ export default function Dashboard() {
           {activeTab === 'keys' && (
             <div className="bg-transparent rounded-lg border border-white/10 p-6">
               <h2 className="text-white text-xl font-semibold mb-6">Keys Management</h2>
-              <div className="text-center py-12">
-                <p className="text-gray-400 text-base">
-                  Keys management interface coming soon...
-                </p>
+              
+              {/* Keysystem Selection */}
+              <div className="mb-6">
+                <label className="block text-white text-sm font-medium mb-2">
+                  Select Keysystem
+                </label>
+                <select
+                  value={selectedKeysystemForKeys}
+                  onChange={(e) => {
+                    setSelectedKeysystemForKeys(e.target.value);
+                    setCurrentKeysPage(1);
+                    if (e.target.value) {
+                      fetchKeysData(e.target.value, 1);
+                    } else {
+                      setKeysData([]);
+                      setKeysPagination(null);
+                    }
+                  }}
+                  className="w-full max-w-md bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white focus:border-[#6366f1] focus:outline-none transition-colors"
+                >
+                  <option value="">Choose a keysystem...</option>
+                  {keysystems.map((ks) => (
+                    <option key={ks.id} value={ks.id}>
+                      {ks.name}
+                    </option>
+                  ))}
+                </select>
               </div>
+
+              {selectedKeysystemForKeys && (
+                <>
+                  {/* Filters */}
+                  <div className="mb-6 p-4 bg-black/20 rounded border border-white/10">
+                    <h3 className="text-white text-sm font-medium mb-4">Filters</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                      <div>
+                        <label className="block text-white text-xs font-medium mb-1">
+                          Sort by Creation
+                        </label>
+                        <select
+                          value={keysFilters.sortBy}
+                          onChange={(e) => handleKeysFilterChange('sortBy', e.target.value)}
+                          className="w-full bg-[#2a2d47] border border-white/10 rounded px-2 py-1 text-white text-sm focus:border-[#6366f1] focus:outline-none transition-colors"
+                        >
+                          <option value="recent">Recent First</option>
+                          <option value="oldest">Oldest First</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-white text-xs font-medium mb-1">
+                          Expiry Status
+                        </label>
+                        <select
+                          value={keysFilters.filterExpires}
+                          onChange={(e) => handleKeysFilterChange('filterExpires', e.target.value)}
+                          className="w-full bg-[#2a2d47] border border-white/10 rounded px-2 py-1 text-white text-sm focus:border-[#6366f1] focus:outline-none transition-colors"
+                        >
+                          <option value="all">All Keys</option>
+                          <option value="soon">Expires Soon (24h)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-white text-xs font-medium mb-1">
+                          HWID Status
+                        </label>
+                        <select
+                          value={keysFilters.filterHwid}
+                          onChange={(e) => handleKeysFilterChange('filterHwid', e.target.value)}
+                          className="w-full bg-[#2a2d47] border border-white/10 rounded px-2 py-1 text-white text-sm focus:border-[#6366f1] focus:outline-none transition-colors"
+                        >
+                          <option value="all">All Keys</option>
+                          <option value="linked">HWID Linked</option>
+                          <option value="not_linked">No HWID</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-white text-xs font-medium mb-1">
+                          Status
+                        </label>
+                        <select
+                          value={keysFilters.filterStatus}
+                          onChange={(e) => handleKeysFilterChange('filterStatus', e.target.value)}
+                          className="w-full bg-[#2a2d47] border border-white/10 rounded px-2 py-1 text-white text-sm focus:border-[#6366f1] focus:outline-none transition-colors"
+                        >
+                          <option value="all">All Status</option>
+                          <option value="active">Active</option>
+                          <option value="expired">Expired</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Keys Count */}
+                  {keysPagination && (
+                    <div className="mb-4">
+                      <p className="text-gray-400 text-sm">
+                        Total Keys: <span className="text-white font-medium">{keysPagination.totalKeys}</span>
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Keys Table */}
+                  {isLoadingKeys ? (
+                    <div className="text-center py-12">
+                      <div className="inline-block w-6 h-6 border-2 border-[#6366f1] border-t-transparent rounded-full animate-spin"></div>
+                      <p className="text-gray-400 text-sm mt-2">Loading keys...</p>
+                    </div>
+                  ) : keysData.length > 0 ? (
+                    <>
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b border-white/10">
+                              <th className="text-left text-white text-sm font-medium py-3 px-2">Key Value</th>
+                              <th className="text-left text-white text-sm font-medium py-3 px-2">Status</th>
+                              <th className="text-left text-white text-sm font-medium py-3 px-2">Created At</th>
+                              <th className="text-left text-white text-sm font-medium py-3 px-2">Expires At</th>
+                              <th className="text-left text-white text-sm font-medium py-3 px-2">Time Left</th>
+                              <th className="text-left text-white text-sm font-medium py-3 px-2">Session ID</th>
+                              <th className="text-left text-white text-sm font-medium py-3 px-2">HWID</th>
+                              <th className="text-left text-white text-sm font-medium py-3 px-2">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {keysData.map((key, index) => {
+                              const isExpired = new Date(key.expires_at) <= new Date();
+                              const timeLeft = getTimeLeft(key.expires_at);
+                              
+                              return (
+                                <tr key={index} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                                  <td className="py-3 px-2">
+                                    <div className="flex items-center space-x-2">
+                                      <span className="text-white text-sm font-mono">
+                                        {key.value ? `${key.value.substring(0, 8)}...` : 'N/A'}
+                                      </span>
+                                      <button
+                                        onClick={() => handleCopyKey(key.value)}
+                                        className="text-gray-400 hover:text-white transition-colors"
+                                      >
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                      </button>
+                                    </div>
+                                  </td>
+                                  <td className="py-3 px-2">
+                                    <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                                      isExpired 
+                                        ? 'bg-red-500/20 text-red-400' 
+                                        : 'bg-green-500/20 text-green-400'
+                                    }`}>
+                                      {isExpired ? 'Expired' : 'Active'}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-2">
+                                    <span className="text-gray-300 text-sm">
+                                      {key.created_at ? new Date(key.created_at).toLocaleString() : 'N/A'}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-2">
+                                    <span className="text-gray-300 text-sm">
+                                      {key.expires_at ? new Date(key.expires_at).toLocaleString() : 'N/A'}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-2">
+                                    <span className={`text-sm ${isExpired ? 'text-red-400' : 'text-green-400'}`}>
+                                      {timeLeft}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-2">
+                                    <span className="text-gray-300 text-sm font-mono">
+                                      {key.session_id ? `${key.session_id.substring(0, 8)}...` : 'N/A'}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-2">
+                                    <span className="text-gray-300 text-sm">
+                                      {key.hwid ? (
+                                        <span className="inline-flex items-center">
+                                          <span className="font-mono">{key.hwid.substring(0, 8)}...</span>
+                                          <span className="ml-2 w-2 h-2 bg-green-400 rounded-full"></span>
+                                        </span>
+                                      ) : (
+                                        <span className="text-gray-500">No HWID</span>
+                                      )}
+                                    </span>
+                                  </td>
+                                  <td className="py-3 px-2">
+                                    <button
+                                      onClick={() => handleDeleteKeyFromDashboard(key.value)}
+                                      disabled={isDeletingKey}
+                                      className="text-red-400 hover:text-red-300 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                      Delete
+                                    </button>
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+
+                      {/* Pagination */}
+                      {keysPagination && keysPagination.totalPages > 1 && (
+                        <div className="mt-6 flex items-center justify-between">
+                          <div className="text-sm text-gray-400">
+                            Page {keysPagination.currentPage} of {keysPagination.totalPages}
+                          </div>
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleKeysPageChange(currentKeysPage - 1)}
+                              disabled={currentKeysPage === 1}
+                              className="px-3 py-1 bg-[#2a2d47] border border-white/10 rounded text-white text-sm hover:bg-[#3a3d57] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Previous
+                            </button>
+                            <button
+                              onClick={() => handleKeysPageChange(currentKeysPage + 1)}
+                              disabled={currentKeysPage === keysPagination.totalPages}
+                              className="px-3 py-1 bg-[#2a2d47] border border-white/10 rounded text-white text-sm hover:bg-[#3a3d57] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              Next
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center py-12">
+                      <p className="text-gray-400 text-base">
+                        No keys found for this keysystem.
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           )}
 
