@@ -1,0 +1,24 @@
+Error: ./app/dashboard/page.js:15:48
+Ecmascript file had an error
+[0m [90m 13 |[39m   [36mconst[39m [showModal[33m,[39m setShowModal] [33m=[39m useState([36mfalse[39m)[33m;[39m[0m
+[0m [90m 14 |[39m   [36mconst[39m [showEditModal[33m,[39m setShowEditModal] [33m=[39m useState([36mfalse[39m)[33m;[39m[0m
+[0m[31m[1m>[22m[39m[90m 15 |[39m   [36mconst[39m [isCreating[33m,[39m setIsCreating] [33m=[39m useState(isCreating [33m=[39m [36mfalse[39m)[33m;[39m[0m
+[0m [90m    |[39m                                                [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 16 |[39m   [36mconst[39m [isUpdating[33m,[39m setIsUpdating] [33m=[39m useState([36mfalse[39m)[33m;[39m[0m
+[0m [90m 17 |[39m   [36mconst[39m [isDeleting[33m,[39m setIsDeleting] [33m=[39m useState([36mfalse[39m)[33m;[39m[0m
+[0m [90m 18 |[39m   [36mconst[39m [editingKeysystem[33m,[39m setEditingKeysystem] [33m=[39m useState([36mnull[39m)[33m;[39m[0m
+
+cannot reassign to a variable declared with `const`
+    at BuildError (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_client_8f19e6fb._.js:11135:41)
+    at react-stack-bottom-frame (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:14911:24)
+    at renderWithHooksAgain (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:6256:24)
+    at renderWithHooks (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:6207:28)
+    at updateFunctionComponent (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:7543:21)
+    at beginWork (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:8142:24)
+    at runWithFiberInDEV (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:3073:74)
+    at performUnitOfWork (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10243:97)
+    at workLoopSync (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10135:40)
+    at renderRootSync (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10118:13)
+    at performWorkOnRoot (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:9853:212)
+    at performWorkOnRootViaSchedulerTask (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10826:9)
+    at MessagePort.performWorkUntilDeadline (https://574e90ea-bd60-4268-b38e-7bb11bffa01d-00-1balmiqonudtj.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:1982:64)
