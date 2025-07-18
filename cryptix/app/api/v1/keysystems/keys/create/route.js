@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../../lib/mongodb';
-import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import jobQueue from '../../../../../../lib/jobQueue';
 
@@ -31,30 +30,22 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Expiration hours must be between 1 and 360, or 0 for permanent' }, { status: 400 });
     }
 
-    // Verify JWT token
+    // Verify Discord refresh token
     const authHeader = request.headers.get('authorization');
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Missing or invalid authorization header' }, { status: 401 });
     }
 
     const token = authHeader.substring(7);
-    let userId;
-
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      userId = decoded.userId;
-    } catch (error) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-    }
 
     // Connect to MongoDB
     const client = await clientPromise;
     const db = client.db('Cryptix');
     const collection = db.collection('customers');
 
-    // Find the user and keysystem
+    // Find the user by Discord refresh token
     const user = await collection.findOne({
-      _id: userId,
+      token: token,
       'keysystems.id': keysystemId
     });
 
@@ -115,7 +106,7 @@ export async function POST(request) {
     // Update database
     const result = await collection.updateOne(
       { 
-        _id: userId,
+        token: token,
         'keysystems.id': keysystemId
       },
       { 
