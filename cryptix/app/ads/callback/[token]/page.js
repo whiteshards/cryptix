@@ -191,7 +191,7 @@ export default function CallbackPage() {
                             },
                             {
                               name: "Checkpoint",
-                              value: `\`${checkpointIndex + 1}/${keysystem.checkpoints.length}\``,
+                              value: `\`${checkpointIndex }/${keysystem.checkpoints.length}\``,
                               inline: true
                             },
                             {
@@ -381,7 +381,7 @@ export default function CallbackPage() {
                   avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
                   embeds: [
                     {
-                      title: "🚨 Anti-Bypass Triggered",
+                      title: "Anti-Bypass Triggered",
                       color: 0xff0000,
                       thumbnail: {
                         url: "https://cryptixmanager.vercel.app/images/thumbnail.gif"
@@ -402,11 +402,7 @@ export default function CallbackPage() {
                           value: `\`${navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent}\``,
                           inline: true
                         },
-                        {
-                          name: "Referer",
-                          value: `\`${document.referrer || 'Direct access'}\``,
-                          inline: true
-                        },
+                        
                         {
                           name: "Session ID",
                           value: `\`${localStorage.getItem('session_token') || 'N/A'}\``,
@@ -584,7 +580,7 @@ export default function CallbackPage() {
                   avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
                   embeds: [
                     {
-                      title: "🚨 Anti-Bypass Triggered",
+                      title: "Anti-Bypass Triggered",
                       color: 0xff0000,
                       thumbnail: {
                         url: "https://cryptixmanager.vercel.app/images/thumbnail.gif"
@@ -605,11 +601,7 @@ export default function CallbackPage() {
                           value: `\`${navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent}\``,
                           inline: true
                         },
-                        {
-                          name: "Referer",
-                          value: `\`${document.referrer || 'Direct access'}\``,
-                          inline: true
-                        },
+                        
                         {
                           name: "Session ID",
                           value: `\`${localStorage.getItem('session_token') || 'N/A'}\``,
