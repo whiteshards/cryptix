@@ -12,7 +12,7 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
+  const [isCreating, setIsCreating] = useState(isCreating = false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingKeysystem, setEditingKeysystem] = useState(null);
@@ -63,7 +63,7 @@ export default function Dashboard() {
   const [apiToken, setApiToken] = useState(null);
   const [showApiToken, setShowApiToken] = useState(false);
   const [generatingApiToken, setGeneratingApiToken] = useState(false);
-  
+
   // Create keys state
   const [showCreateKeysModal, setShowCreateKeysModal] = useState(false);
   const [createKeysData, setCreateKeysData] = useState({
@@ -756,7 +756,7 @@ export default function Dashboard() {
 
       setCreatedKeysResult(data);
       showToast(`Successfully created ${data.keysCreated} key(s)!`, 'success');
-      
+
       // Refresh keys data
       fetchKeysData(selectedKeysystemForKeys, currentKeysPage);
 
@@ -1118,7 +1118,7 @@ export default function Dashboard() {
                         ))}
                       </motion.select>
                     </div>
-                    
+
                     {selectedKeysystemForKeys && (
                       <motion.button
                         onClick={() => setShowCreateKeysModal(true)}
@@ -2285,12 +2285,12 @@ export default function Dashboard() {
 
                       <div>
                         <label className="block text-white text-sm font-medium mb-2">
-                          Expiration Hours (0 for permanent, max 360)
+                          Expiration Hours (1-744, max 1 month)
                         </label>
                         <input
                           type="number"
-                          min="0"
-                          max="360"
+                          min="1"
+                          max="744"
                           value={createKeysData.expirationHours || ''}
                           onChange={(e) => setCreateKeysData(prev => ({ ...prev, expirationHours: e.target.value }))}
                           placeholder="Default: Use keysystem timer"

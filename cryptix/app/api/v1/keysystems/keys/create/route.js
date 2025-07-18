@@ -26,8 +26,8 @@ export async function POST(request) {
     }
 
     // Validate expiration hours
-    if (expirationHours !== null && expirationHours !== 0 && (expirationHours < 1 || expirationHours > 360)) {
-      return NextResponse.json({ error: 'Expiration hours must be between 1 and 360, or 0 for permanent' }, { status: 400 });
+    if (expirationHours !== null && (expirationHours < 1 || expirationHours > 744)) {
+      return NextResponse.json({ error: 'Expiration hours must be between 1 and 744 (1 month)' }, { status: 400 });
     }
 
     // Verify Discord refresh token
@@ -69,12 +69,9 @@ export async function POST(request) {
 
     for (let i = 0; i < amount; i++) {
       const keyValue = generateKey();
-      let expiresAt = null;
+      let expiresAt;
 
-      if (expirationHours === 0) {
-        // Permanent key - no expiration
-        expiresAt = null;
-      } else if (expirationHours) {
+      if (expirationHours) {
         // Custom expiration
         expiresAt = new Date(now.getTime() + (expirationHours * 60 * 60 * 1000));
       } else {
@@ -86,7 +83,7 @@ export async function POST(request) {
         value: keyValue,
         hwid: null,
         created_at: now.toISOString(),
-        expires_at: expiresAt ? expiresAt.toISOString() : null,
+        expires_at: expiresAt.toISOString(),
         status: 'active'
       };
 
@@ -120,11 +117,9 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Failed to create keys' }, { status: 500 });
     }
 
-    // Schedule key expiration jobs for non-permanent keys
+    // Schedule key expiration jobs for all keys
     for (const key of createdKeys) {
-      if (key.expires_at) {
-        await jobQueue.scheduleKeyExpiration(keysystemId, sessionId, key.value, key.expires_at);
-      }
+      await jobQueue.scheduleKeyExpiration(keysystemId, sessionId, key.value, key.expires_at);
     }
 
 
