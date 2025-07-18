@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -524,8 +523,13 @@ export default function Dashboard() {
       if (data.success) {
         setApiToken(data.api_token);
         setShowApiToken(true);
-        // Refresh customer data to update token status
-        // await fetchCustomerData();  // removed as function fetchCustomerData is not available
+        // Update user profile with new token info
+        setUserProfile(prev => ({
+          ...prev,
+          api_token: data.api_token,
+          has_api_token: true
+        }));
+        showToast('API token generated successfully!', 'success');
       } else {
         showToast(data.error || 'Failed to generate API token');
       }
@@ -912,6 +916,7 @@ export default function Dashboard() {
                             </p>
                           </div>
                           <motion.span 
+```text
                             className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ml-2 ${
                               keysystem.active 
                                 ? 'bg-green-500/20 text-green-400' 
@@ -1353,82 +1358,72 @@ export default function Dashboard() {
                       <p className="text-gray-400 text-sm">Generate and manage your API token for secure access.</p>
                     </div>
                   </div>
-                  {!userProfile?.has_api_token ? (
-                    <motion.button
-                      onClick={handleGenerateApiToken}
-                      disabled={generatingApiToken}
-                      className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                    >
-                      {generatingApiToken ? 'Generating...' : 'Generate API Token'}
-                    </motion.button>
-                  ) : (
-                    <>
+                  <motion.div 
+                    className="space-y-4"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: 0.3 }}
+                  >
+                    {userProfile?.api_token && (
                       <motion.div 
                         className="mb-4"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, delay: 0.3 }}
                       >
-                        <p className="text-gray-400 text-sm">
+                        <p className="text-gray-400 text-sm mb-2">
                           Your API token:
                         </p>
                         <div className="relative">
                           <input
-                            type={showApiToken ? "text" : "password"}
-                            value={apiToken || '********************'}
+                            type="text"
+                            value={userProfile.api_token}
                             readOnly
-                            className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors pr-10"
+                            className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white font-mono text-sm focus:border-[#6366f1] focus:outline-none transition-colors"
                           />
-                          <motion.button
-                            type="button"
-                            onClick={() => setShowApiToken(!showApiToken)}
-                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
-                            whileHover={{ scale: 1.1 }}
-                            whileTap={{ scale: 0.9 }}
-                          >
-                            {showApiToken ? (
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                              </svg>
-                            ) : (
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                              </svg>
-                            )}
-                          </motion.button>
                         </div>
                       </motion.div>
-                      <motion.div 
-                        className="flex items-center space-x-3"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.4 }}
+                    )}
+
+                    <motion.div 
+                      className="flex items-center space-x-3"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.4 }}
+                    >
+                      <motion.button
+                        onClick={handleGenerateApiToken}
+                        disabled={generatingApiToken}
+                        className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                       >
+                        {generatingApiToken ? 'Generating...' : (userProfile?.api_token ? 'Generate New Token' : 'Generate API Token')}
+                      </motion.button>
+
+                      {userProfile?.api_token && (
                         <motion.button
-                          onClick={() => handleCopyApiToken(apiToken)}
-                          className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          Copy API Token
-                        </motion.button>
-                        <motion.button
-                          onClick={handleRevokeApiToken}
+                          onClick={() => handleCopyApiToken(userProfile.api_token)}
                           className="border border-white/20 text-gray-300 hover:text-white hover:border-white/40 px-4 py-2 rounded text-sm transition-colors"
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                         >
-                          Revoke API Token
+                          Copy Token
                         </motion.button>
-                      </motion.div>
-                    </>
-                  )}
+                      )}
+                    </motion.div>
+
+                    {userProfile?.api_token && (
+                      <motion.p 
+                        className="text-yellow-400 text-sm"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: 0.5 }}
+                      >
+                        ⚠️ Store this token securely. Generating a new token will invalidate the current one.
+                      </motion.p>
+                    )}
+                  </motion.div>
                 </motion.div>
               </motion.div>
             )}
@@ -1577,7 +1572,7 @@ export default function Dashboard() {
                           <motion.button
                             type="button"
                             onClick={() => setShowLinkvertiseToken(!showLinkvertiseToken)}
-                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                            className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray400 hover:text-white transition-colors"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                           >
@@ -2290,114 +2285,6 @@ export default function Dashboard() {
                   )}
                 </motion.div>
                 <span className="text-sm">{toast.message}</span>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* API Token Modal */}
-      <AnimatePresence>
-        {showApiToken && apiToken && (
-          <motion.div 
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <motion.div 
-              className="bg-[#1a1b2e] border border-white/10 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto"
-              initial={{ scale: 0.9, opacity: 0, y: 50 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.9, opacity: 0, y: 50 }}
-              transition={{ type: "spring", duration: 0.5 }}
-            >
-              <div className="p-6">
-                <motion.div 
-                  className="flex items-center justify-between mb-6"
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.1 }}
-                >
-                  <div className="flex items-center space-x-3">
-                    <motion.div 
-                      className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center"
-                      animate={{ 
-                        scale: [1, 1.1, 1],
-                      }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    >
-                      <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </motion.div>
-                    <h3 className="text-white text-lg font-semibold">API Token Generated</h3>
-                  </div>
-                  <motion.button
-                    onClick={() => setShowApiToken(false)}
-                    className="text-gray-400 hover:text-white transition-colors"
-                    whileHover={{ scale: 1.1, rotate: 90 }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </motion.button>
-                </motion.div>
-
-                <motion.div 
-                  className="mb-6"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.3, delay: 0.2 }}
-                >
-                  <p className="text-gray-300 mb-4">
-                    Your API token has been generated successfully. Copy it now as it won't be shown again.
-                  </p>
-                  <motion.div 
-                    className="bg-black/20 rounded-md p-3 border border-white/10"
-                    initial={{ scale: 0.95 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.3, delay: 0.3 }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <code className="text-sm font-mono text-gray-300 break-all mr-2">{apiToken}</code>
-                      <motion.button
-                        onClick={() => handleCopyApiToken(apiToken)}
-                        className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1 rounded text-xs font-medium transition-colors"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        Copy
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                  <motion.p 
-                    className="text-red-400 text-sm mt-3"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.4 }}
-                  >
-                    ⚠️ Store this token securely. It won't be displayed again.
-                  </motion.p>
-                </motion.div>
-
-                <motion.div 
-                  className="flex justify-end"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.5 }}
-                >
-                  <motion.button
-                    onClick={() => setShowApiToken(false)}
-                    className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    Done
-                  </motion.button>
-                </motion.div>
               </div>
             </motion.div>
           </motion.div>
