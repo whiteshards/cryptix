@@ -121,8 +121,8 @@ export async function POST(request) {
     }
 
     // Schedule key expiration jobs for non-permanent keys
-    if (expiresAt) {
-      for (const key of createdKeys) {
+    for (const key of createdKeys) {
+      if (key.expires_at) {
         await jobQueue.scheduleKeyExpiration(keysystemId, sessionId, key.value, key.expires_at);
       }
     }
