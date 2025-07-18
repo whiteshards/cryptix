@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../../lib/mongodb';
 import jobQueue from '../../../../../../lib/jobQueue';
@@ -38,15 +37,21 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
 
-    // Check cooldown
-    if (session.cooldown_till) {
-      const cooldownTime = new Date(session.cooldown_till);
-      if (cooldownTime > new Date()) {
-        return NextResponse.json({ 
-          error: 'Still in cooldown period',
-          cooldown_till: session.cooldown_till
-        }, { status: 429 });
-      }
+    // Check if user is on cooldown
+    if (session.cooldown_till && new Date(session.cooldown_till) > new Date()) {
+      return NextResponse.json({ 
+        error: 'You are still on cooldown. Please wait before renewing keys.' 
+      }, { status: 429 });
+    }
+
+    // Check if user has completed all checkpoints
+    const totalCheckpoints = keysystem.checkpoints ? keysystem.checkpoints.length : 0;
+    const currentProgress = session.current_checkpoint || 0;
+
+    if (currentProgress < totalCheckpoints) {
+      return NextResponse.json({ 
+        error: 'You must complete all checkpoints before renewing a key.' 
+      }, { status: 403 });
     }
 
     // Find the key to renew
@@ -99,5 +104,3 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-
-

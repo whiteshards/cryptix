@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
 
@@ -10,25 +9,25 @@ function isRateLimited(ip) {
   const now = Date.now();
   const windowMs = 60 * 60 * 1000; // 1 hour
   const maxRequests = 5;
-  
+
   if (!rateLimitMap.has(ip)) {
     rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
     return false;
   }
-  
+
   const userData = rateLimitMap.get(ip);
-  
+
   // Reset if window has passed
   if (now >= userData.resetTime) {
     rateLimitMap.set(ip, { count: 1, resetTime: now + windowMs });
     return false;
   }
-  
+
   // Check if limit exceeded
   if (userData.count >= maxRequests) {
     return true;
   }
-  
+
   // Increment counter
   userData.count++;
   return false;
@@ -39,7 +38,7 @@ export async function POST(request) {
     // Get client IP for rate limiting
     const forwarded = request.headers.get('x-forwarded-for');
     const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
-    
+
     // Check rate limit
     if (isRateLimited(ip)) {
       return NextResponse.json(
@@ -47,7 +46,7 @@ export async function POST(request) {
         { status: 429 }
       );
     }
-    
+
     const { keysystemId, sessionId } = await request.json();
 
     if (!keysystemId || !sessionId) {

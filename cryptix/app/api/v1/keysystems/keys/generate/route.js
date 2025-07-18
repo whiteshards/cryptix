@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../../lib/mongodb';
 import jobQueue from '../../../../../../lib/jobQueue';
@@ -64,6 +63,16 @@ export async function POST(request) {
       }
     }
 
+    // Check if user has completed all checkpoints
+    const totalCheckpoints = keysystem.checkpoints ? keysystem.checkpoints.length : 0;
+    const currentProgress = session.current_checkpoint || 0;
+
+    if (currentProgress < totalCheckpoints) {
+      return NextResponse.json({ 
+        error: 'You must complete all checkpoints before generating a key.' 
+      }, { status: 403 });
+    }
+
     // Check if user has reached max key limit
     const currentKeys = session.keys || [];
     if (currentKeys.length >= keysystem.maxKeyPerPerson) {
@@ -125,5 +134,3 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-
-

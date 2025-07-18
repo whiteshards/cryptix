@@ -757,11 +757,11 @@ export default function GetKey() {
                             {/* Status */}
                             <div className="w-20 flex justify-center">
                               <span className={`inline-flex px-2 py-1 rounded text-xs font-medium ${
-                                key.status === 'active' 
+                                (key.status === 'active' && (!key.expires_at || keyTimers[key.value] !== '00:00:00'))
                                   ? 'bg-green-500/20 text-green-400' 
                                   : 'bg-red-500/20 text-red-400'
                               }`}>
-                                {key.status === 'active' ? 'Active' : 'Expired'}
+                                {(key.status === 'active' && (!key.expires_at || keyTimers[key.value] !== '00:00:00')) ? 'Active' : 'Expired'}
                               </span>
                             </div>
 
@@ -790,7 +790,9 @@ export default function GetKey() {
 
                             {/* Actions */}
                             <div className="w-20 flex flex-col space-y-1">
-                              {!cooldownTimeLeft && (key.status === 'expired' || (key.expires_at && keyTimers[key.value] === '00:00:00')) && (
+                              {!cooldownTimeLeft && 
+                               (key.status === 'expired' || (key.expires_at && keyTimers[key.value] === '00:00:00')) && 
+                               currentProgress === keysystem.checkpointCount && (
                                 <button
                                   onClick={() => handleRenewKey(key.value)}
                                   className="text-green-400 hover:text-green-300 text-xs font-medium transition-colors py-1 px-2 rounded hover:bg-green-500/10"
