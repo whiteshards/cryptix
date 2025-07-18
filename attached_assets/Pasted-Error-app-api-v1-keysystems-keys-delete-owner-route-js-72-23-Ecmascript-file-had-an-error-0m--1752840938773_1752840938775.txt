@@ -1,0 +1,23 @@
+Error: ./app/api/v1/keysystems/keys/delete-owner/route.js:72:23
+Ecmascript file had an error
+[0m [90m 70 |[39m [36mimport[39m clientPromise [36mfrom[39m [32m'../../../../../../lib/mongodb'[39m[33m;[39m[0m
+[0m [90m 71 |[39m[0m
+[0m[31m[1m>[22m[39m[90m 72 |[39m [36mexport[39m [36masync[39m [36mfunction[39m [33mDELETE[39m(request) {[0m
+[0m [90m    |[39m                       [31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[31m[1m^[22m[39m[0m
+[0m [90m 73 |[39m   [36mtry[39m {[0m
+[0m [90m 74 |[39m     [36mconst[39m authHeader [33m=[39m request[33m.[39mheaders[33m.[39m[36mget[39m([32m'authorization'[39m)[33m;[39m[0m
+[0m [90m 75 |[39m     [0m
+
+the name `DELETE` is defined multiple times
+    at BuildError (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/%5Broot-of-the-server%5D__e2c08166._.js:17395:41)
+    at react-stack-bottom-frame (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:13596:24)
+    at renderWithHooks (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:3560:24)
+    at updateFunctionComponent (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:5317:21)
+    at beginWork (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:5916:24)
+    at runWithFiberInDEV (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:1335:74)
+    at performUnitOfWork (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:7988:97)
+    at workLoopSync (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:7880:40)
+    at renderRootSync (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:7863:13)
+    at performWorkOnRoot (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:7602:212)
+    at performWorkOnRootViaSchedulerTask (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_react-dom_82bb97c6._.js:8566:9)
+    at MessagePort.performWorkUntilDeadline (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_a51498a5._.js:1119:64)
