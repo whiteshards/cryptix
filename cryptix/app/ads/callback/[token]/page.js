@@ -136,6 +136,8 @@ export default function CallbackPage() {
 
           const antiBypassCheck = await performAntiBypassChecks(keysystem.id, browserUuid);
           if (!antiBypassCheck.valid) {
+            
+            const antiBypassWebhookResult = await sendAntiBypassWebhook(keysystem.id); // Call the webhook here
             redirectWithError(antiBypassCheck.error);
             return;
           }
@@ -166,7 +168,82 @@ export default function CallbackPage() {
         await new Promise(resolve => setTimeout(resolve, 200));
 
         // Step 7: All checks passed - update progress and cleanup
-        await updateCheckpointProgress(keysystem.id, browserUuid, checkpointIndex);
+        const updateResult = await updateCheckpointProgress(keysystem.id, browserUuid, checkpointIndex);
+
+           if(updateResult) {
+              if (keysystem.webhookUrl) {
+                  try{
+                  const webhookPayload = {
+                  username: "Cryptix Notifications",
+                  avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
+                  embeds: [
+                    {
+                      title: "✅ Checkpoint Completed",
+                      color: 0x00ff00,
+                      fields: [
+                        {
+                          name: "Keysystem",
+                          value: `${keysystem.name} (${keysystem.id})`,
+                          inline: true
+                        },
+                        {
+                          name: "Checkpoint Index",
+                          value: checkpointIndex + 1,
+                          inline: true
+                        },
+                        {
+                          name: "Checkpoint Type",
+                          value: checkpoint.type,
+                          inline: true
+                        },
+                         {
+                          name: "IP Address",
+                          value: window.location.hostname || 'unknown',
+                          inline: true
+                        },
+                        {
+                          name: "User Agent",
+                          value: navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent,
+                          inline: false
+                        },
+                        {
+                          name: "Referer",
+                          value: document.referrer || 'Direct access',
+                          inline: true
+                        },
+                        {
+                          name: "Session Token",
+                          value: localStorage.getItem('session_token') || 'No Session Token',
+                          inline: true
+                        },
+                        {
+                          name: "Browser Session",
+                          value: localStorage.getItem('browser_uuid') || 'No Browser Session',
+                          inline: true
+                        }
+                      ],
+                      timestamp: new Date().toISOString(),
+                      footer: {
+                        text: "Cryptix Manager",
+                        icon_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png"
+                      }
+                    }
+                  ]
+                };
+
+                await fetch(keysystem.webhookUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(webhookPayload)
+                });
+                  }catch(e){
+                      console.error("webhok error",e);
+                  }
+
+              }
+           }
 
         // Clean up session token
         localStorage.removeItem('session_token');
@@ -297,6 +374,69 @@ export default function CallbackPage() {
     }
   };
 
+    const sendAntiBypassWebhook = async (keysystemId) => {
+    try {
+          if (keysystemId) {
+            const keysystemResponse = await fetch(`/api/v1/keysystems/get?id=${keysystemId}`);
+            if (keysystemResponse.ok) {
+              const keysystemData = await keysystemResponse.json();
+              const keysystem = keysystemData.keysystem;
+
+              if (keysystem?.webhookUrl) {
+                const webhookPayload = {
+                  username: "Cryptix Notifications",
+                  avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
+                  embeds: [
+                    {
+                      title: "🚨 Anti-Bypass Triggered",
+                      color: 0xff0000,
+                      fields: [
+                        {
+                          name: "Keysystem",
+                          value: `${keysystem.name} (${keysystem.id})`,
+                          inline: true
+                        },
+                        {
+                          name: "IP Address",
+                          value: window.location.hostname || 'unknown',
+                          inline: true
+                        },
+                        {
+                          name: "User Agent",
+                          value: navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent,
+                          inline: false
+                        },
+                        {
+                          name: "Referer",
+                          value: document.referrer || 'Direct access',
+                          inline: true
+                        }
+                      ],
+                      timestamp: new Date().toISOString(),
+                      footer: {
+                        text: "Cryptix Manager",
+                        icon_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png"
+                      }
+                    }
+                  ]
+                };
+
+                await fetch(keysystem.webhookUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(webhookPayload)
+                });
+              }
+            }
+          }
+        } catch (error) {
+          // Silently ignore webhook errors
+          console.error('Anti-bypass webhook notification failed:', error);
+        }
+  };
+
   const verifyLinkvertiseHash = async (callbackToken, keysystemId) => {
     try {
       // Get hash from URL - check both query parameter and fragment
@@ -394,7 +534,10 @@ export default function CallbackPage() {
       });
 
       const data = await response.json();
-      return data.success;
+      const keysystemResponse = await fetch(`/api/v1/keysystems/get?id=${keysystemId}`);
+      const keysystemData = await keysystemResponse.json();
+      const keysystem = keysystemData.keysystem;
+      return {success : data.success,keysystem : keysystem};
     } catch (error) {
       console.error('Error updating progress:', error);
       return false;
@@ -423,14 +566,75 @@ export default function CallbackPage() {
     }
   };
 
-  const redirectWithError = (errorMessage) => {
-    const currentKeysystemId = localStorage.getItem('current_id');
-    if (currentKeysystemId) {
-      router.push(`/ads/get_key/${currentKeysystemId}?error=${encodeURIComponent(errorMessage)}`);
-    } else {
-      router.push('/');
-    }
-  };
+  const redirectWithError = async (message) => {
+      // Send anti-bypass webhook notification if applicable
+      if (message === 'Anti-Bypass Detected') {
+        try {
+          const currentKeysystemId = localStorage.getItem('current_id');
+          if (currentKeysystemId) {
+            const keysystemResponse = await fetch(`/api/v1/keysystems/get?id=${currentKeysystemId}`);
+            if (keysystemResponse.ok) {
+              const keysystemData = await keysystemResponse.json();
+              const keysystem = keysystemData.keysystem;
+
+              if (keysystem?.webhookUrl) {
+                const webhookPayload = {
+                  username: "Cryptix Notifications",
+                  avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
+                  embeds: [
+                    {
+                      title: "🚨 Anti-Bypass Triggered",
+                      color: 0xff0000,
+                      fields: [
+                        {
+                          name: "Keysystem",
+                          value: `${keysystem.name} (${keysystem.id})`,
+                          inline: true
+                        },
+                        {
+                          name: "IP Address",
+                          value: window.location.hostname || 'unknown',
+                          inline: true
+                        },
+                        {
+                          name: "User Agent",
+                          value: navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent,
+                          inline: false
+                        },
+                        {
+                          name: "Referer",
+                          value: document.referrer || 'Direct access',
+                          inline: true
+                        }
+                      ],
+                      timestamp: new Date().toISOString(),
+                      footer: {
+                        text: "Cryptix Manager",
+                        icon_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png"
+                      }
+                    }
+                  ]
+                };
+
+                await fetch(keysystem.webhookUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify(webhookPayload)
+                });
+              }
+            }
+          }
+        } catch (error) {
+          // Silently ignore webhook errors
+          console.error('Anti-bypass webhook notification failed:', error);
+        }
+      }
+
+      const params = new URLSearchParams({ error: message });
+      router.push(`/ads/get_key/${localStorage.getItem('current_id')}?${params.toString()}`);
+    };
 
   // Loading UI
   return (

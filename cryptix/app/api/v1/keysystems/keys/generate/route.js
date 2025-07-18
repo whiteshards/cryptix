@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../../lib/mongodb';
 import jobQueue from '../../../../../../lib/jobQueue';
+import { sendWebhookNotification } from '../../../../../../lib/webhookUtils';
 
 // Generate random 32-character key
 const generateKey = () => {
@@ -120,6 +121,23 @@ export async function POST(request) {
 
     // Schedule cooldown cleanup
     jobQueue.scheduleCooldownCleanup(keysystemId, sessionId, cooldownTill);
+
+    // Send webhook notification if webhook URL is configured
+    if (keysystem.webhookUrl) {
+      const forwarded = request.headers.get('x-forwarded-for');
+      const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
+      const userAgent = request.headers.get('user-agent') || 'unknown';
+
+      await sendWebhookNotification(keysystem.webhookUrl, 'key_generated', {
+        keysystemName: keysystem.name,
+        keysystemId: keysystem.id,
+        keyValue: keyValue,
+        sessionId: sessionId,
+        expiresAt: expiresAt.toISOString(),
+        ip: ip,
+        userAgent: userAgent
+      });
+    }
 
     return NextResponse.json({
       success: true,
