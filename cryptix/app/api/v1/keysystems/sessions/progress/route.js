@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
-//import { sendWebhookNotification } from '../../../../../lib/webhookUtils';
 
 const uri = process.env.MONGO_URI;
 const options = {};
@@ -79,7 +78,75 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Failed to update progress' }, { status: 500 });
     }
 
-    // Webhook notifications are handled by the callback page
+    // Send webhook notification for checkpoint completion
+    if (keysystem.webhookUrl) {
+      try {
+        const checkpoint = keysystem.checkpoints[checkpointIndex - 1]; // Previous checkpoint that was just completed
+        
+        const embed = {
+          title: 'Checkpoint Completed',
+          color: 0x00ff00,
+          thumbnail: {
+            url: 'https://cryptixmanager.vercel.app/images/thumbnail.gif'
+          },
+          fields: [
+            {
+              name: 'Keysystem',
+              value: `\`${keysystem.name} (${keysystem.id})\``,
+              inline: true
+            },
+            {
+              name: 'Checkpoint',
+              value: `\`${checkpointIndex}/${keysystem.checkpoints.length}\``,
+              inline: true
+            },
+            {
+              name: 'Type',
+              value: `\`${checkpoint?.type || 'unknown'}\``,
+              inline: true
+            },
+            {
+              name: 'Session ID',
+              value: `\`${sessionId}\``,
+              inline: true
+            },
+            {
+              name: 'IP Address',
+              value: `\`${request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown'}\``,
+              inline: true
+            },
+            {
+              name: 'User Agent',
+              value: `\`${request.headers.get('user-agent')?.substring(0, 100) + '...' || 'unknown'}\``,
+              inline: true
+            }
+          ],
+          timestamp: new Date().toISOString(),
+          footer: {
+            text: 'Cryptix Manager',
+            icon_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
+          }
+        };
+
+        const webhookPayload = {
+          username: 'Cryptix Notifications',
+          avatar_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png',
+          embeds: [embed]
+        };
+
+        await fetch(keysystem.webhookUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(webhookPayload)
+        });
+
+      } catch (error) {
+        console.error('Webhook notification failed:', error);
+        // Don't fail the request if webhook fails
+      }
+    }
 
     return NextResponse.json({
       success: true,
