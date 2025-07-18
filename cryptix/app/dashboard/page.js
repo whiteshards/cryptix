@@ -916,7 +916,6 @@ export default function Dashboard() {
                             </p>
                           </div>
                           <motion.span 
-```text
                             className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ml-2 ${
                               keysystem.active 
                                 ? 'bg-green-500/20 text-green-400' 
