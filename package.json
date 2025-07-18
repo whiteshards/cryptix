@@ -11,6 +11,8 @@
   "description": "",
   "dependencies": {
     "discord.js": "^14.21.0",
+    "framer-motion": "^12.23.6",
+    "jsonwebtoken": "^9.0.2",
     "uuid": "^11.1.0"
   }
 }

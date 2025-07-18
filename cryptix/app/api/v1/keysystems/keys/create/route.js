@@ -60,6 +60,29 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Keysystem not found or not active' }, { status: 404 });
     }
 
+    // Check max key limit
+    const maxKeyLimit = keysystem.maxKeyLimit || 5000;
+    
+    // Count existing keys in all sessions
+    let existingKeyCount = 0;
+    if (keysystem.keys) {
+      Object.values(keysystem.keys).forEach(session => {
+        if (session.keys && Array.isArray(session.keys)) {
+          existingKeyCount += session.keys.length;
+        }
+      });
+    }
+
+    // Check if adding new keys would exceed the limit
+    if (existingKeyCount + amount > maxKeyLimit) {
+      return NextResponse.json({ 
+        error: 'Free Play Max Key Limit Exceeded. upgrade your plan',
+        currentKeys: existingKeyCount,
+        maxLimit: maxKeyLimit,
+        requested: amount
+      }, { status: 400 });
+    }
+
     // Generate session ID
     const sessionId = `generated_${uuidv4().replace(/-/g, '')}`;
 

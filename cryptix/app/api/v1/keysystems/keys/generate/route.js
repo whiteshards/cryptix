@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../../lib/mongodb';
 import jobQueue from '../../../../../../lib/jobQueue';
@@ -41,6 +40,28 @@ export async function POST(request) {
 
     if (!keysystem || !keysystem.active) {
       return NextResponse.json({ error: 'Keysystem not found or not active' }, { status: 404 });
+    }
+
+    // Check max key limit
+    const maxKeyLimit = keysystem.maxKeyLimit || 5000;
+
+    // Count existing keys in all sessions
+    let existingKeyCount = 0;
+    if (keysystem.keys) {
+      Object.values(keysystem.keys).forEach(session => {
+        if (session.keys && Array.isArray(session.keys)) {
+          existingKeyCount += session.keys.length;
+        }
+      });
+    }
+
+    // Check if adding a new key would exceed the limit
+    if (existingKeyCount + 1 > maxKeyLimit) {
+      return NextResponse.json({ 
+        error: 'Free Play Max Key Limit Exceeded. upgrade your plan',
+        currentKeys: existingKeyCount,
+        maxLimit: maxKeyLimit
+      }, { status: 400 });
     }
 
     // Check if session exists

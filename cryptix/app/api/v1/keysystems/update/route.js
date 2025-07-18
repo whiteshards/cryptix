@@ -62,6 +62,14 @@ export async function PUT(request) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
+    // Retrieve existing keysystem
+     const existingUser = await collection.findOne(
+      { _id: user._id },
+      { projection: { keysystems: { $elemMatch: { id: keysystemId } } } }
+    );
+
+    const existingKeysystem = existingUser?.keysystems?.[0];
+
     // Update the specific keysystem
     const result = await collection.updateOne(
       { 
@@ -73,8 +81,9 @@ export async function PUT(request) {
           'keysystems.$.maxKeyPerPerson': maxKeys,
           'keysystems.$.keyTimer': timer,
           'keysystems.$.keyCooldown': cooldown,
+          'keysystems.$.active': active !== undefined ? active : true,
           'keysystems.$.webhookUrl': webhookUrl && webhookUrl.trim() ? webhookUrl.trim() : null,
-          'keysystems.$.active': active !== undefined ? active : true
+          'keysystems.$.maxKeyLimit': existingKeysystem?.maxKeyLimit || 5000
         }
       }
     );
