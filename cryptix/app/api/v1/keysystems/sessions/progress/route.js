@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
+import { sendWebhookNotification } from '../../../../../lib/webhookUtils';
 
 const uri = process.env.MONGO_URI;
 const options = {};
@@ -20,109 +21,6 @@ if (process.env.NODE_ENV === 'development') {
 } else {
   client = new MongoClient(uri, options);
   clientPromise = client.connect();
-}
-
-async function sendWebhookNotification(webhookUrl, eventType, data) {
-  try {
-    let title = "";
-    let color = 0;
-    let fields = [];
-
-    if (eventType === 'checkpoint_completed') {
-      title = "✅ Checkpoint Completed";
-      color = 0x00ff00;
-      fields = [
-        {
-          name: "Keysystem",
-          value: `${data.keysystemName} (${data.keysystemId})`,
-          inline: true
-        },
-        {
-          name: "Checkpoint",
-          value: `${data.checkpointIndex + 1}/${data.totalCheckpoints}`,
-          inline: true
-        },
-        {
-          name: "Type",
-          value: data.checkpointType || 'unknown',
-          inline: true
-        },
-        {
-          name: "Session ID",
-          value: data.sessionId,
-          inline: true
-        },
-        {
-          name: "IP Address",
-          value: data.ip,
-          inline: true
-        },
-        {
-          name: "User Agent",
-          value: data.userAgent.length > 100 ? data.userAgent.substring(0, 100) + '...' : data.userAgent,
-          inline: false
-        }
-      ];
-    } else if (eventType === 'anti_bypass_triggered') {
-      title = "🚨 Anti-Bypass Triggered";
-      color = 0xff0000;
-      fields = [
-        {
-          name: "Keysystem",
-          value: `${data.keysystemName} (${data.keysystemId})`,
-          inline: true
-        },
-        {
-          name: "Session ID",
-          value: data.sessionId,
-          inline: true
-        },
-        {
-          name: "IP Address",
-          value: data.ip,
-          inline: true
-        },
-        {
-          name: "User Agent",
-          value: data.userAgent.length > 100 ? data.userAgent.substring(0, 100) + '...' : data.userAgent,
-          inline: false
-        },
-        {
-          name: "Reason",
-          value: data.reason || 'unknown',
-          inline: false
-        }
-      ];
-    }
-
-    const webhookPayload = {
-      username: "Cryptix Notifications",
-      avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
-      embeds: [
-        {
-          title: title,
-          color: color,
-          fields: fields,
-          timestamp: new Date().toISOString(),
-          footer: {
-            text: "Cryptix Manager",
-            icon_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png"
-          }
-        }
-      ]
-    };
-
-    await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(webhookPayload)
-    });
-  } catch (error) {
-    // Silently ignore webhook errors as requested
-    console.error('Webhook notification failed:', error);
-  }
 }
 
 export async function POST(request) {
