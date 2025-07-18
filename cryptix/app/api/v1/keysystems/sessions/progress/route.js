@@ -1,6 +1,6 @@
+
 import { NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
-import { sendWebhookNotification, createCheckpointCompletionEmbed } from '../../../../lib/webhook';
 
 const uri = process.env.MONGO_URI;
 const options = {};
@@ -77,28 +77,6 @@ export async function POST(request) {
 
     if (result.modifiedCount === 0) {
       return NextResponse.json({ error: 'Failed to update progress' }, { status: 500 });
-    }
-
-    // Send webhook notification if webhook URL is configured
-    if (keysystem.webhookUrl) {
-      const forwarded = request.headers.get('x-forwarded-for');
-      const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'Unknown';
-      const userAgent = request.headers.get('user-agent') || 'Unknown';
-      const browserSession = request.headers.get('x-browser-session') || sessionId;
-
-      const checkpointData = {
-        keysystemId: keysystem.id,
-        keysystemName: keysystem.name,
-        checkpointIndex: checkpointIndex,
-        checkpointType: keysystem.checkpoints[checkpointIndex]?.type || 'unknown',
-        sessionId: sessionId,
-        ip: ip,
-        userAgent: userAgent,
-        browserSession: browserSession
-      };
-
-      const embed = createCheckpointCompletionEmbed(checkpointData);
-      sendWebhookNotification(keysystem.webhookUrl, embed);
     }
 
     return NextResponse.json({

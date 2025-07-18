@@ -168,32 +168,6 @@ export default function CallbackPage() {
         // Step 7: All checks passed - update progress and cleanup
         await updateCheckpointProgress(keysystem.id, browserUuid, checkpointIndex);
 
-        // Send webhook notification for Linkvertise checkpoint completion
-        if (keysystem.webhookUrl && checkpoint.type === 'linkvertise') {
-          try {
-            const webhookData = {
-              keysystemId: keysystem.id,
-              keysystemName: keysystem.name,
-              checkpointIndex: checkpointIndex,
-              checkpointType: checkpoint.type,
-              sessionId: null, // Linkvertise doesn't have session tokens
-              ip: 'Unknown', // Client-side, IP not available
-              userAgent: navigator.userAgent,
-              browserSession: browserUuid
-            };
-
-            await fetch('/api/v1/keysystems/webhook/checkpoint', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(webhookData)
-            });
-          } catch (error) {
-            // Ignore webhook errors
-          }
-        }
-
         // Clean up session token
         localStorage.removeItem('session_token');
 
