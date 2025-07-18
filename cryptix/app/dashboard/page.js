@@ -62,6 +62,11 @@ export default function Dashboard() {
   const [apiToken, setApiToken] = useState(null);
   const [showApiToken, setShowApiToken] = useState(false);
   const [generatingApiToken, setGeneratingApiToken] = useState(false);
+  
+  // Animation states
+  const [dashboardVisible, setDashboardVisible] = useState(false);
+  const [tabContentVisible, setTabContentVisible] = useState(false);
+  const [modalAnimating, setModalAnimating] = useState(false);
 
   useEffect(() => {
     // Check authentication and fetch profile
@@ -140,7 +145,12 @@ export default function Dashboard() {
       // If there's an error, still allow them to see the dashboard with limited functionality
       setIsAuthenticated(true);
     } finally {
-      setTimeout(() => setIsLoading(false), 200);
+      setTimeout(() => {
+        setIsLoading(false);
+        // Trigger dashboard animations
+        setTimeout(() => setDashboardVisible(true), 100);
+        setTimeout(() => setTabContentVisible(true), 300);
+      }, 200);
     }
   };
 
@@ -657,12 +667,24 @@ export default function Dashboard() {
     }
   };
 
+  const handleTabChange = (newTab) => {
+    setTabContentVisible(false);
+    setTimeout(() => {
+      setActiveTab(newTab);
+      setTabContentVisible(true);
+    }, 150);
+  };
+
   return (
     <div className="min-h-screen bg-[#0f1015]">
       {/* Profile Section (Navbar) */}
-      <div className="pt-8 px-8">
+      <div className={`pt-8 px-8 transition-all duration-700 ease-out ${
+        dashboardVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'
+      }`}>
         <div className="max-w-6xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
+          <div className={`flex items-center justify-between mb-8 transition-all duration-500 ease-out delay-200 ${
+            dashboardVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+          }`}>
             <div className="flex items-center space-x-4">
               {/* Profile Avatar with first letter */}
               <div className="w-8 h-8 bg-[#2a2d47] rounded-full flex items-center justify-center border border-white/10">
@@ -691,13 +713,15 @@ export default function Dashboard() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="px-8">
+      <div className={`px-8 transition-all duration-700 ease-out delay-300 ${
+        dashboardVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+      }`}>
         <div className="max-w-6xl mx-auto">
           <div className="border-b border-white/10">
             <nav className="flex space-x-8 overflow-x-auto">
               <button
-                onClick={() => setActiveTab('keysystems')}
-                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                onClick={() => handleTabChange('keysystems')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-300 hover:scale-105 ${
                   activeTab === 'keysystems'
                     ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
@@ -706,8 +730,8 @@ export default function Dashboard() {
                 Keysystems
               </button>
               <button
-                onClick={() => setActiveTab('statistics')}
-                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                onClick={() => handleTabChange('statistics')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-300 hover:scale-105 ${
                   activeTab === 'statistics'
                     ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
@@ -716,8 +740,8 @@ export default function Dashboard() {
                 Statistics
               </button>
               <button
-                onClick={() => setActiveTab('keys')}
-                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                onClick={() => handleTabChange('keys')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-300 hover:scale-105 ${
                   activeTab === 'keys'
                     ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
@@ -726,8 +750,8 @@ export default function Dashboard() {
                 Keys
               </button>
               <button
-                onClick={() => setActiveTab('store')}
-                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                onClick={() => handleTabChange('store')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-300 hover:scale-105 ${
                   activeTab === 'store'
                     ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
@@ -736,8 +760,8 @@ export default function Dashboard() {
                 Store
               </button>
               <button
-                onClick={() => setActiveTab('api')}
-                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                onClick={() => handleTabChange('api')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-300 hover:scale-105 ${
                   activeTab === 'api'
                     ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
@@ -746,8 +770,8 @@ export default function Dashboard() {
                 API
               </button>
               <button
-                onClick={() => setActiveTab('integrations')}
-                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                onClick={() => handleTabChange('integrations')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-300 hover:scale-105 ${
                   activeTab === 'integrations'
                     ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
@@ -756,8 +780,8 @@ export default function Dashboard() {
                 Integrations
               </button>
               <button
-                onClick={() => setActiveTab('documentation')}
-                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                onClick={() => handleTabChange('documentation')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-300 hover:scale-105 ${
                   activeTab === 'documentation'
                     ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
@@ -766,8 +790,8 @@ export default function Dashboard() {
                 Documentation
               </button>
               <button
-                onClick={() => setActiveTab('settings')}
-                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${
+                onClick={() => handleTabChange('settings')}
+                className={`py-3 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-all duration-300 hover:scale-105 ${
                   activeTab === 'settings'
                     ? 'border-[#1c1c1c] text-white'
                     : 'border-transparent text-gray-400 hover:text-gray-300'
@@ -781,8 +805,12 @@ export default function Dashboard() {
       </div>
 
       {/* Tab Content */}
-      <div className="px-8 py-16">
-        <div className="max-w-6xl mx-auto">
+      <div className={`px-8 py-16 transition-all duration-500 ease-out delay-400 ${
+        dashboardVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+      }`}>
+        <div className={`max-w-6xl mx-auto transition-all duration-400 ease-out ${
+          tabContentVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+        }`}>
           {activeTab === 'keysystems' && (
             <div className="bg-transparent rounded-lg border border-white/10 p-6">
               <div className="flex items-center justify-between mb-6">
@@ -812,7 +840,16 @@ export default function Dashboard() {
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {keysystems.map((keysystem, index) => (
-                    <div key={index} className="bg-black/20 border border-white/10 rounded-lg p-4 hover:border-white/20 transition-all group">
+                    <div 
+                      key={index} 
+                      className={`bg-black/20 border border-white/10 rounded-lg p-4 hover:border-white/20 hover:scale-[1.02] hover:shadow-lg hover:shadow-white/5 transition-all duration-300 group ${
+                        tabContentVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+                      }`}
+                      style={{ 
+                        transitionDelay: `${index * 100}ms`,
+                        animationDelay: `${index * 100}ms`
+                      }}
+                    >
                       {/* Header */}
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex-1 min-w-0">
@@ -1387,14 +1424,24 @@ export default function Dashboard() {
 
       {/* Create Keysystem Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1a1b2e] border border-white/10 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300 ${
+          modalAnimating ? 'opacity-0' : 'opacity-100'
+        }`}>
+          <div className={`bg-[#1a1b2e] border border-white/10 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto transition-all duration-500 ease-out ${
+            modalAnimating ? 'opacity-0 scale-90 translate-y-8' : 'opacity-100 scale-100 translate-y-0'
+          }`}>
             <div className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-white text-lg font-semibold">Create New Keysystem</h3>
                 <button
-                  onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  onClick={() => {
+                    setModalAnimating(true);
+                    setTimeout(() => {
+                      setShowModal(false);
+                      setModalAnimating(false);
+                    }, 300);
+                  }}
+                  className="text-gray-400 hover:text-white hover:rotate-90 transition-all duration-300"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1482,8 +1529,14 @@ export default function Dashboard() {
 
               <div className="flex flex-col sm:flex-row  sm:space-x-3 mt-6">
                 <button
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 px-4 py-2 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded transition-colors"
+                  onClick={() => {
+                    setModalAnimating(true);
+                    setTimeout(() => {
+                      setShowModal(false);
+                      setModalAnimating(false);
+                    }, 300);
+                  }}
+                  className="flex-1 px-4 py-2 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded transition-all duration-300 hover:scale-105"
                 >
                   Cancel
                 </button>
@@ -1502,14 +1555,24 @@ export default function Dashboard() {
 
       {/* Edit Keysystem Modal */}
       {showEditModal && editingKeysystem && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1a1b2e] border border-white/10 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300 ${
+          modalAnimating ? 'opacity-0' : 'opacity-100'
+        }`}>
+          <div className={`bg-[#1a1b2e] border border-white/10 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto transition-all duration-500 ease-out ${
+            modalAnimating ? 'opacity-0 scale-90 translate-y-8' : 'opacity-100 scale-100 translate-y-0'
+          }`}>
             <div className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-white text-lg font-semibold">Edit Keysystem: {editingKeysystem.name}</h3>
                 <button
-                  onClick={() => setShowEditModal(false)}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  onClick={() => {
+                    setModalAnimating(true);
+                    setTimeout(() => {
+                      setShowEditModal(false);
+                      setModalAnimating(false);
+                    }, 300);
+                  }}
+                  className="text-gray-400 hover:text-white hover:rotate-90 transition-all duration-300"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1605,8 +1668,14 @@ export default function Dashboard() {
 
               <div className="flex flex-col sm:flex-row sm:space-x-3 mt-6">
                 <button
-                  onClick={() => setShowEditModal(false)}
-                  className="flex-1 px-4 py-2 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded transition-colors"
+                  onClick={() => {
+                    setModalAnimating(true);
+                    setTimeout(() => {
+                      setShowEditModal(false);
+                      setModalAnimating(false);
+                    }, 300);
+                  }}
+                  className="flex-1 px-4 py-2 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded transition-all duration-300 hover:scale-105"
                 >
                   Cancel
                 </button>
@@ -1625,8 +1694,12 @@ export default function Dashboard() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && deletingKeysystem && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1a1b2e] border border-red-500/30 rounded-lg max-w-md w-full">
+        <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300 ${
+          modalAnimating ? 'opacity-0' : 'opacity-100'
+        }`}>
+          <div className={`bg-[#1a1b2e] border border-red-500/30 rounded-lg max-w-md w-full transition-all duration-500 ease-out ${
+            modalAnimating ? 'opacity-0 scale-90 translate-y-8' : 'opacity-100 scale-100 translate-y-0'
+          }`}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
@@ -1638,8 +1711,14 @@ export default function Dashboard() {
                   <h3 className="text-white text-lg font-semibold">Delete Keysystem</h3>
                 </div>
                 <button
-                  onClick={() => setShowDeleteModal(false)}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  onClick={() => {
+                    setModalAnimating(true);
+                    setTimeout(() => {
+                      setShowDeleteModal(false);
+                      setModalAnimating(false);
+                    }, 300);
+                  }}
+                  className="text-gray-400 hover:text-white hover:rotate-90 transition-all duration-300"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1661,9 +1740,15 @@ export default function Dashboard() {
 
               <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                 <button
-                  onClick={() => setShowDeleteModal(false)}
+                  onClick={() => {
+                    setModalAnimating(true);
+                    setTimeout(() => {
+                      setShowDeleteModal(false);
+                      setModalAnimating(false);
+                    }, 300);
+                  }}
                   disabled={isDeleting}
-                  className="flex-1 px-3 py-1.5 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-3 py-1.5 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded text-sm transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
@@ -1682,8 +1767,12 @@ export default function Dashboard() {
 
       {/* Delete Key Confirmation Modal */}
       {showDeleteKeyModal && deletingKeyValue && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1a1b2e] border border-red-500/30 rounded-lg max-w-md w-full">
+        <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300 ${
+          modalAnimating ? 'opacity-0' : 'opacity-100'
+        }`}>
+          <div className={`bg-[#1a1b2e] border border-red-500/30 rounded-lg max-w-md w-full transition-all duration-500 ease-out ${
+            modalAnimating ? 'opacity-0 scale-90 translate-y-8' : 'opacity-100 scale-100 translate-y-0'
+          }`}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
@@ -1695,8 +1784,14 @@ export default function Dashboard() {
                   <h3 className="text-white text-lg font-semibold">Delete Key</h3>
                 </div>
                 <button
-                  onClick={() => setShowDeleteKeyModal(false)}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  onClick={() => {
+                    setModalAnimating(true);
+                    setTimeout(() => {
+                      setShowDeleteKeyModal(false);
+                      setModalAnimating(false);
+                    }, 300);
+                  }}
+                  className="text-gray-400 hover:text-white hover:rotate-90 transition-all duration-300"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1718,9 +1813,15 @@ export default function Dashboard() {
 
               <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
                 <button
-                  onClick={() => setShowDeleteKeyModal(false)}
+                  onClick={() => {
+                    setModalAnimating(true);
+                    setTimeout(() => {
+                      setShowDeleteKeyModal(false);
+                      setModalAnimating(false);
+                    }, 300);
+                  }}
                   disabled={isDeletingKey}
-                  className="flex-1 px-3 py-1.5 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-3 py-1.5 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded text-sm transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel
                 </button>
@@ -1739,8 +1840,8 @@ export default function Dashboard() {
 
       {/* Toast Notification */}
       {toast && (
-        <div className="fixed top-4 right-4 z-50">
-          <div className={`bg-black/80 backdrop-blur-md border rounded-lg px-4 py-3 max-w-sm ${
+        <div className="fixed top-4 right-4 z-50 animate-slide-in-right">
+          <div className={`bg-black/80 backdrop-blur-md border rounded-lg px-4 py-3 max-w-sm transition-all duration-300 hover:scale-105 ${
             toast.type === 'success' ? 'border-green-500/30 text-green-400' : 'border-red-500/30 text-red-400'
           }`}>
             <div className="flex items-center space-x-2">
@@ -1759,8 +1860,12 @@ export default function Dashboard() {
         </div>
       )}
 {showApiToken && apiToken && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-[#1a1b2e] border border-white/10 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all duration-300 ${
+          modalAnimating ? 'opacity-0' : 'opacity-100'
+        }`}>
+          <div className={`bg-[#1a1b2e] border border-white/10 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto transition-all duration-500 ease-out ${
+            modalAnimating ? 'opacity-0 scale-90 translate-y-8' : 'opacity-100 scale-100 translate-y-0'
+          }`}>
               <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-3">
@@ -1772,8 +1877,14 @@ export default function Dashboard() {
                   <h3 className="text-white text-lg font-semibold">API Token Generated</h3>
                 </div>
                 <button
-                  onClick={() => setShowApiToken(false)}
-                  className="text-gray-400 hover:text-white transition-colors"
+                  onClick={() => {
+                    setModalAnimating(true);
+                    setTimeout(() => {
+                      setShowApiToken(false);
+                      setModalAnimating(false);
+                    }, 300);
+                  }}
+                  className="text-gray-400 hover:text-white hover:rotate-90 transition-all duration-300"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1803,8 +1914,14 @@ export default function Dashboard() {
 
               <div className="flex justify-end">
                 <button
-                  onClick={() => setShowApiToken(false)}
-                  className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+                  onClick={() => {
+                    setModalAnimating(true);
+                    setTimeout(() => {
+                      setShowApiToken(false);
+                      setModalAnimating(false);
+                    }, 300);
+                  }}
+                  className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg"
                 >
                   Done
                 </button>
@@ -1814,5 +1931,86 @@ export default function Dashboard() {
         </div>
       )}
     </div>
+
+    <style jsx>{`
+      @keyframes slide-in-right {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes fade-scale-in {
+        from {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .animate-slide-in-right {
+        animation: slide-in-right 0.4s ease-out;
+      }
+
+      .animate-fade-scale-in {
+        animation: fade-scale-in 0.3s ease-out;
+      }
+
+      /* Enhanced button animations */
+      button {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+      }
+
+      button:active {
+        transform: translateY(0);
+      }
+
+      /* Smooth card animations */
+      .group:hover {
+        transform: translateY(-2px);
+      }
+
+      /* Loading state animations */
+      .loading-shimmer {
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        animation: shimmer 2s infinite;
+      }
+
+      @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+      }
+
+      /* Custom scrollbar animations */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+        transition: background 0.3s ease;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    `}</style>
   );
 }
