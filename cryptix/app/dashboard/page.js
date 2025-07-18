@@ -54,12 +54,7 @@ export default function Dashboard() {
   const [isDeletingKey, setIsDeletingKey] = useState(false);
   const [showDeleteKeyModal, setShowDeleteKeyModal] = useState(false);
   const [deletingKeyValue, setDeletingKeyValue] = useState(null);
-  const [keysFilters, setKeysFilters] = useState({
-    sortBy: 'recent',
-    filterExpires: 'all',
-    filterHwid: 'all',
-    filterStatus: 'all'
-  });
+  
   const [apiToken, setApiToken] = useState(null);
   const [showApiToken, setShowApiToken] = useState(false);
   const [generatingApiToken, setGeneratingApiToken] = useState(false);
@@ -84,12 +79,7 @@ export default function Dashboard() {
     fetchUserProfile(token);
   }, [router]);
 
-  // Effect for keys filters
-  useEffect(() => {
-    if (selectedKeysystemForKeys) {
-      fetchKeysData(selectedKeysystemForKeys, currentKeysPage);
-    }
-  }, [keysFilters]);
+  
 
   const fetchUserProfile = async (token) => {
     try {
@@ -602,8 +592,7 @@ export default function Dashboard() {
       const token = localStorage.getItem('cryptix_jwt');
       const params = new URLSearchParams({
         keysystemId,
-        page: page.toString(),
-        ...keysFilters
+        page: page.toString()
       });
 
       const response = await fetch(`/api/v1/keysystems/keys/list?${params}`, {
@@ -630,20 +619,7 @@ export default function Dashboard() {
     }
   };
 
-  const handleKeysFilterChange = (filterName, value) => {
-    setKeysFilters(prev => ({
-      ...prev,
-      [filterName]: value
-    }));
-    setCurrentKeysPage(1);
-
-    // Fetch data with new filter
-    if (selectedKeysystemForKeys) {
-      setTimeout(() => {
-        fetchKeysData(selectedKeysystemForKeys, 1);
-      }, 100);
-    }
-  };
+  
 
   const handleKeysPageChange = (newPage) => {
     setCurrentKeysPage(newPage);
@@ -1138,59 +1114,7 @@ export default function Dashboard() {
 
                 {selectedKeysystemForKeys && (
                   <>
-                    {/* Filters */}
-                    <motion.div 
-                      className="mb-6 p-4 bg-black/20 rounded border border-white/10"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.5, delay: 0.3 }}
-                    >
-                      <h3 className="text-white text-sm font-medium mb-4">Filters</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        {[
-                          { key: 'sortBy', label: 'Sort by Creation', options: [
-                            { value: 'recent', label: 'Recent First' },
-                            { value: 'oldest', label: 'Oldest First' }
-                          ]},
-                          { key: 'filterExpires', label: 'Expiry Status', options: [
-                            { value: 'all', label: 'All Keys' },
-                            { value: 'soon', label: 'Expires Soon (24h)' }
-                          ]},
-                          { key: 'filterHwid', label: 'HWID Status', options: [
-                            { value: 'all', label: 'All Keys' },
-                            { value: 'linked', label: 'HWID Linked' },
-                            { value: 'not_linked', label: 'No HWID' }
-                          ]},
-                          { key: 'filterStatus', label: 'Status', options: [
-                            { value: 'all', label: 'All Status' },
-                            { value: 'active', label: 'Active' },
-                            { value: 'expired', label: 'Expired' }
-                          ]}
-                        ].map((filter, index) => (
-                          <motion.div 
-                            key={filter.key}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
-                          >
-                            <label className="block text-white text-xs font-medium mb-1">
-                              {filter.label}
-                            </label>
-                            <select
-                              value={keysFilters[filter.key]}
-                              onChange={(e) => handleKeysFilterChange(filter.key, e.target.value)}
-                              className="w-full bg-[#2a2d47] border border-white/10 rounded px-2 py-1 text-white text-sm focus:border-[#6366f1] focus:outline-none transition-colors"
-                            >
-                              {filter.options.map(option => (
-                                <option key={option.value} value={option.value}>
-                                  {option.label}
-                                </option>
-                              ))}
-                            </select>
-                          </motion.div>
-                        ))}
-                      </div>
-                    </motion.div>
+                    
 
                     {/* Keys Count */}
                     {keysPagination && (
