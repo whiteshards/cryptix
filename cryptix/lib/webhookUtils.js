@@ -1,29 +1,23 @@
 
-import { WebhookClient, EmbedBuilder } from 'discord.js';
+import { Webhook } from 'discord-webhook';
 
 export async function sendWebhookNotification(webhookUrl, type, data) {
   if (!webhookUrl) return;
 
   try {
-    // Extract webhook ID and token from URL
-    const webhookUrlMatch = webhookUrl.match(/https:\/\/discord\.com\/api\/webhooks\/(\d+)\/([^\/]+)/);
-    if (!webhookUrlMatch) {
-      console.error('Invalid Discord webhook URL format');
-      return;
-    }
-
-    const [, webhookId, webhookToken] = webhookUrlMatch;
-    const webhook = new WebhookClient({ id: webhookId, token: webhookToken });
+    const webhook = new Webhook(webhookUrl);
 
     let embed;
 
     switch (type) {
       case 'checkpoint_completed':
-        embed = new EmbedBuilder()
-          .setTitle('✅ Checkpoint Completed')
-          .setColor(0x00ff00)
-          .setThumbnail('https://cryptixmanager.vercel.app/images/thumbnail.gif')
-          .addFields(
+        embed = {
+          title: '✅ Checkpoint Completed',
+          color: 0x00ff00,
+          thumbnail: {
+            url: 'https://cryptixmanager.vercel.app/images/thumbnail.gif'
+          },
+          fields: [
             {
               name: 'Keysystem',
               value: `\`${data.keysystemName} (${data.keysystemId})\``,
@@ -54,20 +48,23 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
               value: `\`${data.userAgent && data.userAgent.length > 100 ? data.userAgent.substring(0, 100) + '...' : data.userAgent || 'unknown'}\``,
               inline: true
             }
-          )
-          .setTimestamp()
-          .setFooter({
+          ],
+          timestamp: new Date().toISOString(),
+          footer: {
             text: 'Cryptix Manager',
-            iconURL: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
-          });
+            icon_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
+          }
+        };
         break;
 
       case 'anti_bypass_triggered':
-        embed = new EmbedBuilder()
-          .setTitle('🚨 Anti-Bypass Triggered')
-          .setColor(0xff0000)
-          .setThumbnail('https://cryptixmanager.vercel.app/images/thumbnail.gif')
-          .addFields(
+        embed = {
+          title: '🚨 Anti-Bypass Triggered',
+          color: 0xff0000,
+          thumbnail: {
+            url: 'https://cryptixmanager.vercel.app/images/thumbnail.gif'
+          },
+          fields: [
             {
               name: 'Keysystem',
               value: `\`${data.keysystemName} (${data.keysystemId})\``,
@@ -93,20 +90,23 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
               value: `\`${data.sessionId || 'N/A'}\``,
               inline: true
             }
-          )
-          .setTimestamp()
-          .setFooter({
+          ],
+          timestamp: new Date().toISOString(),
+          footer: {
             text: 'Cryptix Manager',
-            iconURL: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
-          });
+            icon_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
+          }
+        };
         break;
 
       case 'key_generated':
-        embed = new EmbedBuilder()
-          .setTitle('🔑 Key Generated')
-          .setColor(0x0099ff)
-          .setThumbnail('https://cryptixmanager.vercel.app/images/thumbnail.gif')
-          .addFields(
+        embed = {
+          title: '🔑 Key Generated',
+          color: 0x0099ff,
+          thumbnail: {
+            url: 'https://cryptixmanager.vercel.app/images/thumbnail.gif'
+          },
+          fields: [
             {
               name: 'Keysystem',
               value: `\`${data.keysystemName} (${data.keysystemId})\``,
@@ -137,12 +137,13 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
               value: `\`${data.userAgent && data.userAgent.length > 100 ? data.userAgent.substring(0, 100) + '...' : data.userAgent || 'unknown'}\``,
               inline: true
             }
-          )
-          .setTimestamp()
-          .setFooter({
+          ],
+          timestamp: new Date().toISOString(),
+          footer: {
             text: 'Cryptix Manager',
-            iconURL: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
-          });
+            icon_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
+          }
+        };
         break;
 
       default:
@@ -151,7 +152,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
 
     await webhook.send({
       username: 'Cryptix Notifications',
-      avatarURL: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png',
+      avatar_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png',
       embeds: [embed]
     });
 
