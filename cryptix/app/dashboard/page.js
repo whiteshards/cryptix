@@ -1146,11 +1146,6 @@ export default function Dashboard() {
           {activeTab === 'api' && (
             <div className="bg-transparent rounded-lg border border-white/10 p-6">
               <h2 className="text-white text-xl font-semibold mb-6">API Documentation</h2>
-              <div className="text-center py-12">
-                <p className="text-gray-400 text-base">
-                  API documentation and tools coming soon...
-                </p>
-              </div>
               <div className="bg-black/20 rounded-lg p-6 border border-white/10">
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -1764,53 +1759,52 @@ export default function Dashboard() {
         </div>
       )}
 {showApiToken && apiToken && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" aria-hidden="true" onClick={() => setShowApiToken(false)}>
-              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-
-            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-            <div className="inline-block align-bottom bg-[#1a1b2e] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-white/10">
-              <div className="bg-[#1a1b2e] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-[#1a1b2e] border border-white/10 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-green-500/20 rounded-full flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                    <h3 className="text-lg leading-6 font-medium text-white">
-                      API Token Generated
-                    </h3>
-                    <div className="mt-2">
-                      <p className="text-sm text-gray-400 mb-4">
-                        Your API token has been generated successfully. Copy it now as it won't be shown again.
-                      </p>
-                      <div className="bg-black/20 rounded-md p-3 border border-white/10">
-                        <div className="flex items-center justify-between">
-                          <code className="text-sm font-mono text-gray-300 break-all">{apiToken}</code>
-                          <button
-                            onClick={() => handleCopyApiToken(apiToken)}
-                            className="ml-2 bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1 rounded text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            Copy
-                          </button>
-                        </div>
-                      </div>
-                      <p className="text-xs text-red-400 mt-2">
-                        ⚠️ Store this token securely. It won't be displayed again.
-                      </p>
-                    </div>
+                  <h3 className="text-white text-lg font-semibold">API Token Generated</h3>
+                </div>
+                <button
+                  onClick={() => setShowApiToken(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-gray-300 mb-4">
+                  Your API token has been generated successfully. Copy it now as it won't be shown again.
+                </p>
+                <div className="bg-black/20 rounded-md p-3 border border-white/10">
+                  <div className="flex items-center justify-between">
+                    <code className="text-sm font-mono text-gray-300 break-all mr-2">{apiToken}</code>
+                    <button
+                      onClick={() => handleCopyApiToken(apiToken)}
+                      className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1 rounded text-xs font-medium transition-colors"
+                    >
+                      Copy
+                    </button>
                   </div>
                 </div>
+                <p className="text-red-400 text-sm mt-3">
+                  ⚠️ Store this token securely. It won't be displayed again.
+                </p>
               </div>
-              <div className="bg-[#1a1b2e] px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+
+              <div className="flex justify-end">
                 <button
-                  type="button"
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#6366f1] text-base font-medium text-white hover:bg-[#5856eb] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6366f1] sm:ml-3 sm:w-auto sm:text-sm transition-colors"
                   onClick={() => setShowApiToken(false)}
+                  className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors"
                 >
                   Done
                 </button>
