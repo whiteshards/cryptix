@@ -79,23 +79,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Failed to update progress' }, { status: 500 });
     }
 
-    // Send webhook notification if webhook URL is configured
-    if (keysystem.webhookUrl) {
-      const forwarded = request.headers.get('x-forwarded-for');
-      const ip = forwarded ? forwarded.split(',')[0] : request.headers.get('x-real-ip') || 'unknown';
-      const userAgent = request.headers.get('user-agent') || 'unknown';
-
-      await sendWebhookNotification(keysystem.webhookUrl, 'checkpoint_completed', {
-        keysystemName: keysystem.name,
-        keysystemId: keysystem.id,
-        checkpointIndex: checkpointIndex,
-        totalCheckpoints: keysystem.checkpoints.length,
-        checkpointType: keysystem.checkpoints[checkpointIndex]?.type,
-        sessionId: sessionId,
-        ip: ip,
-        userAgent: userAgent
-      });
-    }
+    // Webhook notifications are handled by the callback page
 
     return NextResponse.json({
       success: true,
