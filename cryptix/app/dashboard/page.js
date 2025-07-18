@@ -43,7 +43,7 @@ export default function Dashboard() {
   const [linkvertiseApiToken, setLinkvertiseApiToken] = useState('');
   const [linkvertiseTokenChanged, setLinkvertiseTokenChanged] = useState(false);
   const [isSavingLinkvertiseToken, setIsSavingLinkvertiseToken] = useState(false);
-  
+
   // Keys management state
   const [selectedKeysystemForKeys, setSelectedKeysystemForKeys] = useState('');
   const [keysData, setKeysData] = useState([]);
@@ -59,6 +59,9 @@ export default function Dashboard() {
     filterHwid: 'all',
     filterStatus: 'all'
   });
+  const [apiToken, setApiToken] = useState(null);
+  const [showApiToken, setShowApiToken] = useState(false);
+  const [generatingApiToken, setGeneratingApiToken] = useState(false);
 
   useEffect(() => {
     // Check authentication and fetch profile
@@ -450,10 +453,82 @@ export default function Dashboard() {
     }
   };
 
+  const handleGenerateApiToken = async () => {
+    setGeneratingApiToken(true);
+    try {
+      const token = localStorage.getItem('cryptix_jwt');
+      const response = await fetch('/api/v1/users/api-token', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setApiToken(data.api_token);
+        setShowApiToken(true);
+        // Refresh customer data to update token status
+        // await fetchCustomerData();  // removed as function fetchCustomerData is not available
+      } else {
+        showToast(data.error || 'Failed to generate API token');
+      }
+    } catch (error) {
+      showToast(error.message || 'Failed to generate API token');
+    } finally {
+      setGeneratingApiToken(false);
+    }
+  };
+
+  const handleRevokeApiToken = async () => {
+    if (!confirm('Are you sure you want to revoke your API token? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('cryptix_jwt');
+      const response = await fetch('/api/v1/users/api-token', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setApiToken(null);
+        setShowApiToken(false);
+        // Refresh customer data to update token status
+        // await fetchCustomerData(); // removed as function fetchCustomerData is not available
+        showToast('API token revoked successfully!', 'success');
+      } else {
+        showToast(data.error || 'Failed to revoke API token');
+      }
+    } catch (error) {
+      showToast(error.message || 'Failed to revoke API token');
+    }
+    finally {
+      setGeneratingApiToken(false);
+    }
+  };
+
+  const handleCopyApiToken = async (apiToken) => {
+    if (!apiToken) return;
+
+    try {
+      await navigator.clipboard.writeText(apiToken);
+      showToast('API token copied to clipboard!', 'success');
+    } catch (error) {
+      showToast('Failed to copy API token', 'error');
+    }
+  };
+
   // Keys management functions
   const fetchKeysData = async (keysystemId, page = 1) => {
     if (!keysystemId) return;
-    
+
     setIsLoadingKeys(true);
     try {
       const token = localStorage.getItem('cryptix_jwt');
@@ -493,7 +568,7 @@ export default function Dashboard() {
       [filterName]: value
     }));
     setCurrentKeysPage(1);
-    
+
     // Fetch data with new filter
     if (selectedKeysystemForKeys) {
       setTimeout(() => {
@@ -514,7 +589,7 @@ export default function Dashboard() {
 
   const confirmDeleteKey = async () => {
     if (!deletingKeyValue) return;
-    
+
     setIsDeletingKey(true);
     try {
       const token = localStorage.getItem('cryptix_jwt');
@@ -540,7 +615,7 @@ export default function Dashboard() {
       showToast('Key deleted successfully!', 'success');
       setShowDeleteKeyModal(false);
       setDeletingKeyValue(null);
-      
+
       // Refresh the keys data
       fetchKeysData(selectedKeysystemForKeys, currentKeysPage);
 
@@ -553,27 +628,27 @@ export default function Dashboard() {
 
   const getTimeLeft = (expiresAt) => {
     if (!expiresAt) return 'N/A';
-    
+
     const now = new Date();
     const expiry = new Date(expiresAt);
     const diff = expiry.getTime() - now.getTime();
-    
+
     if (diff <= 0) return 'Expired';
-    
+
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
+
     if (hours > 24) {
       const days = Math.floor(hours / 24);
       return `${days}d ${hours % 24}h`;
     }
-    
+
     return `${hours}h ${minutes}m`;
   };
 
   const handleCopyKey = async (keyValue) => {
     if (!keyValue) return;
-    
+
     try {
       await navigator.clipboard.writeText(keyValue);
       showToast('Key copied to clipboard!', 'success');
@@ -817,7 +892,7 @@ export default function Dashboard() {
           {activeTab === 'keys' && (
             <div className="bg-transparent rounded-lg border border-white/10 p-6">
               <h2 className="text-white text-xl font-semibold mb-6">Keys Management</h2>
-              
+
               {/* Keysystem Selection */}
               <div className="mb-6">
                 <label className="block text-white text-sm font-medium mb-2">
@@ -943,7 +1018,7 @@ export default function Dashboard() {
                             {keysData.map((key, index) => {
                               const isExpired = new Date(key.expires_at) <= new Date();
                               const timeLeft = getTimeLeft(key.expires_at);
-                              
+
                               return (
                                 <tr key={index} className="border-b border-white/5 hover:bg-white/5 transition-colors">
                                   <td className="py-2 px-1">
@@ -1075,6 +1150,69 @@ export default function Dashboard() {
                 <p className="text-gray-400 text-base">
                   API documentation and tools coming soon...
                 </p>
+              </div>
+              <div className="bg-black/20 rounded-lg p-6 border border-white/10">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-white text-lg font-medium">API Token</h3>
+                    <p className="text-gray-400 text-sm">Generate and manage your API token for secure access.</p>
+                  </div>
+                </div>
+                {!userProfile?.has_api_token ? (
+                  <button
+                    onClick={handleGenerateApiToken}
+                    disabled={generatingApiToken}
+                    className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {generatingApiToken ? 'Generating...' : 'Generate API Token'}
+                  </button>
+                ) : (
+                  <>
+                    <div className="mb-4">
+                      <p className="text-gray-400 text-sm">
+                        Your API token:
+                      </p>
+                      <div className="relative">
+                        <input
+                          type={showApiToken ? "text" : "password"}
+                          value={apiToken || '********************'}
+                          readOnly
+                          className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowApiToken(!showApiToken)}
+                          className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                        >
+                          {showApiToken ? (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
+                            </svg>
+                          ) : (
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={() => handleCopyApiToken(apiToken)}
+                        className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        Copy API Token
+                      </button>
+                      <button
+                        onClick={handleRevokeApiToken}
+                        className="border border-white/20 text-gray-300 hover:text-white hover:border-white/40 px-4 py-2 rounded text-sm transition-colors"
+                      >
+                        Revoke API Token
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -1621,6 +1759,62 @@ export default function Dashboard() {
                 </svg>
               )}
               <span className="text-sm">{toast.message}</span>
+            </div>
+          </div>
+        </div>
+      )}
+{showApiToken && apiToken && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" aria-hidden="true" onClick={() => setShowApiToken(false)}>
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div className="inline-block align-bottom bg-[#1a1b2e] rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-white/10">
+              <div className="bg-[#1a1b2e] px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                    <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                    <h3 className="text-lg leading-6 font-medium text-white">
+                      API Token Generated
+                    </h3>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-400 mb-4">
+                        Your API token has been generated successfully. Copy it now as it won't be shown again.
+                      </p>
+                      <div className="bg-black/20 rounded-md p-3 border border-white/10">
+                        <div className="flex items-center justify-between">
+                          <code className="text-sm font-mono text-gray-300 break-all">{apiToken}</code>
+                          <button
+                            onClick={() => handleCopyApiToken(apiToken)}
+                            className="ml-2 bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1 rounded text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            Copy
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-xs text-red-400 mt-2">
+                        ⚠️ Store this token securely. It won't be displayed again.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-[#1a1b2e] px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  type="button"
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-[#6366f1] text-base font-medium text-white hover:bg-[#5856eb] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#6366f1] sm:ml-3 sm:w-auto sm:text-sm transition-colors"
+                  onClick={() => setShowApiToken(false)}
+                >
+                  Done
+                </button>
+              </div>
             </div>
           </div>
         </div>

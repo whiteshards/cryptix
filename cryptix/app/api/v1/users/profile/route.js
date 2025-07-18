@@ -33,6 +33,8 @@ export async function GET(request) {
         activated: user.activated,
         keysystems: user.keysystems || [],
         integrations: user.integrations || {},
+        has_api_token: !!user.api_token,
+        api_token_created_at: user.api_token_created_at,
         createdAt: user.createdAt
       }
     });
