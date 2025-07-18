@@ -1,3 +1,6 @@
+The code modification involves updating the key generation route to use async job scheduling for key expiration.
+```
+```replit_final_file
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../../lib/mongodb';
 import jobQueue from '../../../../../../lib/jobQueue';
@@ -116,7 +119,7 @@ export async function POST(request) {
 
     // Schedule key expiration if not permanent
     if (!keysystem.permanent && expiresAt) {
-      jobQueue.scheduleKeyExpiration(keysystemId, sessionId, keyValue, expiresAt);
+      await jobQueue.scheduleKeyExpiration(keysystemId, sessionId, keyValue, expiresAt);
     }
 
     // Schedule cooldown cleanup
@@ -134,3 +137,5 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+```The code modification involves adding async job scheduling and the database persistence for jobs.
+```

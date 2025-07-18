@@ -86,11 +86,11 @@ export async function POST(request) {
 
     // Schedule key expiration if not permanent
     if (!keysystem.permanent && expiresAt) {
-      jobQueue.scheduleKeyExpiration(keysystemId, sessionId, keyValue, expiresAt);
+      await jobQueue.scheduleKeyExpiration(keysystemId, sessionId, keyValue, expiresAt);
     }
 
     // Schedule cooldown cleanup
-    jobQueue.scheduleCooldownCleanup(keysystemId, sessionId, cooldownTill);
+    await jobQueue.scheduleCooldownCleanup(keysystemId, sessionId, cooldownTill);
 
     return NextResponse.json({
       success: true,

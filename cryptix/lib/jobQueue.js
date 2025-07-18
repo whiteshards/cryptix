@@ -5,38 +5,155 @@ import clientPromise from './mongodb.js';
 class JobQueue {
   constructor() {
     this.jobs = new Map();
-    this.startCronJobs();
+    this.isInitialized = false;
+    this.init();
+  }
+
+  async init() {
+    try {
+      await this.createJobCacheTable();
+      await this.loadJobsFromDatabase();
+      this.startCronJobs();
+      this.isInitialized = true;
+      console.log('Job queue initialized successfully');
+    } catch (error) {
+      console.error('Error initializing job queue:', error);
+    }
+  }
+
+  async createJobCacheTable() {
+    try {
+      const client = await clientPromise;
+      const db = client.db('Cryptix');
+      
+      // Create job_cache collection if it doesn't exist
+      const collections = await db.listCollections({ name: 'job_cache' }).toArray();
+      if (collections.length === 0) {
+        await db.createCollection('job_cache');
+        console.log('Created job_cache collection');
+      }
+
+      // Create index for efficient querying
+      await db.collection('job_cache').createIndex({ scheduledFor: 1 });
+    } catch (error) {
+      console.error('Error creating job cache table:', error);
+      throw error;
+    }
+  }
+
+  async loadJobsFromDatabase() {
+    try {
+      const client = await clientPromise;
+      const db = client.db('Cryptix');
+      const collection = db.collection('job_cache');
+
+      const jobs = await collection.find({}).toArray();
+      const now = new Date();
+      const expiredJobs = [];
+
+      for (const job of jobs) {
+        this.jobs.set(job.jobId, {
+          type: job.type,
+          keysystemId: job.keysystemId,
+          sessionId: job.sessionId,
+          keyValue: job.keyValue,
+          scheduledFor: new Date(job.scheduledFor)
+        });
+
+        // Check if job should have already run
+        if (new Date(job.scheduledFor) <= now) {
+          expiredJobs.push(job);
+        }
+      }
+
+      // Execute expired jobs immediately
+      if (expiredJobs.length > 0) {
+        console.log(`Found ${expiredJobs.length} expired jobs, executing immediately...`);
+        for (const job of expiredJobs) {
+          await this.executeJob(job);
+        }
+      }
+
+      console.log(`Loaded ${jobs.length} jobs from database`);
+    } catch (error) {
+      console.error('Error loading jobs from database:', error);
+      throw error;
+    }
+  }
+
+  async saveJobToDatabase(jobId, jobData) {
+    try {
+      const client = await clientPromise;
+      const db = client.db('Cryptix');
+      const collection = db.collection('job_cache');
+
+      await collection.insertOne({
+        jobId,
+        type: jobData.type,
+        keysystemId: jobData.keysystemId,
+        sessionId: jobData.sessionId,
+        keyValue: jobData.keyValue,
+        scheduledFor: jobData.scheduledFor,
+        createdAt: new Date()
+      });
+    } catch (error) {
+      console.error('Error saving job to database:', error);
+      throw error;
+    }
+  }
+
+  async removeJobFromDatabase(jobId) {
+    try {
+      const client = await clientPromise;
+      const db = client.db('Cryptix');
+      const collection = db.collection('job_cache');
+
+      await collection.deleteOne({ jobId });
+    } catch (error) {
+      console.error('Error removing job from database:', error);
+      throw error;
+    }
   }
 
   // Schedule a job to expire a key
-  scheduleKeyExpiration(keysystemId, sessionId, keyValue, expiresAt) {
+  async scheduleKeyExpiration(keysystemId, sessionId, keyValue, expiresAt) {
     const jobId = `key_expire_${keysystemId}_${sessionId}_${keyValue}`;
     const expireTime = new Date(expiresAt);
     
-    // Store job info
-    this.jobs.set(jobId, {
+    const jobData = {
       type: 'key_expiration',
       keysystemId,
       sessionId,
       keyValue,
       scheduledFor: expireTime
-    });
+    };
+
+    // Store job info in memory
+    this.jobs.set(jobId, jobData);
+
+    // Store job info in database
+    await this.saveJobToDatabase(jobId, jobData);
 
     console.log(`Scheduled key expiration for ${keyValue} at ${expireTime}`);
   }
 
   // Schedule a job to clear cooldown
-  scheduleCooldownCleanup(keysystemId, sessionId, cooldownTill) {
+  async scheduleCooldownCleanup(keysystemId, sessionId, cooldownTill) {
     const jobId = `cooldown_cleanup_${keysystemId}_${sessionId}`;
     const cleanupTime = new Date(cooldownTill);
     
-    // Store job info
-    this.jobs.set(jobId, {
+    const jobData = {
       type: 'cooldown_cleanup',
       keysystemId,
       sessionId,
       scheduledFor: cleanupTime
-    });
+    };
+
+    // Store job info in memory
+    this.jobs.set(jobId, jobData);
+
+    // Store job info in database
+    await this.saveJobToDatabase(jobId, jobData);
 
     console.log(`Scheduled cooldown cleanup for session ${sessionId} at ${cleanupTime}`);
   }
@@ -45,7 +162,9 @@ class JobQueue {
   startCronJobs() {
     // Run every minute to check for expired keys and cooldowns
     cron.schedule('* * * * *', async () => {
-      await this.processExpiredJobs();
+      if (this.isInitialized) {
+        await this.processExpiredJobs();
+      }
     });
 
     console.log('Job queue cron jobs started');
@@ -64,21 +183,27 @@ class JobQueue {
 
     // Process expired jobs
     for (const job of expiredJobs) {
-      try {
-        if (job.type === 'key_expiration') {
-          await this.expireKey(job.keysystemId, job.sessionId, job.keyValue);
-        } else if (job.type === 'cooldown_cleanup') {
-          await this.clearCooldown(job.keysystemId, job.sessionId);
-        }
+      await this.executeJob(job);
+    }
+  }
 
-        // Remove processed job
-        this.jobs.delete(job.jobId);
-        console.log(`Processed job: ${job.jobId}`);
-      } catch (error) {
-        console.error(`Error processing job ${job.jobId}:`, error);
-        // Remove failed job to prevent infinite retries
-        this.jobs.delete(job.jobId);
+  async executeJob(job) {
+    try {
+      if (job.type === 'key_expiration') {
+        await this.expireKey(job.keysystemId, job.sessionId, job.keyValue);
+      } else if (job.type === 'cooldown_cleanup') {
+        await this.clearCooldown(job.keysystemId, job.sessionId);
       }
+
+      // Remove processed job from memory and database
+      this.jobs.delete(job.jobId);
+      await this.removeJobFromDatabase(job.jobId);
+      console.log(`Processed job: ${job.jobId}`);
+    } catch (error) {
+      console.error(`Error processing job ${job.jobId}:`, error);
+      // Remove failed job to prevent infinite retries
+      this.jobs.delete(job.jobId);
+      await this.removeJobFromDatabase(job.jobId);
     }
   }
 
@@ -156,6 +281,11 @@ class JobQueue {
     }
 
     return stats;
+  }
+
+  // Method to manually trigger startup job loading (for testing)
+  async restoreJobsOnStartup() {
+    await this.loadJobsFromDatabase();
   }
 }
 
