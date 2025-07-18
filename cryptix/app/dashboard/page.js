@@ -63,6 +63,15 @@ export default function Dashboard() {
   const [apiToken, setApiToken] = useState(null);
   const [showApiToken, setShowApiToken] = useState(false);
   const [generatingApiToken, setGeneratingApiToken] = useState(false);
+  
+  // Create keys state
+  const [showCreateKeysModal, setShowCreateKeysModal] = useState(false);
+  const [createKeysData, setCreateKeysData] = useState({
+    amount: 1,
+    expirationHours: null
+  });
+  const [isCreatingKeys, setIsCreatingKeys] = useState(false);
+  const [createdKeysResult, setCreatedKeysResult] = useState(null);
 
   useEffect(() => {
     // Check authentication and fetch profile
@@ -716,6 +725,60 @@ export default function Dashboard() {
     }
   };
 
+  const handleCreateKeys = async () => {
+    if (!selectedKeysystemForKeys) {
+      showToast('Please select a keysystem first', 'error');
+      return;
+    }
+
+    setIsCreatingKeys(true);
+    try {
+      const token = localStorage.getItem('cryptix_jwt');
+      const response = await fetch('/api/v1/keysystems/keys/create', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          keysystemId: selectedKeysystemForKeys,
+          amount: parseInt(createKeysData.amount),
+          expirationHours: createKeysData.expirationHours === '' ? null : parseInt(createKeysData.expirationHours)
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showToast(data.error || 'Failed to create keys');
+        return;
+      }
+
+      setCreatedKeysResult(data);
+      showToast(`Successfully created ${data.keysCreated} key(s)!`, 'success');
+      
+      // Refresh keys data
+      fetchKeysData(selectedKeysystemForKeys, currentKeysPage);
+
+    } catch (error) {
+      showToast(error.message || 'An error occurred while creating keys');
+    } finally {
+      setIsCreatingKeys(false);
+    }
+  };
+
+  const handleCopyAllKeys = async () => {
+    if (!createdKeysResult?.keys) return;
+
+    try {
+      const keysList = createdKeysResult.keys.map(key => key.value).join('\n');
+      await navigator.clipboard.writeText(keysList);
+      showToast('All keys copied to clipboard!', 'success');
+    } catch (error) {
+      showToast('Failed to copy keys', 'error');
+    }
+  };
+
   return (
     <motion.div 
       className="min-h-screen bg-[#0f1015]"
@@ -1027,31 +1090,49 @@ export default function Dashboard() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  <label className="block text-white text-sm font-medium mb-2">
-                    Select Keysystem
-                  </label>
-                  <motion.select
-                    value={selectedKeysystemForKeys}
-                    onChange={(e) => {
-                      setSelectedKeysystemForKeys(e.target.value);
-                      setCurrentKeysPage(1);
-                      if (e.target.value) {
-                        fetchKeysData(e.target.value, 1);
-                      } else {
-                        setKeysData([]);
-                        setKeysPagination(null);
-                      }
-                    }}
-                    className="w-full max-w-md bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white focus:border-[#6366f1] focus:outline-none transition-colors"
-                    whileFocus={{ scale: 1.02 }}
-                  >
-                    <option value="">Choose a keysystem...</option>
-                    {keysystems.map((ks) => (
-                      <option key={ks.id} value={ks.id}>
-                        {ks.name}
-                      </option>
-                    ))}
-                  </motion.select>
+                  <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between sm:space-x-4">
+                    <div className="flex-1">
+                      <label className="block text-white text-sm font-medium mb-2">
+                        Select Keysystem
+                      </label>
+                      <motion.select
+                        value={selectedKeysystemForKeys}
+                        onChange={(e) => {
+                          setSelectedKeysystemForKeys(e.target.value);
+                          setCurrentKeysPage(1);
+                          if (e.target.value) {
+                            fetchKeysData(e.target.value, 1);
+                          } else {
+                            setKeysData([]);
+                            setKeysPagination(null);
+                          }
+                        }}
+                        className="w-full max-w-md bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white focus:border-[#6366f1] focus:outline-none transition-colors"
+                        whileFocus={{ scale: 1.02 }}
+                      >
+                        <option value="">Choose a keysystem...</option>
+                        {keysystems.map((ks) => (
+                          <option key={ks.id} value={ks.id}>
+                            {ks.name}
+                          </option>
+                        ))}
+                      </motion.select>
+                    </div>
+                    
+                    {selectedKeysystemForKeys && (
+                      <motion.button
+                        onClick={() => setShowCreateKeysModal(true)}
+                        className="mt-4 sm:mt-0 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        Create Keys
+                      </motion.button>
+                    )}
+                  </div>
                 </motion.div>
 
                 {selectedKeysystemForKeys && (
@@ -2133,6 +2214,175 @@ export default function Dashboard() {
                     {isDeleting ? 'Deleting...' : 'Delete'}
                   </motion.button>
                 </motion.div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Create Keys Modal */}
+      <AnimatePresence>
+        {showCreateKeysModal && (
+          <motion.div 
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div 
+              className="bg-[#1a1b2e] border border-white/10 rounded-lg max-w-md w-full"
+              initial={{ scale: 0.9, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 50 }}
+              transition={{ type: "spring", duration: 0.5 }}
+            >
+              <div className="p-6">
+                <motion.div 
+                  className="flex items-center justify-between mb-6"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  <h3 className="text-white text-lg font-semibold">Create Keys</h3>
+                  <motion.button
+                    onClick={() => {
+                      setShowCreateKeysModal(false);
+                      setCreatedKeysResult(null);
+                      setCreateKeysData({ amount: 1, expirationHours: null });
+                    }}
+                    className="text-gray-400 hover:text-white transition-colors"
+                    whileHover={{ scale: 1.1, rotate: 90 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </motion.button>
+                </motion.div>
+
+                {!createdKeysResult ? (
+                  <>
+                    <motion.div 
+                      className="space-y-4 mb-6"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                      <div>
+                        <label className="block text-white text-sm font-medium mb-2">
+                          Number of Keys (1-100)
+                        </label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="100"
+                          value={createKeysData.amount}
+                          onChange={(e) => setCreateKeysData(prev => ({ ...prev, amount: e.target.value }))}
+                          className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-white text-sm font-medium mb-2">
+                          Expiration Hours (0 for permanent, max 360)
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          max="360"
+                          value={createKeysData.expirationHours || ''}
+                          onChange={(e) => setCreateKeysData(prev => ({ ...prev, expirationHours: e.target.value }))}
+                          placeholder="Default: Use keysystem timer"
+                          className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                        />
+                        <p className="text-gray-400 text-xs mt-1">
+                          Leave empty to use keysystem default ({keysystems.find(ks => ks.id === selectedKeysystemForKeys)?.keyTimer || 0}h)
+                        </p>
+                      </div>
+                    </motion.div>
+
+                    <motion.div 
+                      className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: 0.3 }}
+                    >
+                      <motion.button
+                        onClick={() => {
+                          setShowCreateKeysModal(false);
+                          setCreateKeysData({ amount: 1, expirationHours: null });
+                        }}
+                        disabled={isCreatingKeys}
+                        className="flex-1 px-4 py-2 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        Cancel
+                      </motion.button>
+                      <motion.button
+                        onClick={handleCreateKeys}
+                        disabled={isCreatingKeys || !createKeysData.amount || createKeysData.amount < 1 || createKeysData.amount > 100}
+                        className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        {isCreatingKeys ? 'Creating...' : 'Create Keys'}
+                      </motion.button>
+                    </motion.div>
+                  </>
+                ) : (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <div className="text-center mb-4">
+                      <motion.div 
+                        className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.2, type: "spring" }}
+                      >
+                        <svg className="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </motion.div>
+                      <h4 className="text-white text-lg font-medium mb-2">Keys Created Successfully!</h4>
+                      <p className="text-gray-400 text-sm">
+                        Created {createdKeysResult.keysCreated} key(s) in session: {createdKeysResult.sessionId}
+                      </p>
+                    </div>
+
+                    <motion.div 
+                      className="flex space-x-2 mb-4"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: 0.3 }}
+                    >
+                      <motion.button
+                        onClick={handleCopyAllKeys}
+                        className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-2 rounded text-sm transition-colors"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        Copy All Keys
+                      </motion.button>
+                      <motion.button
+                        onClick={() => {
+                          setShowCreateKeysModal(false);
+                          setCreatedKeysResult(null);
+                          setCreateKeysData({ amount: 1, expirationHours: null });
+                        }}
+                        className="flex-1 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 px-3 py-2 rounded text-sm transition-colors"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        Close
+                      </motion.button>
+                    </motion.div>
+                  </motion.div>
+                )}
               </div>
             </motion.div>
           </motion.div>
