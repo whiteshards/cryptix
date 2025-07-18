@@ -1,8 +1,8 @@
-
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../../lib/mongodb';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
+import jobQueue from '../../../../../../lib/jobQueue';
 
 function generateKey() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -128,6 +128,14 @@ export async function POST(request) {
     if (result.modifiedCount === 0) {
       return NextResponse.json({ error: 'Failed to create keys' }, { status: 500 });
     }
+
+    // Schedule key expiration jobs for non-permanent keys
+    if (expiresAt) {
+      for (const key of createdKeys) {
+        await jobQueue.scheduleKeyExpiration(keysystemId, sessionId, key.value, key.expires_at);
+      }
+    }
+
 
     return NextResponse.json({
       success: true,
