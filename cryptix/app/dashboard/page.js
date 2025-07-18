@@ -562,6 +562,17 @@ export default function Dashboard() {
     return `${hours}h ${minutes}m`;
   };
 
+  const handleCopyKey = async (keyValue) => {
+    if (!keyValue) return;
+    
+    try {
+      await navigator.clipboard.writeText(keyValue);
+      showToast('Key copied to clipboard!', 'success');
+    } catch (error) {
+      showToast('Failed to copy key', 'error');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#0f1015]">
       {/* Profile Section (Navbar) */}
@@ -907,17 +918,16 @@ export default function Dashboard() {
                   ) : keysData.length > 0 ? (
                     <>
                       <div className="overflow-x-auto">
-                        <table className="w-full">
+                        <table className="w-full text-xs">
                           <thead>
                             <tr className="border-b border-white/10">
-                              <th className="text-left text-white text-sm font-medium py-3 px-2">Key Value</th>
-                              <th className="text-left text-white text-sm font-medium py-3 px-2">Status</th>
-                              <th className="text-left text-white text-sm font-medium py-3 px-2">Created At</th>
-                              <th className="text-left text-white text-sm font-medium py-3 px-2">Expires At</th>
-                              <th className="text-left text-white text-sm font-medium py-3 px-2">Time Left</th>
-                              <th className="text-left text-white text-sm font-medium py-3 px-2">Session ID</th>
-                              <th className="text-left text-white text-sm font-medium py-3 px-2">HWID</th>
-                              <th className="text-left text-white text-sm font-medium py-3 px-2">Actions</th>
+                              <th className="text-left text-white font-medium py-2 px-1 w-20">Key</th>
+                              <th className="text-left text-white font-medium py-2 px-1 w-16">Status</th>
+                              <th className="text-left text-white font-medium py-2 px-1 hidden md:table-cell w-32">Created</th>
+                              <th className="text-left text-white font-medium py-2 px-1 w-24">Time Left</th>
+                              <th className="text-left text-white font-medium py-2 px-1 hidden lg:table-cell w-20">Session</th>
+                              <th className="text-left text-white font-medium py-2 px-1 w-16">HWID</th>
+                              <th className="text-left text-white font-medium py-2 px-1 w-16">Actions</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -927,69 +937,71 @@ export default function Dashboard() {
                               
                               return (
                                 <tr key={index} className="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                  <td className="py-3 px-2">
-                                    <div className="flex items-center space-x-2">
-                                      <span className="text-white text-sm font-mono">
-                                        {key.value ? `${key.value.substring(0, 8)}...` : 'N/A'}
-                                      </span>
+                                  <td className="py-2 px-1">
+                                    <div className="flex items-center space-x-1">
+                                      <button
+                                        onClick={() => handleCopyKey(key.value)}
+                                        className="text-white font-mono hover:text-[#6366f1] transition-colors text-left"
+                                        title="Click to copy full key"
+                                      >
+                                        {key.value ? `${key.value.substring(0, 6)}...` : 'N/A'}
+                                      </button>
                                       <button
                                         onClick={() => handleCopyKey(key.value)}
                                         className="text-gray-400 hover:text-white transition-colors"
                                       >
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                                         </svg>
                                       </button>
                                     </div>
                                   </td>
-                                  <td className="py-3 px-2">
-                                    <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
+                                  <td className="py-2 px-1">
+                                    <span className={`inline-flex px-1.5 py-0.5 rounded text-xs font-medium ${
                                       isExpired 
                                         ? 'bg-red-500/20 text-red-400' 
                                         : 'bg-green-500/20 text-green-400'
                                     }`}>
-                                      {isExpired ? 'Expired' : 'Active'}
+                                      {isExpired ? 'Exp' : 'Act'}
                                     </span>
                                   </td>
-                                  <td className="py-3 px-2">
-                                    <span className="text-gray-300 text-sm">
-                                      {key.created_at ? new Date(key.created_at).toLocaleString() : 'N/A'}
+                                  <td className="py-2 px-1 hidden md:table-cell">
+                                    <span className="text-gray-300">
+                                      {key.created_at ? new Date(key.created_at).toLocaleDateString() : 'N/A'}
                                     </span>
                                   </td>
-                                  <td className="py-3 px-2">
-                                    <span className="text-gray-300 text-sm">
-                                      {key.expires_at ? new Date(key.expires_at).toLocaleString() : 'N/A'}
-                                    </span>
-                                  </td>
-                                  <td className="py-3 px-2">
-                                    <span className={`text-sm ${isExpired ? 'text-red-400' : 'text-green-400'}`}>
+                                  <td className="py-2 px-1">
+                                    <span className={`${isExpired ? 'text-red-400' : 'text-green-400'}`}>
                                       {timeLeft}
                                     </span>
                                   </td>
-                                  <td className="py-3 px-2">
-                                    <span className="text-gray-300 text-sm font-mono">
-                                      {key.session_id ? `${key.session_id.substring(0, 8)}...` : 'N/A'}
+                                  <td className="py-2 px-1 hidden lg:table-cell">
+                                    <span className="text-gray-300 font-mono">
+                                      {key.session_id ? `${key.session_id.substring(0, 6)}...` : 'N/A'}
                                     </span>
                                   </td>
-                                  <td className="py-3 px-2">
-                                    <span className="text-gray-300 text-sm">
-                                      {key.hwid ? (
-                                        <span className="inline-flex items-center">
-                                          <span className="font-mono">{key.hwid.substring(0, 8)}...</span>
-                                          <span className="ml-2 w-2 h-2 bg-green-400 rounded-full"></span>
+                                  <td className="py-2 px-1">
+                                    {key.hwid ? (
+                                      <div className="flex items-center space-x-1">
+                                        <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                                        <span className="text-gray-300 font-mono hidden sm:inline">
+                                          {key.hwid.substring(0, 4)}...
                                         </span>
-                                      ) : (
-                                        <span className="text-gray-500">No HWID</span>
-                                      )}
-                                    </span>
+                                      </div>
+                                    ) : (
+                                      <span className="text-gray-500">-</span>
+                                    )}
                                   </td>
-                                  <td className="py-3 px-2">
+                                  <td className="py-2 px-1">
                                     <button
                                       onClick={() => handleDeleteKeyFromDashboard(key.value)}
                                       disabled={isDeletingKey}
-                                      className="text-red-400 hover:text-red-300 text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      className="text-red-400 hover:text-red-300 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      title="Delete key"
                                     >
-                                      Delete
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                      </svg>
                                     </button>
                                   </td>
                                 </tr>
