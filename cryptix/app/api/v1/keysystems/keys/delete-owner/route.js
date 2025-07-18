@@ -61,7 +61,7 @@ export async function DELETE(request) {
     }
 
     // Remove the key from the found session
-    const result = await collection.updateOne(
+    const deleteResult = await collection.updateOne(
       { 
         _id: user._id,
         'keysystems.id': keysystemId
@@ -73,7 +73,7 @@ export async function DELETE(request) {
       }
     );
 
-    if (result.modifiedCount === 0) {
+    if (deleteResult.modifiedCount === 0) {
       return NextResponse.json({ error: 'Failed to delete key' }, { status: 500 });
     }
 
@@ -81,9 +81,6 @@ export async function DELETE(request) {
       success: true,
       message: 'Key deleted successfully'
     });
-
-    if (keysystem.keys) {
-      for (const [sessionId, sessionData] of Object.entries(keysystem.keys)) {
         if (sessionData.keys) {
           const keyIndex = sessionData.keys.findIndex(key => key.value === keyValue);
           if (keyIndex !== -1) {
