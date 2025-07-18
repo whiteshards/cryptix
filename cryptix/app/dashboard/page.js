@@ -921,7 +921,7 @@ export default function Dashboard() {
                       type="url"
                       value={formData.webhookUrl}
                       onChange={(e) => handleInputChange('webhookUrl', e.target.value)}
-                      placeholder="https://example.com/webhook"
+                      placeholder="https://discord.com/api/webhooks/..."
                       className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                   </div>
@@ -1076,7 +1076,7 @@ export default function Dashboard() {
                       type="url"
                       value={editFormData.webhookUrl}
                       onChange={(e) => handleEditInputChange('webhookUrl', e.target.value)}
-                      placeholder="https://example.com/webhook"
+                      placeholder="https://discord.com/api/webhooks/..."
                       className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
                     />
                   </div>
