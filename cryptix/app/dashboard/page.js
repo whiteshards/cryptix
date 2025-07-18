@@ -12,7 +12,7 @@ export default function Dashboard() {
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [isCreating, setIsCreating] = useState(isCreating = false);
+  const [isCreating, setIsCreating] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingKeysystem, setEditingKeysystem] = useState(null);
@@ -978,7 +978,8 @@ export default function Dashboard() {
                               {keysystem.id ? keysystem.id.substring(0, 16) + '...' : 'N/A'}
                             </p>
                           </div>
-                          <motion.span 
+                          
+<motion.span 
                             className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ml-2 ${
                               keysystem.active 
                                 ? 'bg-green-500/20 text-green-400' 
@@ -1277,7 +1278,8 @@ export default function Dashboard() {
                                       </div>
                                     </td>
                                     <td className="py-2 px-1">
-                                      <motion.span 
+                                      
+<motion.span 
                                         className={`inline-flex px-1.5 py-0.5 rounded text-xs font-medium ${
                                           isExpired 
                                             ? 'bg-red-500/20 text-red-400' 
@@ -2285,12 +2287,12 @@ export default function Dashboard() {
 
                       <div>
                         <label className="block text-white text-sm font-medium mb-2">
-                          Expiration Hours (1-744, max 1 month)
+                          Expiration Hours (1-750, max 1 month)
                         </label>
                         <input
                           type="number"
                           min="1"
-                          max="744"
+                          max="750"
                           value={createKeysData.expirationHours || ''}
                           onChange={(e) => setCreateKeysData(prev => ({ ...prev, expirationHours: e.target.value }))}
                           placeholder="Default: Use keysystem timer"

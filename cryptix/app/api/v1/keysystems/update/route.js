@@ -33,8 +33,8 @@ export async function PUT(request) {
 
 
     const timer = parseInt(keyTimer);
-    if (!timer || timer < 1 || timer > 744) {
-      return NextResponse.json({ error: 'Key timer must be between 1 and 744 hours (1 month)' }, { status: 400 });
+    if (!timer || timer < 1 || timer > 750) {
+      return NextResponse.json({ error: 'Key timer must be between 1 and 750 hours' }, { status: 400 });
     }
 
     const cooldown = parseInt(keyCooldown);

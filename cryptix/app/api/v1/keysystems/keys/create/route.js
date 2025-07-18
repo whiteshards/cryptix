@@ -26,8 +26,8 @@ export async function POST(request) {
     }
 
     // Validate expiration hours
-    if (expirationHours !== null && (expirationHours < 1 || expirationHours > 744)) {
-      return NextResponse.json({ error: 'Expiration hours must be between 1 and 744 (1 month)' }, { status: 400 });
+    if (expirationHours !== null && (expirationHours < 1 || expirationHours > 750)) {
+      return NextResponse.json({ error: 'Expiration hours must be between 1 and 750' }, { status: 400 });
     }
 
     // Verify Discord refresh token
