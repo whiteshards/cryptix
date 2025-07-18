@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { initializeApplication } from '../lib/startup.js'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -11,17 +10,6 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
-
-// Initialize application on server startup
-if (typeof window === 'undefined') {
-  initializeApplication().then((success) => {
-    if (success) {
-      console.log('Server startup initialization completed');
-    } else {
-      console.error('Server startup initialization failed');
-    }
-  });
-}
 
 export const metadata = {
   title: "Cryptix",
