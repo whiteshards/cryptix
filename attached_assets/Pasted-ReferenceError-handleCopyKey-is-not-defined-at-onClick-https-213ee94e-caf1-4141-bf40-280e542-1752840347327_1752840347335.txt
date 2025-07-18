@@ -1,0 +1,15 @@
+ReferenceError: handleCopyKey is not defined
+    at onClick (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/app_dashboard_page_a40d4570.js:1499:106)
+    at executeDispatch (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10906:13)
+    at runWithFiberInDEV (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:3073:74)
+    at processDispatchQueue (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:10932:41)
+    at https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:11223:13
+    at batchedUpdates$1 (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:4384:44)
+    at dispatchEventForPluginEventSystem (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:11008:9)
+    at dispatchEvent (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:13121:37)
+    at dispatchDiscreteEvent (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_compiled_2ce9398a._.js:13103:64)
+    at button (<anonymous>)
+    at https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/app_dashboard_page_a40d4570.js:1498:291
+    at Array.map (<anonymous>)
+    at Dashboard (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/app_dashboard_page_a40d4570.js:1479:84)
+    at ClientPageRoot (https://213ee94e-caf1-4141-bf40-280e5423d224-00-3bc6s8io82wnq.sisko.replit.dev/_next/static/chunks/node_modules_next_dist_1a6ee436._.js:2061:50)
