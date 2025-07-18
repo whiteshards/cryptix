@@ -1,21 +1,20 @@
-
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../../lib/mongodb';
 
 export async function DELETE(request) {
   try {
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
       return NextResponse.json({ error: 'Authorization token required' }, { status: 401 });
     }
 
     const token = authHeader.substring(7);
-    const { keyValue, keysystemId } = await request.json();
+    const { keysystemId, keyValue } = await request.json();
 
     // Validation
-    if (!keyValue || !keysystemId) {
-      return NextResponse.json({ error: 'Key value and keysystem ID are required' }, { status: 400 });
+    if (!keysystemId || !keyValue) {
+      return NextResponse.json({ error: 'Keysystem ID and key value are required' }, { status: 400 });
     }
 
     // Connect to MongoDB
@@ -23,14 +22,18 @@ export async function DELETE(request) {
     const db = client.db('Cryptix');
     const collection = db.collection('customers');
 
-    // Find user by token
-    const user = await collection.findOne({ token: token });
+    // Find user by token and verify they own this keysystem
+    const user = await collection.findOne({ 
+      token: token,
+      'keysystems.id': keysystemId
+    });
+
     if (!user) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
+      return NextResponse.json({ error: 'Invalid token or keysystem not found' }, { status: 401 });
     }
 
-    // Find the keysystem
-    const keysystem = user.keysystems?.find(ks => ks.id === keysystemId);
+    // Find the specific keysystem
+    const keysystem = user.keysystems.find(ks => ks.id === keysystemId);
     if (!keysystem) {
       return NextResponse.json({ error: 'Keysystem not found' }, { status: 404 });
     }
@@ -38,7 +41,7 @@ export async function DELETE(request) {
     // Find and remove the key by searching through all sessions
     let keyFound = false;
     let sessionToUpdate = null;
-    
+
     // Check if keysystem.keys exists and is an object
     if (!keysystem.keys || typeof keysystem.keys !== 'object') {
       return NextResponse.json({ error: 'No sessions found in keysystem' }, { status: 404 });
@@ -61,49 +64,13 @@ export async function DELETE(request) {
     }
 
     // Remove the key from the found session
-    const deleteResult = await collection.updateOne(
+    const result = await collection.updateOne(
       { 
         _id: user._id,
         'keysystems.id': keysystemId
       },
       { 
         $pull: {
-          [`keysystems.$.keys.${sessionToUpdate}.keys`]: { value: keyValue }
-        }
-      }
-    );
-
-    if (deleteResult.modifiedCount === 0) {
-      return NextResponse.json({ error: 'Failed to delete key' }, { status: 500 });
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: 'Key deleted successfully'
-    });
-        if (sessionData.keys) {
-          const keyIndex = sessionData.keys.findIndex(key => key.value === keyValue);
-          if (keyIndex !== -1) {
-            keyFound = true;
-            sessionToUpdate = sessionId;
-            break;
-          }
-        }
-      }
-    }
-
-    if (!keyFound) {
-      return NextResponse.json({ error: 'Key not found' }, { status: 404 });
-    }
-
-    // Remove the key from the session
-    const result = await collection.updateOne(
-      { 
-        _id: user._id,
-        'keysystems.id': keysystemId 
-      },
-      { 
-        $pull: { 
           [`keysystems.$.keys.${sessionToUpdate}.keys`]: { value: keyValue }
         }
       }
