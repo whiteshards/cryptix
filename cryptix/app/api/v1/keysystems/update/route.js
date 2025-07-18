@@ -15,6 +15,7 @@ export async function PUT(request) {
       maxKeyPerPerson,
       keyTimer,
       keyCooldown,
+      webhookUrl,
       active
     } = await request.json();
 
@@ -41,6 +42,15 @@ export async function PUT(request) {
       return NextResponse.json({ error: 'Key cooldown must be between 1 and 180 minutes' }, { status: 400 });
     }
 
+    // Validate webhook URL if provided
+    if (webhookUrl && webhookUrl.trim()) {
+      try {
+        new URL(webhookUrl.trim());
+      } catch (error) {
+        return NextResponse.json({ error: 'Invalid webhook URL format' }, { status: 400 });
+      }
+    }
+
     // Connect to MongoDB
     const client = await clientPromise;
     const db = client.db('Cryptix');
@@ -63,6 +73,7 @@ export async function PUT(request) {
           'keysystems.$.maxKeyPerPerson': maxKeys,
           'keysystems.$.keyTimer': timer,
           'keysystems.$.keyCooldown': cooldown,
+          'keysystems.$.webhookUrl': webhookUrl && webhookUrl.trim() ? webhookUrl.trim() : null,
           'keysystems.$.active': active !== undefined ? active : true
         }
       }

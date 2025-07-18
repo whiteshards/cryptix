@@ -10,7 +10,7 @@ export async function POST(request) {
     }
 
     const token = authHeader.substring(7);
-    const { name, maxKeyPerPerson, keyTimer, keyCooldown } = await request.json();
+    const { name, maxKeyPerPerson, keyTimer, keyCooldown, webhookUrl } = await request.json();
 
     // Validation
     if (!name || typeof name !== 'string') {
@@ -39,6 +39,15 @@ export async function POST(request) {
     const cooldown = parseInt(keyCooldown);
     if (!cooldown || cooldown < 1 || cooldown > 180) {
       return NextResponse.json({ error: 'Key cooldown must be between 1 and 180 minutes' }, { status: 400 });
+    }
+
+    // Validate webhook URL if provided
+    if (webhookUrl && webhookUrl.trim()) {
+      try {
+        new URL(webhookUrl.trim());
+      } catch (error) {
+        return NextResponse.json({ error: 'Invalid webhook URL format' }, { status: 400 });
+      }
     }
 
     // Connect to MongoDB
@@ -108,6 +117,7 @@ export async function POST(request) {
       maxKeyPerPerson: maxKeys,
       keyTimer: timer,
       keyCooldown: cooldown,
+      webhookUrl: webhookUrl && webhookUrl.trim() ? webhookUrl.trim() : null,
       active: true,
       createdAt: new Date().toISOString(),
       checkpoints: [mandatoryCheckpoint]

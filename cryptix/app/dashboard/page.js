@@ -22,13 +22,15 @@ export default function Dashboard() {
     name: '',
     maxKeyPerPerson: 1,
     keyTimer: 12,
-    keyCooldown: 10
+    keyCooldown: 10,
+    webhookUrl: ''
   });
   const [editFormData, setEditFormData] = useState({
     maxKeyPerPerson: 1,
     keyTimer: 12,
     keyCooldown: 10,
-    active: true
+    active: true,
+    webhookUrl: ''
   });
   const [activeTab, setActiveTab] = useState('keysystems');
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -229,7 +231,8 @@ export default function Dashboard() {
         name: '',
         maxKeyPerPerson: 1,
         keyTimer: 12,
-        keyCooldown: 10
+        keyCooldown: 10,
+        webhookUrl: ''
       });
 
       // Refresh the page to show the new keysystem
@@ -250,7 +253,8 @@ export default function Dashboard() {
       maxKeyPerPerson: keysystem.maxKeyPerPerson,
       keyTimer: keysystem.keyTimer,
       keyCooldown: keysystem.keyCooldown,
-      active: keysystem.active
+      active: keysystem.active,
+      webhookUrl: keysystem.webhookUrl || ''
     });
     setShowEditModal(true);
   };
@@ -908,6 +912,19 @@ export default function Dashboard() {
                     />
                     <p className="text-gray-400 text-xs mt-1">This is the number of individual keys a person can create in one session</p>
                   </div>
+                  {/* Webhook URL Field */}
+                  <div>
+                    <label className="block text-white text-sm font-medium mb-2">
+                      Webhook URL (Optional)
+                    </label>
+                    <input
+                      type="url"
+                      value={formData.webhookUrl}
+                      onChange={(e) => handleInputChange('webhookUrl', e.target.value)}
+                      placeholder="https://example.com/webhook"
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                    />
+                  </div>
                 </div>
 
                 {/* Right Column */}
@@ -1049,6 +1066,19 @@ export default function Dashboard() {
                     <p className="text-gray-400 text-xs mt-1">
                       This will be counted in minutes and its used to determine how much cooldown the user needs to go through before completing the checkpoints again
                     </p>
+                  </div>
+                  {/* Webhook URL Field */}
+                  <div>
+                    <label className="block text-white text-sm font-medium mb-2">
+                      Webhook URL (Optional)
+                    </label>
+                    <input
+                      type="url"
+                      value={editFormData.webhookUrl}
+                      onChange={(e) => handleEditInputChange('webhookUrl', e.target.value)}
+                      placeholder="https://example.com/webhook"
+                      className="w-full bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white placeholder-gray-400 focus:border-[#6366f1] focus:outline-none transition-colors"
+                    />
                   </div>
                 </div>
               </div>
