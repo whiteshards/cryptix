@@ -293,7 +293,7 @@ export default function Scripts() {
               {checkpoints.length < 10 && (
                 <button
                   onClick={() => setShowAddCheckpointModal(true)}
-                  className="bg-[#1c1c1c] hover:bg-[#2a2a2a] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                  className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
                 >
                   Add
                 </button>
@@ -333,7 +333,7 @@ export default function Scripts() {
                 </p>
                 <button
                   onClick={() => setShowAddCheckpointModal(true)}
-                  className="bg-[#1c1c1c] hover:bg-[#2a2a2a] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
+                  className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-xs font-medium transition-colors"
                 >
                   Add First Checkpoint
                 </button>
@@ -576,7 +576,7 @@ export default function Scripts() {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:space-x-3 mt-6">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 mt-6">
                 <button
                   onClick={() => setShowAddCheckpointModal(false)}
                   className="flex-1 px-4 py-2 border border-white/20 text-gray-300 hover:text-white hover:border-white/40 rounded transition-colors"
@@ -586,7 +586,7 @@ export default function Scripts() {
                 <button
                   onClick={handleCreateCheckpoint}
                   disabled={isCreatingCheckpoint || (checkpointFormData.type === 'lootlabs' && !userProfile?.integrations?.lootlabs) || (checkpointFormData.type === 'linkvertise' && !userProfile?.integrations?.linkvertise)}
-                  className="flex-1 bg-[#374151] hover:bg-[#4b5563] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreatingCheckpoint ? 'Creating...' : 'Create Checkpoint'}
                 </button>
