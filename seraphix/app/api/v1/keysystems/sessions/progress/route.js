@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
+import geoip from 'geoip-lite';
 
 const uri = process.env.MONGO_URI;
 const options = {};
@@ -133,6 +134,9 @@ export async function POST(request) {
     if (keysystem.webhookUrl) {
       try {
         const checkpoint = keysystem.checkpoints[checkpointIndex - 1]; // Previous checkpoint that was just completed
+        const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown';
+        const geo = geoip.lookup(ip);
+        const country = geo ? geo.country : 'unknown';
 
         const embed = {
           title: 'Checkpoint Completed',
@@ -163,7 +167,12 @@ export async function POST(request) {
             },
             {
               name: 'IP Address',
-              value: `\`${request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown'}\``,
+              value: `\`${ip}\``,
+              inline: true
+            },
+            {
+              name: 'Country',
+              value: `\`${country}\``,
               inline: true
             },
             {
