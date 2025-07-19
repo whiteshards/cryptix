@@ -210,14 +210,106 @@ export default function Statistics() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="text-center">
+        <div className="w-full max-w-md px-8">
+          {/* Loading Text */}
           <motion.div 
-            className="inline-block w-8 h-8 border-2 border-[#6366f1] border-t-transparent rounded-full mb-4"
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          />
-          <p className="text-white text-lg">Loading statistics...</p>
+            className="text-center mb-8"
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <motion.div 
+              className="text-white text-lg font-medium mb-2"
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              Loading Statistics...
+            </motion.div>
+            <div className="text-gray-400 text-sm">
+              Please wait while we prepare your analytics
+            </div>
+          </motion.div>
+
+          {/* Progress Bar Container */}
+          <motion.div 
+            className="relative w-full h-2 bg-white/10 rounded-full overflow-hidden"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            {/* Animated Progress Bar */}
+            <motion.div 
+              className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] rounded-full"
+              initial={{ width: 0 }}
+              animate={{ width: "85%" }}
+              transition={{ duration: 2, ease: "easeOut" }}
+            >
+              {/* Shimmer Effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
+            </motion.div>
+
+            {/* Progress Glow */}
+            <motion.div 
+              className="absolute top-0 left-0 h-full bg-[#6366f1]/50 rounded-full blur-sm"
+              animate={{ width: "85%" }}
+              transition={{ duration: 2, ease: "easeOut" }}
+            ></motion.div>
+          </motion.div>
+
+          {/* Progress Percentage */}
+          <motion.div 
+            className="text-center mt-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <motion.span 
+              className="text-gray-300 text-sm font-mono"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              85%
+            </motion.span>
+          </motion.div>
+
+          {/* Progress Dots */}
+          <motion.div 
+            className="flex justify-center space-x-2 mt-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.8 }}
+          >
+            {[0, 150, 300].map((delay, index) => (
+              <motion.div 
+                key={index}
+                className="w-2 h-2 bg-[#6366f1] rounded-full"
+                animate={{ 
+                  y: [0, -8, 0],
+                  scale: [1, 1.1, 1]
+                }}
+                transition={{
+                  duration: 0.6,
+                  repeat: Infinity,
+                  delay: delay / 1000,
+                  ease: "easeInOut"
+                }}
+              />
+            ))}
+          </motion.div>
         </div>
+
+        <style jsx>{`
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+          }
+
+          .animate-shimmer {
+            animation: shimmer 2s infinite;
+          }
+        `}</style>
       </motion.div>
     );
   }
@@ -502,31 +594,7 @@ export default function Statistics() {
             </motion.div>
           </motion.div>
 
-          {/* Additional Statistics */}
-          <motion.div 
-            className="bg-black/20 border border-white/10 rounded-xl p-6"
-            initial={{ y: 30, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-            <h3 className="text-white text-lg font-semibold mb-4">Keysystem Information</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-black/30 rounded-lg p-4">
-                <p className="text-gray-400 text-sm mb-1">Max Keys Per Person</p>
-                <p className="text-white text-xl font-bold">{keysystem.maxKeyPerPerson}</p>
-              </div>
-              <div className="bg-black/30 rounded-lg p-4">
-                <p className="text-gray-400 text-sm mb-1">Key Timer</p>
-                <p className="text-white text-xl font-bold">{keysystem.keyTimer}h</p>
-              </div>
-              <div className="bg-black/30 rounded-lg p-4">
-                <p className="text-gray-400 text-sm mb-1">Created</p>
-                <p className="text-white text-xl font-bold">
-                  {keysystem.createdAt ? new Date(keysystem.createdAt).toLocaleDateString() : 'N/A'}
-                </p>
-              </div>
-            </div>
-          </motion.div>
+          
         </div>
       </div>
     </motion.div>
