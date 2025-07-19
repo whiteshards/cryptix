@@ -34,8 +34,8 @@ export default function Statistics() {
 
   const fetchKeysystemData = async (token) => {
     try {
-      // Fetch keysystem data using the get route
-      const response = await fetch(`/api/v1/keysystems/get?id=${keysystemId}`, {
+      // First fetch keysystem basic info
+      const keysystemResponse = await fetch(`/api/v1/keysystems/get?id=${keysystemId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -43,8 +43,8 @@ export default function Statistics() {
         },
       });
 
-      if (!response.ok) {
-        if (response.status === 401) {
+      if (!keysystemResponse.ok) {
+        if (keysystemResponse.status === 401) {
           localStorage.removeItem('cryptix_jwt');
           router.push('/login');
           return;
@@ -52,39 +52,55 @@ export default function Statistics() {
         throw new Error('Failed to fetch keysystem data');
       }
 
-      const data = await response.json();
-      console.log('Keysystem data:', data);
+      const keysystemData = await keysystemResponse.json();
+      console.log('Keysystem data:', keysystemData);
 
-      if (data.success && data.keysystem) {
-        setKeysystem(data.keysystem);
-        setIsAuthenticated(true);
-
-        // Process the statistics from the keysystem data
-        processStatistics(data.keysystem);
-      } else {
+      if (!keysystemData.success || !keysystemData.keysystem) {
         throw new Error('Keysystem not found');
       }
+
+      setKeysystem(keysystemData.keysystem);
+      setIsAuthenticated(true);
+
+      // Now fetch the keys data using the list endpoint
+      const keysResponse = await fetch(`/api/v1/keysystems/keys/list?keysystemId=${keysystemId}&page=1&pageSize=1000`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!keysResponse.ok) {
+        throw new Error('Failed to fetch keys data');
+      }
+
+      const keysData = await keysResponse.json();
+      console.log('Keys data:', keysData);
+
+      // Process the statistics with both keysystem and keys data
+      processStatistics(keysystemData.keysystem, keysData.keys || []);
+
     } catch (error) {
-      console.error('Error fetching keysystem data:', error);
+      console.error('Error fetching data:', error);
       setError(error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const processStatistics = (keysystemData) => {
+  const processStatistics = (keysystemData, keysArray) => {
     const now = new Date();
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    // Process keys data
-    const keys = keysystemData.keys || [];
+    // Process keys data from the keys/list endpoint
     let activeKeys = 0;
     let expiredKeys = 0;
     let recentKeys = 0;
     const keysByDay = {};
 
-    keys.forEach(key => {
+    keysArray.forEach(key => {
       const expiresAt = new Date(key.expires_at);
       const createdAt = new Date(key.created_at);
 
@@ -114,23 +130,25 @@ export default function Statistics() {
     const checkpointTypeBreakdown = {};
     const dailyActivity = {};
 
-    // Process checkpoint completions
+    // Process checkpoint completions - stats.checkpoints is an object with numeric keys
     Object.values(checkpointStats).forEach(checkpoint => {
-      totalCheckpointCompletions++;
-      const checkpointDate = new Date(checkpoint.date);
+      if (checkpoint.date && checkpoint.type) {
+        totalCheckpointCompletions++;
+        const checkpointDate = new Date(checkpoint.date);
 
-      if (checkpointDate >= sevenDaysAgo) {
-        recentCheckpointCompletions++;
-      }
+        if (checkpointDate >= sevenDaysAgo) {
+          recentCheckpointCompletions++;
+        }
 
-      // Count by type
-      const type = checkpoint.type || 'unknown';
-      checkpointTypeBreakdown[type] = (checkpointTypeBreakdown[type] || 0) + 1;
+        // Count by type
+        const type = checkpoint.type || 'unknown';
+        checkpointTypeBreakdown[type] = (checkpointTypeBreakdown[type] || 0) + 1;
 
-      // Daily activity for the last 30 days
-      if (checkpointDate >= thirtyDaysAgo) {
-        const dateKey = checkpointDate.toISOString().split('T')[0];
-        dailyActivity[dateKey] = (dailyActivity[dateKey] || 0) + 1;
+        // Daily activity for the last 30 days
+        if (checkpointDate >= thirtyDaysAgo) {
+          const dateKey = checkpointDate.toISOString().split('T')[0];
+          dailyActivity[dateKey] = (dailyActivity[dateKey] || 0) + 1;
+        }
       }
     });
 
@@ -154,7 +172,7 @@ export default function Statistics() {
 
     const processedStats = {
       keys: {
-        total: keys.length,
+        total: keysArray.length,
         active: activeKeys,
         expired: expiredKeys,
         recent: recentKeys
