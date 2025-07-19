@@ -22,7 +22,7 @@ export default function Scripts() {
   });
 
   // Configuration for domain - change this for production
-  const DOMAIN = 'https://cryptixmanager.vercel.app';
+  const DOMAIN = 'https://seraphix.vercel.app';
 
   useEffect(() => {
     if (!keysystemId) {
