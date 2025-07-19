@@ -46,7 +46,8 @@ export async function GET(request) {
         maxKeyPerPerson: keysystem.maxKeyPerPerson,
         keyTimer: keysystem.keyTimer,
         keyCooldown: keysystem.keyCooldown,
-        stats: keysystem.stats || {}
+        stats: keysystem.stats || {},
+        active: keysystem.active
       }
     });
 
