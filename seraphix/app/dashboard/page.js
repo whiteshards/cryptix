@@ -1103,16 +1103,125 @@ export default function Dashboard() {
                 transition={{ duration: 0.5 }}
               >
                 <h2 className="text-white text-xl font-semibold mb-6">Statistics</h2>
-                <motion.div 
-                  className="text-center py-12"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  <p className="text-gray-400 text-base">
-                    Statistics dashboard coming soon...
-                  </p>
-                </motion.div>
+                
+                {keysystems.length === 0 ? (
+                  <motion.div 
+                    className="text-center py-12"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                  >
+                    <motion.div 
+                      className="w-16 h-16 bg-[#6366f1]/20 rounded-full flex items-center justify-center mx-auto mb-4"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.3, type: "spring" }}
+                    >
+                      <svg className="w-8 h-8 text-[#6366f1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </motion.div>
+                    <h3 className="text-white text-lg font-semibold mb-2">No Keysystems to Analyze</h3>
+                    <p className="text-gray-400 text-base mb-4">
+                      Create a keysystem first to view its statistics and analytics.
+                    </p>
+                  </motion.div>
+                ) : (
+                  <div>
+                    <motion.p 
+                      className="text-gray-300 text-base mb-6"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                      Choose which keysystem to view statistics of:
+                    </motion.p>
+
+                    <motion.div 
+                      className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.3 }}
+                    >
+                      {keysystems.map((keysystem, index) => (
+                        <motion.div 
+                          key={index}
+                          className="bg-gradient-to-br from-black/40 via-black/20 to-transparent border border-white/10 rounded-xl p-6 hover:border-[#6366f1]/30 hover:shadow-lg hover:shadow-[#6366f1]/10 transition-all duration-300 group backdrop-blur-sm cursor-pointer"
+                          initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          transition={{ 
+                            duration: 0.5, 
+                            delay: 0.4 + index * 0.1,
+                            type: "spring",
+                            stiffness: 100
+                          }}
+                          whileHover={{ 
+                            y: -8,
+                            scale: 1.02,
+                            transition: { duration: 0.2 }
+                          }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => router.push(`/dashboard/statistics/${keysystem.id}`)}
+                        >
+                          {/* Header */}
+                          <div className="flex items-start justify-between mb-4">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-white font-semibold text-base hover:text-[#6366f1] transition-colors text-left truncate group-hover:text-[#6366f1]">
+                                {keysystem.name || `Keysystem ${index + 1}`}
+                              </h3>
+                              <p className="text-gray-400 text-xs font-mono mt-2 bg-black/30 px-2 py-1 rounded inline-block">
+                                {keysystem.id ? keysystem.id.substring(0, 12) + '...' : 'N/A'}
+                              </p>
+                            </div>
+                            
+                            <motion.span 
+                              className={`inline-flex px-3 py-1.5 rounded-full text-xs font-semibold ml-3 ${
+                                keysystem.active 
+                                  ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                                  : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
+                              }`}
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ delay: 0.6 + index * 0.1, type: "spring" }}
+                            >
+                              {keysystem.active ? 'Active' : 'Inactive'}
+                            </motion.span>
+                          </div>
+
+                          {/* Quick Stats Preview */}
+                          <motion.div 
+                            className="grid grid-cols-2 gap-3 mb-4"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.5 + index * 0.1 }}
+                          >
+                            <div className="bg-black/30 rounded-lg p-3 border border-white/5">
+                              <div className="text-gray-400 text-xs mb-1">Max Keys</div>
+                              <div className="text-white font-bold text-sm">{keysystem.maxKeyPerPerson || 'N/A'}</div>
+                            </div>
+                            <div className="bg-black/30 rounded-lg p-3 border border-white/5">
+                              <div className="text-gray-400 text-xs mb-1">Timer</div>
+                              <div className="text-white font-bold text-sm">{keysystem.keyTimer || 0}h</div>
+                            </div>
+                          </motion.div>
+
+                          {/* View Analytics Button */}
+                          <motion.div 
+                            className="flex items-center justify-center w-full bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] hover:from-[#5856eb] hover:to-[#7c3aed] text-white py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-md group-hover:shadow-lg"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6 + index * 0.1 }}
+                          >
+                            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                            View Analytics
+                          </motion.div>
+                        </motion.div>
+                      ))}
+                    </motion.div>
+                  </div>
+                )}
               </motion.div>
             )}
 
