@@ -1,7 +1,4 @@
-` tags.
 
-```
-<replit_final_file>
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
 

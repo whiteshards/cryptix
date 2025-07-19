@@ -45,7 +45,8 @@ export async function GET(request) {
         checkpointCount: (keysystem.checkpoints || []).length,
         maxKeyPerPerson: keysystem.maxKeyPerPerson,
         keyTimer: keysystem.keyTimer,
-        keyCooldown: keysystem.keyCooldown
+        keyCooldown: keysystem.keyCooldown,
+        stats: keysystem.stats || {}
       }
     });
 
