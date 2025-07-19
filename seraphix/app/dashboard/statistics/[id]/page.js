@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -45,12 +46,13 @@ export default function KeysystemStatistics() {
       return;
     }
 
-    fetchStatistics(token);
+    fetchKeysystemData(token);
   }, [keysystemId, router]);
 
-  const fetchStatistics = async (token) => {
+  const fetchKeysystemData = async (token) => {
     try {
-      const response = await fetch(`/api/v1/keysystems/statistics?keysystemId=${keysystemId}`, {
+      // Fetch user profile to get keysystem data
+      const profileResponse = await fetch('/api/v1/users/profile', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -58,30 +60,150 @@ export default function KeysystemStatistics() {
         },
       });
 
-      if (!response.ok) {
-        if (response.status === 401) {
+      if (!profileResponse.ok) {
+        if (profileResponse.status === 401) {
           localStorage.removeItem('cryptix_jwt');
           router.push('/login');
           return;
         }
-        throw new Error('Failed to fetch statistics');
+        throw new Error('Failed to fetch user data');
       }
 
-      const data = await response.json();
+      const userData = await profileResponse.json();
 
-      if (data.success) {
-        setStatistics(data.statistics);
-        setKeysystemInfo(data.keysystem);
-        setIsAuthenticated(true);
-      } else {
-        throw new Error('Failed to fetch statistics data');
+      if (!userData.success) {
+        throw new Error('Failed to fetch user data');
       }
+
+      // Find the specific keysystem
+      const keysystem = userData.user.keysystems?.find(ks => ks.id === keysystemId);
+      if (!keysystem) {
+        throw new Error('Keysystem not found');
+      }
+
+      setKeysystemInfo({
+        id: keysystem.id,
+        name: keysystem.name,
+        active: keysystem.active
+      });
+
+      // Process the statistics data
+      const processedStats = processKeysystemData(keysystem);
+      setStatistics(processedStats);
+      setIsAuthenticated(true);
+
     } catch (error) {
-      console.error('Error fetching statistics:', error);
+      console.error('Error fetching keysystem data:', error);
       setError(error.message);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const processKeysystemData = (keysystem) => {
+    // Process keys data
+    const keys = keysystem.keys || {};
+    const keyEntries = Object.entries(keys);
+    
+    const totalKeys = keyEntries.length;
+    const activeKeys = keyEntries.filter(([_, key]) => {
+      if (!key.expires_at) return true;
+      return new Date(key.expires_at) > new Date();
+    }).length;
+    const expiredKeys = totalKeys - activeKeys;
+
+    // Calculate recent keys (last 7 days)
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    const recentKeys = keyEntries.filter(([_, key]) => {
+      return key.created_at && new Date(key.created_at) > sevenDaysAgo;
+    }).length;
+
+    // Process checkpoint stats
+    const checkpointStats = keysystem.stats?.checkpoints || [];
+    const checkpointData = [];
+    
+    if (keysystem.checkpoints && keysystem.checkpoints.length > 0) {
+      keysystem.checkpoints.forEach((checkpoint, index) => {
+        const completions = checkpointStats.filter(stat => 
+          stat.type === checkpoint.type || stat.checkpoint === index
+        ).length;
+        
+        checkpointData.push({
+          name: checkpoint.name || `Checkpoint ${index + 1}`,
+          completed: completions,
+          completion_rate: totalKeys > 0 ? ((completions / totalKeys) * 100).toFixed(1) : 0
+        });
+      });
+    }
+
+    // Process daily stats (group keys by creation date)
+    const dailyStats = {};
+    keyEntries.forEach(([_, key]) => {
+      if (key.created_at) {
+        const date = new Date(key.created_at).toISOString().split('T')[0];
+        if (!dailyStats[date]) {
+          dailyStats[date] = { keys: 0, completed: 0 };
+        }
+        dailyStats[date].keys++;
+        if (key.current_checkpoint === (keysystem.checkpoints?.length || 0)) {
+          dailyStats[date].completed++;
+        }
+      }
+    });
+
+    // Convert to array and sort by date (last 30 days)
+    const dailyStatsArray = Object.entries(dailyStats)
+      .map(([date, data]) => ({
+        date,
+        keys: data.keys,
+        completed: data.completed
+      }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .slice(-30);
+
+    // Process hourly stats (group by hour of creation)
+    const hourlyStats = {};
+    for (let i = 0; i < 24; i++) {
+      hourlyStats[i] = { hour: i, keys: 0 };
+    }
+    
+    keyEntries.forEach(([_, key]) => {
+      if (key.created_at) {
+        const hour = new Date(key.created_at).getHours();
+        hourlyStats[hour].keys++;
+      }
+    });
+
+    const hourlyStatsArray = Object.values(hourlyStats);
+
+    // Calculate sessions data (based on keys with progress)
+    const completedSessions = keyEntries.filter(([_, key]) => 
+      key.current_checkpoint === (keysystem.checkpoints?.length || 0)
+    ).length;
+    const failedSessions = keyEntries.filter(([_, key]) => 
+      key.current_checkpoint < (keysystem.checkpoints?.length || 0) && key.expires_at && new Date(key.expires_at) < new Date()
+    ).length;
+    const totalSessions = totalKeys;
+    const completionRate = totalSessions > 0 ? ((completedSessions / totalSessions) * 100).toFixed(1) : 0;
+
+    return {
+      keys: {
+        total: totalKeys,
+        active: activeKeys,
+        expired: expiredKeys,
+        recent: recentKeys
+      },
+      sessions: {
+        total: totalSessions,
+        completed: completedSessions,
+        failed: failedSessions,
+        completion_rate: parseFloat(completionRate)
+      },
+      daily_stats: dailyStatsArray,
+      hourly_stats: hourlyStatsArray,
+      checkpoint_stats: checkpointData
+    };
   };
 
   const formatNumber = (num) => {
@@ -105,6 +227,22 @@ export default function KeysystemStatistics() {
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
           />
           <p className="text-white text-lg">Loading statistics...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-red-400 text-lg mb-4">Error: {error}</div>
+          <button
+            onClick={() => router.push('/dashboard')}
+            className="bg-[#6366f1] hover:bg-[#5555f1] text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            Back to Dashboard
+          </button>
         </div>
       </div>
     );
