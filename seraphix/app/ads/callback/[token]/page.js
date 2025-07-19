@@ -377,14 +377,14 @@ export default function CallbackPage() {
 
               if (keysystem?.webhookUrl) {
                 const webhookPayload = {
-                  username: "Cryptix Notifications",
-                  avatar_url: "https://cryptixmanager.vercel.app/images/unrounded-logo.png",
+                  username: "Seraphix Notifications",
+                  avatar_url: "https://seraphix.vercel.app/images/unrounded-logo.png",
                   embeds: [
                     {
                       title: "Anti-Bypass Triggered",
                       color: 0xff0000,
                       thumbnail: {
-                        url: "https://cryptixmanager.vercel.app/images/thumbnail.gif"
+                        url: "https://seraphix.vercel.app/images/thumbnail.gif"
                       },
                       fields: [
                         {

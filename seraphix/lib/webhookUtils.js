@@ -46,7 +46,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
           ],
           timestamp: new Date().toISOString(),
           footer: {
-            text: 'seraphix.app',
+            text: 'Seraphix Manager',
             icon_url: 'https://seraphix.vercel.app/images/unrounded-logo.png'
           }
         };
@@ -88,7 +88,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
           ],
           timestamp: new Date().toISOString(),
           footer: {
-            text: 'seraphix.app',
+            text: 'Seraphix Manager',
             icon_url: 'https://seraphix.vercel.app/images/unrounded-logo.png'
           }
         };
@@ -135,7 +135,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
           ],
           timestamp: new Date().toISOString(),
           footer: {
-            text: 'seraphix.app',
+            text: 'Seraphix Manager',
             icon_url: 'https://seraphix.vercel.app/images/unrounded-logo.png'
           }
         };
@@ -146,7 +146,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
     }
 
     const webhookPayload = {
-      username: 'seraphix.app',
+      username: 'Seraphix Notifications',
       avatar_url: 'https://seraphix.vercel.app/images/unrounded-logo.png',
       embeds: [embed]
     };
