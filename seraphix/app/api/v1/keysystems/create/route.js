@@ -128,7 +128,7 @@ export async function POST(request) {
       keyTimer: timer,
       keyCooldown: cooldown,
       webhookUrl: webhookUrl && webhookUrl.trim() ? webhookUrl.trim() : null,
-      maxKeyLimit: 5000,
+      maxKeyLimit: 500,
       active: true,
       createdAt: new Date().toISOString(),
       checkpoints: [mandatoryCheckpoint]
