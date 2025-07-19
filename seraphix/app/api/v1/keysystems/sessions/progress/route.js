@@ -57,7 +57,17 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Session not found' }, { status: 404 });
     }
 
-    // Update the session's current checkpoint progress
+    // Prepare stats update - initialize stats object if it doesn't exist
+    const statsUpdate = {};
+
+    // Log checkpoint completion in stats
+    const checkpointStat = {
+      date: new Date().toISOString(),
+      type: checkpointType || 'unknown'
+      // Note: This will be used for graphical representation later
+    };
+
+    // Update session progress and stats
     const result = await collection.updateOne(
       { 
         _id: user._id,
@@ -67,6 +77,9 @@ export async function POST(request) {
         $set: {
           [`keysystems.$.keys.${sessionId}.current_checkpoint`]: checkpointIndex
         },
+        $push: {
+          'keysystems.$.stats.checkpoints': checkpointStat
+        },
         // Also remove the session token since checkpoint is completed
         $unset: {
           [`keysystems.$.keys.${sessionId}.session_token`]: ""
@@ -74,15 +87,53 @@ export async function POST(request) {
       }
     );
 
+    // If the stats field doesn't exist yet, initialize it and try again
     if (result.modifiedCount === 0) {
-      return NextResponse.json({ error: 'Failed to update progress' }, { status: 500 });
+      // First try to initialize the stats object
+      await collection.updateOne(
+        { 
+          _id: user._id,
+          'keysystems.id': keysystemId
+        },
+        { 
+          $set: {
+            'keysystems.$.stats': {
+              checkpoints: []
+            }
+          }
+        }
+      );
+
+      // Then update with both progress and stats
+      const retryResult = await collection.updateOne(
+        { 
+          _id: user._id,
+          'keysystems.id': keysystemId
+        },
+        { 
+          $set: {
+            [`keysystems.$.keys.${sessionId}.current_checkpoint`]: checkpointIndex
+          },
+          $push: {
+            'keysystems.$.stats.checkpoints': checkpointStat
+          },
+          // Also remove the session token since checkpoint is completed
+          $unset: {
+            [`keysystems.$.keys.${sessionId}.session_token`]: ""
+          }
+        }
+      );
+
+      if (retryResult.modifiedCount === 0) {
+        return NextResponse.json({ error: 'Failed to update progress' }, { status: 500 });
+      }
     }
 
     // Send webhook notification for checkpoint completion
     if (keysystem.webhookUrl) {
       try {
         const checkpoint = keysystem.checkpoints[checkpointIndex - 1]; // Previous checkpoint that was just completed
-        
+
         const embed = {
           title: 'Checkpoint Completed',
           color: 0x00ff00,

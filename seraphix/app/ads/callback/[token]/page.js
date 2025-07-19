@@ -402,7 +402,7 @@ export default function CallbackPage() {
                           value: `\`${navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent}\``,
                           inline: true
                         },
-                        
+
                         {
                           name: "Session ID",
                           value: `\`${localStorage.getItem('session_token') || 'N/A'}\``,
@@ -601,7 +601,7 @@ export default function CallbackPage() {
                           value: `\`${navigator.userAgent.length > 100 ? navigator.userAgent.substring(0, 100) + '...' : navigator.userAgent}\``,
                           inline: true
                         },
-                        
+
                         {
                           name: "Session ID",
                           value: `\`${localStorage.getItem('session_token') || 'N/A'}\``,
