@@ -47,7 +47,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
           ],
           timestamp: new Date().toISOString(),
           footer: {
-            text: 'Cryptix Manager',
+            text: 'seraphix.app',
             icon_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
           }
         };
@@ -55,7 +55,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
 
       case 'anti_bypass_triggered':
         embed = {
-          title: '🚨 Anti-Bypass Triggered',
+          title: 'Anti-Bypass Triggered',
           color: 0xff0000,
           thumbnail: {
             url: 'https://cryptixmanager.vercel.app/images/thumbnail.gif'
@@ -89,7 +89,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
           ],
           timestamp: new Date().toISOString(),
           footer: {
-            text: 'Cryptix Manager',
+            text: 'seraphix.app',
             icon_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
           }
         };
@@ -136,7 +136,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
           ],
           timestamp: new Date().toISOString(),
           footer: {
-            text: 'Cryptix Manager',
+            text: 'seraphix.app',
             icon_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
           }
         };
@@ -147,7 +147,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
     }
 
     const webhookPayload = {
-      username: 'Cryptix Notifications',
+      username: 'seraphix.app',
       avatar_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png',
       embeds: [embed]
     };
