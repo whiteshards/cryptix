@@ -227,13 +227,34 @@ export async function POST(request) {
 
 async function getLocationFromIP(ip) {
   try {
-    const response = await fetch(`https://api.iplocation.net/json/${ip}`);
+    // Skip geolocation for localhost/private IPs
+    if (ip === '127.0.0.1' || ip === '::1' || ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.')) {
+      return {
+        country: 'Unknown',
+        region: 'Unknown',
+        city: 'Unknown',
+        ll: [0, 0]
+      };
+    }
+
+    const response = await fetch(`http://ip-api.com/json/${ip}?fields=status,message,country,regionName,city,lat,lon`);
     const data = await response.json();
+    
+    if (data.status !== 'success') {
+      console.error('IP-API query failed:', data.message);
+      return {
+        country: 'Unknown',
+        region: 'Unknown',
+        city: 'Unknown',
+        ll: [0, 0]
+      };
+    }
+    
     return {
-      country: data.country_name || 'Unknown',
-      region: data.region_name || 'Unknown',
+      country: data.country || 'Unknown',
+      region: data.regionName || 'Unknown',
       city: data.city || 'Unknown',
-      ll: [data.latitude || 0, data.longitude || 0]
+      ll: [data.lat || 0, data.lon || 0]
     };
   } catch (error) {
     console.error('Error getting location from IP:', error);

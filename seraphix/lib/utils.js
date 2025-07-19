@@ -43,18 +43,24 @@ export async function getLocationFromIP(ip) {
       };
     }
 
-    const response = await fetch(`https://ipapi.co/${ip}/json/`);
-    if (!response.ok) {
-      throw new Error('Geolocation API request failed');
-    }
-    
+    const response = await fetch(`http://ip-api.com/json/${ip}?fields=status,message,country,regionName,city,lat,lon`);
     const data = await response.json();
     
+    if (data.status !== 'success') {
+      console.error('IP-API query failed:', data.message);
+      return {
+        country: 'Unknown',
+        region: 'Unknown',
+        city: 'Unknown',
+        ll: [0, 0]
+      };
+    }
+    
     return {
-      country: data.country_name || 'Unknown',
-      region: data.region || 'Unknown', 
+      country: data.country || 'Unknown',
+      region: data.regionName || 'Unknown', 
       city: data.city || 'Unknown',
-      ll: [data.latitude || 0, data.longitude || 0]
+      ll: [data.lat || 0, data.lon || 0]
     };
   } catch (error) {
     console.error('Error getting location from IP:', error);
