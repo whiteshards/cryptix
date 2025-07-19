@@ -803,11 +803,12 @@ export default function Dashboard() {
             >
               <motion.button 
                 onClick={() => setShowModal(true)}
-                className="hidden md:block bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                disabled={keysystems.length >= (userProfile?.maxKeysystems || 3)}
+                className="hidden md:block bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                whileHover={{ scale: keysystems.length >= (userProfile?.maxKeysystems || 3) ? 1 : 1.05 }}
+                whileTap={{ scale: keysystems.length >= (userProfile?.maxKeysystems || 3) ? 1 : 0.95 }}
               >
-                New
+                {keysystems.length >= (userProfile?.maxKeysystems || 3) ? 'Limit Reached' : 'New'}
               </motion.button>
             </motion.div>
           </div>
@@ -874,19 +875,46 @@ export default function Dashboard() {
                 transition={{ duration: 0.5 }}
               >
                 <motion.div 
-                  className="flex items-center justify-between mb-6"
+                  className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 space-y-4 lg:space-y-0"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  <h2 className="text-white text-xl font-semibold">Your Keysystems</h2>
+                  <div className="flex flex-col space-y-2">
+                    <h2 className="text-white text-xl font-semibold">Your Keysystems</h2>
+                    <div className="flex items-center space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-400 text-sm">Active:</span>
+                        <span className="text-white font-medium">{keysystems.length}</span>
+                      </div>
+                      <div className="w-px h-4 bg-white/10"></div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-400 text-sm">Max Allowed:</span>
+                        <span className="text-white font-medium">{userProfile?.maxKeysystems || 3}</span>
+                      </div>
+                      <div className="w-px h-4 bg-white/10"></div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-gray-400 text-sm">Remaining:</span>
+                        <span className={`font-medium ${
+                          (userProfile?.maxKeysystems || 3) - keysystems.length <= 0 
+                            ? 'text-red-400' 
+                            : (userProfile?.maxKeysystems || 3) - keysystems.length <= 1 
+                              ? 'text-yellow-400' 
+                              : 'text-green-400'
+                        }`}>
+                          {Math.max(0, (userProfile?.maxKeysystems || 3) - keysystems.length)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                   <motion.button 
                     onClick={() => setShowModal(true)}
-                    className="md:hidden bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    disabled={keysystems.length >= (userProfile?.maxKeysystems || 3)}
+                    className="md:hidden bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-1.5 rounded text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    whileHover={{ scale: keysystems.length >= (userProfile?.maxKeysystems || 3) ? 1 : 1.05 }}
+                    whileTap={{ scale: keysystems.length >= (userProfile?.maxKeysystems || 3) ? 1 : 0.95 }}
                   >
-                    New
+                    {keysystems.length >= (userProfile?.maxKeysystems || 3) ? 'Limit Reached' : 'New'}
                   </motion.button>
                 </motion.div>
 
@@ -905,18 +933,38 @@ export default function Dashboard() {
 
                 {keysystems.length === 0 ? (
                   <motion.div 
-                    className="text-center py-12"
+                    className="text-center py-16"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
                   >
-                    <p className="text-gray-400 text-base">
-                      No Key Systems In Your Account, Click The "New" Button To Create One.
+                    <motion.div 
+                      className="w-16 h-16 bg-[#6366f1]/20 rounded-full flex items-center justify-center mx-auto mb-4"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.4, type: "spring" }}
+                    >
+                      <svg className="w-8 h-8 text-[#6366f1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </motion.div>
+                    <h3 className="text-white text-lg font-semibold mb-2">No Keysystems Created</h3>
+                    <p className="text-gray-400 text-base mb-4">
+                      Get started by creating your first keysystem. You can create up to {userProfile?.maxKeysystems || 3} keysystems.
                     </p>
+                    <motion.button
+                      onClick={() => setShowModal(true)}
+                      disabled={keysystems.length >= (userProfile?.maxKeysystems || 3)}
+                      className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-6 py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Create Your First Keysystem
+                    </motion.button>
                   </motion.div>
                 ) : (
                   <motion.div 
-                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+                    className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.3 }}
@@ -924,7 +972,7 @@ export default function Dashboard() {
                     {keysystems.map((keysystem, index) => (
                       <motion.div 
                         key={index} 
-                        className="bg-black/20 border border-white/10 rounded-lg p-4 hover:border-white/20 transition-all group"
+                        className="bg-gradient-to-br from-black/40 via-black/20 to-transparent border border-white/10 rounded-xl p-6 hover:border-white/20 hover:shadow-lg hover:shadow-[#6366f1]/10 transition-all duration-300 group backdrop-blur-sm"
                         initial={{ opacity: 0, y: 30, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         transition={{ 
@@ -934,32 +982,32 @@ export default function Dashboard() {
                           stiffness: 100
                         }}
                         whileHover={{ 
-                          y: -5,
+                          y: -8,
                           scale: 1.02,
                           transition: { duration: 0.2 }
                         }}
                       >
                         {/* Header */}
-                        <div className="flex items-start justify-between mb-3">
+                        <div className="flex items-start justify-between mb-4">
                           <div className="flex-1 min-w-0">
                             <motion.button
                               onClick={() => router.push(`/dashboard/scripts/${keysystem.id}`)}
-                              className="text-white font-medium text-sm hover:text-[#6366f1] transition-colors text-left truncate block w-full"
+                              className="text-white font-semibold text-base hover:text-[#6366f1] transition-colors text-left truncate block w-full group-hover:text-[#6366f1]"
                               whileHover={{ x: 5 }}
                               transition={{ duration: 0.2 }}
                             >
                               {keysystem.name || `Keysystem ${index + 1}`}
                             </motion.button>
-                            <p className="text-gray-400 text-xs font-mono mt-1">
-                              {keysystem.id ? keysystem.id.substring(0, 16) + '...' : 'N/A'}
+                            <p className="text-gray-400 text-xs font-mono mt-2 bg-black/30 px-2 py-1 rounded inline-block">
+                              {keysystem.id ? keysystem.id.substring(0, 12) + '...' : 'N/A'}
                             </p>
                           </div>
                           
-<motion.span 
-                            className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ml-2 ${
+                          <motion.span 
+                            className={`inline-flex px-3 py-1.5 rounded-full text-xs font-semibold ml-3 ${
                               keysystem.active 
-                                ? 'bg-green-500/20 text-green-400' 
-                                : 'bg-gray-500/20 text-gray-400'
+                                ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                                : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
                             }`}
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
@@ -969,42 +1017,44 @@ export default function Dashboard() {
                           </motion.span>
                         </div>
 
-                        {/* Stats */}
+                        {/* Stats Grid */}
                         <motion.div 
-                          className="space-y-2 mb-4"
+                          className="grid grid-cols-2 gap-4 mb-6"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: 0.5 + index * 0.1 }}
                         >
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-gray-400">Max Keys</span>
-                            <span className="text-white">{keysystem.maxKeyPerPerson || 'N/A'}</span>
+                          <div className="bg-black/30 rounded-lg p-3 border border-white/5">
+                            <div className="text-gray-400 text-xs mb-1">Max Keys</div>
+                            <div className="text-white font-bold text-lg">{keysystem.maxKeyPerPerson || 'N/A'}</div>
                           </div>
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-gray-400">Timer</span>
-                            <span className="text-white">
-                              {keysystem.keyTimer || 0}h
-                            </span>
+                          <div className="bg-black/30 rounded-lg p-3 border border-white/5">
+                            <div className="text-gray-400 text-xs mb-1">Timer</div>
+                            <div className="text-white font-bold text-lg">{keysystem.keyTimer || 0}h</div>
                           </div>
-                          <div className="flex items-center justify-between text-xs">
-                            <span className="text-gray-400">Created</span>
-                            <span className="text-white">
-                              {keysystem.createdAt ? new Date(keysystem.createdAt).toLocaleDateString() : 'N/A'}
-                            </span>
+                          <div className="bg-black/30 rounded-lg p-3 border border-white/5 col-span-2">
+                            <div className="text-gray-400 text-xs mb-1">Created</div>
+                            <div className="text-white font-medium text-sm">
+                              {keysystem.createdAt ? new Date(keysystem.createdAt).toLocaleDateString('en-US', { 
+                                year: 'numeric', 
+                                month: 'short', 
+                                day: 'numeric' 
+                              }) : 'N/A'}
+                            </div>
                           </div>
                         </motion.div>
 
                         {/* Actions */}
                         <motion.div 
-                          className="flex space-x-2"
+                          className="flex space-x-3"
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.6 + index * 0.1 }}
                         >
                           <motion.button 
                             onClick={() => handleEditKeysystem(keysystem)}
-                            className="flex-1 bg-[#6366f1] hover:bg-[#5856eb] text-white px-3 py-2 rounded text-xs font-medium transition-colors"
-                            whileHover={{ scale: 1.05 }}
+                            className="flex-1 bg-gradient-to-r from-[#6366f1] to-[#8b5cf6] hover:from-[#5856eb] hover:to-[#7c3aed] text-white px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-md"
+                            whileHover={{ scale: 1.05, y: -2 }}
                             whileTap={{ scale: 0.95 }}
                           >
                             Edit
@@ -1012,8 +1062,8 @@ export default function Dashboard() {
                           <motion.button 
                             onClick={() => handleDeleteKeysystem(keysystem)}
                             disabled={isDeleting}
-                            className="flex-1 border border-red-500/50 text-red-400 hover:text-red-300 hover:border-red-400 px-3 py-2 rounded text-xs font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            whileHover={{ scale: 1.05 }}
+                            className="flex-1 border-2 border-red-500/50 text-red-400 hover:text-red-300 hover:border-red-400 hover:bg-red-500/10 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                            whileHover={{ scale: 1.05, y: -2 }}
                             whileTap={{ scale: 0.95 }}
                           >
                             Delete
