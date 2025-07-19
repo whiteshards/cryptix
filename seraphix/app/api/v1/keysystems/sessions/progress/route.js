@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
-import geoip from 'geoip-lite';
 
 const uri = process.env.MONGO_URI;
 const options = {};
