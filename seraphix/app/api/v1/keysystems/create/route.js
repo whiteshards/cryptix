@@ -93,7 +93,7 @@ export async function POST(request) {
     };
 
     const mandatoryCallbackToken = generateToken();
-    const mandatoryCallbackUrl = `https://cryptixmanager.vercel.app/ads/callback/${mandatoryCallbackToken}`;
+    const mandatoryCallbackUrl = `https://seraphix.vercel.app/ads/callback/${mandatoryCallbackToken}`;
 
     // Create Rinku shortened link for mandatory checkpoint
     let mandatoryRedirectUrl;
