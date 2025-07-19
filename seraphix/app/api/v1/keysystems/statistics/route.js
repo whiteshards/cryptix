@@ -1,23 +1,12 @@
+` tags.
 
+```
+<replit_final_file>
 import { NextResponse } from 'next/server';
-import jwt from 'jsonwebtoken';
 import clientPromise from '../../../../../lib/mongodb';
 
 export async function GET(request) {
   try {
-    const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ error: 'No authorization token provided' }, { status: 401 });
-    }
-
-    const token = authHeader.substring(7);
-    let decoded;
-    try {
-      decoded = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
-      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
-    }
-
     const { searchParams } = new URL(request.url);
     const keysystemId = searchParams.get('keysystemId');
 
@@ -25,160 +14,127 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Keysystem ID is required' }, { status: 400 });
     }
 
+    // Get authorization header
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Authorization token required' }, { status: 401 });
+    }
+
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+
+    // Connect to MongoDB
     const client = await clientPromise;
     const db = client.db('Cryptix');
     const customersCollection = db.collection('customers');
     const sessionsCollection = db.collection('sessions');
-    const keysCollection = db.collection('keys');
 
-    // Find the customer and verify ownership of keysystem
-    const customer = await customersCollection.findOne({ 
-      discord_id: decoded.discord_id,
-      'keysystems.id': keysystemId
-    });
+    // Find user by Discord refresh token
+    const user = await customersCollection.findOne({ token: token });
 
-    if (!customer) {
-      return NextResponse.json({ error: 'Keysystem not found or access denied' }, { status: 404 });
+    if (!user) {
+      return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
-    const keysystem = customer.keysystems.find(ks => ks.id === keysystemId);
-
-    // Get total keys count
-    const totalKeys = await keysCollection.countDocuments({ keysystem_id: keysystemId });
-
-    // Get active keys count (not expired)
-    const activeKeys = await keysCollection.countDocuments({ 
-      keysystem_id: keysystemId,
-      expires_at: { $gt: new Date() }
-    });
-
-    // Get expired keys count
-    const expiredKeys = totalKeys - activeKeys;
-
-    // Get total sessions count
-    const totalSessions = await sessionsCollection.countDocuments({ keysystem_id: keysystemId });
-
-    // Get completed sessions count
-    const completedSessions = await sessionsCollection.countDocuments({ 
-      keysystem_id: keysystemId,
-      completed: true
-    });
-
-    // Get failed sessions count
-    const failedSessions = totalSessions - completedSessions;
-
-    // Get keys created in the last 7 days
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    
-    const recentKeys = await keysCollection.countDocuments({ 
-      keysystem_id: keysystemId,
-      created_at: { $gte: sevenDaysAgo }
-    });
-
-    // Get daily statistics for the last 7 days
-    const dailyStats = [];
-    for (let i = 6; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      const endOfDay = new Date(startOfDay);
-      endOfDay.setDate(endOfDay.getDate() + 1);
-
-      const keysCreated = await keysCollection.countDocuments({
-        keysystem_id: keysystemId,
-        created_at: { $gte: startOfDay, $lt: endOfDay }
-      });
-
-      const sessionsCreated = await sessionsCollection.countDocuments({
-        keysystem_id: keysystemId,
-        created_at: { $gte: startOfDay, $lt: endOfDay }
-      });
-
-      const sessionsCompleted = await sessionsCollection.countDocuments({
-        keysystem_id: keysystemId,
-        completed: true,
-        completed_at: { $gte: startOfDay, $lt: endOfDay }
-      });
-
-      dailyStats.push({
-        date: startOfDay.toISOString().split('T')[0],
-        keys: keysCreated,
-        sessions: sessionsCreated,
-        completed: sessionsCompleted
-      });
+    // Check if user is activated
+    if (!user.activated) {
+      return NextResponse.json({ error: 'Account not activated' }, { status: 403 });
     }
 
-    // Get checkpoint completion statistics
-    const checkpointStats = [];
-    if (keysystem.checkpoints && keysystem.checkpoints.length > 0) {
-      for (let i = 0; i < keysystem.checkpoints.length; i++) {
-        const checkpoint = keysystem.checkpoints[i];
-        const completedCount = await sessionsCollection.countDocuments({
-          keysystem_id: keysystemId,
-          [`progress.${i}.completed`]: true
-        });
+    // Find the specific keysystem
+    const keysystem = user.keysystems?.find(ks => ks.id === keysystemId);
+    if (!keysystem) {
+      return NextResponse.json({ error: 'Keysystem not found' }, { status: 404 });
+    }
 
-        checkpointStats.push({
-          index: i,
-          name: `Step ${i + 1}`,
-          type: checkpoint.type,
-          completed: completedCount,
-          completion_rate: totalSessions > 0 ? Math.round((completedCount / totalSessions) * 100) : 0
-        });
+    // Get session statistics for this keysystem
+    const sessions = await sessionsCollection.find({ 
+      keysystem_id: keysystemId 
+    }).toArray();
+
+    // Calculate statistics
+    const totalSessions = sessions.length;
+    const completedSessions = sessions.filter(s => s.completed).length;
+    const activeSessions = sessions.filter(s => !s.completed && !s.expired).length;
+    const expiredSessions = sessions.filter(s => s.expired).length;
+
+    // Group sessions by date for time series data
+    const sessionsByDate = {};
+    sessions.forEach(session => {
+      const date = new Date(session.created_at).toISOString().split('T')[0];
+      if (!sessionsByDate[date]) {
+        sessionsByDate[date] = { completed: 0, total: 0 };
       }
+      sessionsByDate[date].total++;
+      if (session.completed) {
+        sessionsByDate[date].completed++;
+      }
+    });
+
+    // Convert to array for charts
+    const timeSeriesData = Object.entries(sessionsByDate)
+      .map(([date, data]) => ({
+        date,
+        completed: data.completed,
+        total: data.total,
+        completion_rate: ((data.completed / data.total) * 100).toFixed(1)
+      }))
+      .sort((a, b) => new Date(a.date) - new Date(b.date))
+      .slice(-30); // Last 30 days
+
+    // Calculate completion rates by checkpoint
+    const checkpointStats = {};
+    if (keysystem.checkpoints) {
+      keysystem.checkpoints.forEach((checkpoint, index) => {
+        const checkpointSessions = sessions.filter(s => 
+          s.current_checkpoint >= index && s.completed
+        );
+        checkpointStats[`Checkpoint ${index + 1}`] = {
+          completed: checkpointSessions.length,
+          total: sessions.filter(s => s.current_checkpoint >= index).length
+        };
+      });
     }
 
-    // Get hourly distribution of key creation (last 24 hours)
-    const hourlyStats = [];
-    const now = new Date();
-    for (let i = 23; i >= 0; i--) {
-      const hour = new Date(now);
-      hour.setHours(hour.getHours() - i);
-      const startHour = new Date(hour.getFullYear(), hour.getMonth(), hour.getDate(), hour.getHours());
-      const endHour = new Date(startHour);
-      endHour.setHours(endHour.getHours() + 1);
+    const checkpointData = Object.entries(checkpointStats).map(([name, data]) => ({
+      name,
+      completion_rate: data.total > 0 ? ((data.completed / data.total) * 100).toFixed(1) : 0,
+      completed: data.completed,
+      total: data.total
+    }));
 
-      const keysInHour = await keysCollection.countDocuments({
-        keysystem_id: keysystemId,
-        created_at: { $gte: startHour, $lt: endHour }
-      });
+    // Pie chart data for session status
+    const statusData = [
+      { name: 'Completed', value: completedSessions, color: '#22c55e' },
+      { name: 'Active', value: activeSessions, color: '#3b82f6' },
+      { name: 'Expired', value: expiredSessions, color: '#ef4444' }
+    ].filter(item => item.value > 0);
 
-      hourlyStats.push({
-        hour: startHour.getHours(),
-        keys: keysInHour
-      });
-    }
+    // Calculate overall completion rate
+    const completionRate = totalSessions > 0 ? ((completedSessions / totalSessions) * 100).toFixed(1) : 0;
 
     return NextResponse.json({
       success: true,
       keysystem: {
         id: keysystem.id,
         name: keysystem.name,
-        active: keysystem.active,
-        created_at: keysystem.createdAt
+        active: keysystem.active
       },
       statistics: {
-        keys: {
-          total: totalKeys,
-          active: activeKeys,
-          expired: expiredKeys,
-          recent: recentKeys
+        overview: {
+          total_sessions: totalSessions,
+          completed_sessions: completedSessions,
+          active_sessions: activeSessions,
+          expired_sessions: expiredSessions,
+          completion_rate: parseFloat(completionRate)
         },
-        sessions: {
-          total: totalSessions,
-          completed: completedSessions,
-          failed: failedSessions,
-          completion_rate: totalSessions > 0 ? Math.round((completedSessions / totalSessions) * 100) : 0
-        },
-        daily_stats: dailyStats,
-        checkpoint_stats: checkpointStats,
-        hourly_stats: hourlyStats
+        time_series: timeSeriesData,
+        checkpoint_performance: checkpointData,
+        status_distribution: statusData
       }
     });
 
   } catch (error) {
-    console.error('Statistics fetch error:', error);
+    console.error('Statistics error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
