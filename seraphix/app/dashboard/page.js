@@ -1929,7 +1929,7 @@ export default function Dashboard() {
                 </motion.div>
 
                 <motion.div 
-                  className="flex flex-col sm:flex-row  sm:space-x-3 mt-6"
+                  className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 mt-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.8 }}
@@ -2110,7 +2110,7 @@ export default function Dashboard() {
                 </motion.div>
 
                 <motion.div 
-                  className="flex flex-col sm:flex-row sm:space-x-3 mt-6"
+                  className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3 mt-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.8 }}
