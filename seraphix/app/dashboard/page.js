@@ -1008,7 +1008,7 @@ export default function Dashboard() {
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1 min-w-0">
                             <motion.button
-                              onClick={() => router.push(`/dashboard/scripts/${keysystem.id}`)}
+                              onClick={() => router.push(`/dashboard/keysystems/${keysystem.id}`)}
                               className="text-white font-semibold text-base hover:text-[#6366f1] transition-colors text-left truncate block w-full group-hover:text-[#6366f1]"
                               whileHover={{ x: 5 }}
                               transition={{ duration: 0.2 }}
