@@ -134,8 +134,9 @@ export async function POST(request) {
       try {
         const checkpoint = keysystem.checkpoints[checkpointIndex - 1]; // Previous checkpoint that was just completed
         const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown';
-        const geo = geoip.lookup(ip);
-        const country = geo ? geo.country : 'unknown';
+        
+        // Get geolocation data using external API
+        const location = await getLocationFromIP(ip);
 
         const embed = {
           title: 'Checkpoint Completed',
@@ -171,7 +172,7 @@ export async function POST(request) {
             },
             {
               name: 'Country',
-              value: `\`${country}\``,
+              value: `\`${location.country}\``,
               inline: true
             },
             {
@@ -216,5 +217,26 @@ export async function POST(request) {
   } catch (error) {
     console.error('Update progress error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+async function getLocationFromIP(ip) {
+  try {
+    const response = await fetch(`https://api.iplocation.net/json/${ip}`);
+    const data = await response.json();
+    return {
+      country: data.country_name || 'Unknown',
+      region: data.region_name || 'Unknown',
+      city: data.city || 'Unknown',
+      ll: [data.latitude || 0, data.longitude || 0]
+    };
+  } catch (error) {
+    console.error('Error getting location from IP:', error);
+    return {
+      country: 'Unknown',
+      region: 'Unknown',
+      city: 'Unknown',
+      ll: [0, 0]
+    };
   }
 }
