@@ -87,6 +87,7 @@ export async function POST(request) {
       password: password,
       token: refresh_token,
       activated: false,
+      maxKeysystems: 3,
       createdAt: new Date(),
       updatedAt: new Date()
     };

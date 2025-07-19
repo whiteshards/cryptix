@@ -61,6 +61,16 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 401 });
     }
 
+    // Check keysystem limit
+    const currentKeysystemCount = user.keysystems ? user.keysystems.length : 0;
+    const maxKeysystems = user.maxKeysystems || 3;
+    
+    if (currentKeysystemCount >= maxKeysystems) {
+      return NextResponse.json({ 
+        error: `Maximum keysystem limit reached (${maxKeysystems}). Please upgrade your plan to create more keysystems.` 
+      }, { status: 403 });
+    }
+
     // Generate unique keysystem ID (9 letters only)
     const generateId = () => {
       const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
