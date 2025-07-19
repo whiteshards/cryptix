@@ -64,10 +64,15 @@ export async function POST(request) {
     const completedCheckpoint = keysystem.checkpoints[checkpointIndex - 1];
     const checkpointType = completedCheckpoint?.type || 'unknown';
 
+    // Get geolocation data for stats
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown';
+    const location = await getLocationFromIP(ip);
+
     // Log checkpoint completion in stats
     const checkpointStat = {
       date: new Date().toISOString(),
-      type: checkpointType
+      type: checkpointType,
+      country: location.country
       // Note: This will be used for graphical representation later
     };
 
@@ -137,10 +142,6 @@ export async function POST(request) {
     if (keysystem.webhookUrl) {
       try {
         const checkpoint = keysystem.checkpoints[checkpointIndex - 1]; // Previous checkpoint that was just completed
-        const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown';
-        
-        // Get geolocation data using external API
-        const location = await getLocationFromIP(ip);
 
         const embed = {
           title: 'Checkpoint Completed',
