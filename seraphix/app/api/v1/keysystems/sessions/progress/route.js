@@ -123,13 +123,13 @@ export async function POST(request) {
           ],
           timestamp: new Date().toISOString(),
           footer: {
-            text: 'Cryptix Manager',
+            text: 'seraphix.app',
             icon_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
           }
         };
 
         const webhookPayload = {
-          username: 'Cryptix Notifications',
+          username: 'seraphix.app',
           avatar_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png',
           embeds: [embed]
         };
