@@ -35,7 +35,7 @@ export default function Statistics() {
   const fetchKeysystemData = async (token) => {
     try {
       // Fetch keysystem data using the get route
-      const response = await fetch(`/api/v1/keysystems/get?keysystemId=${keysystemId}`, {
+      const response = await fetch(`/api/v1/keysystems/get?id=${keysystemId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
