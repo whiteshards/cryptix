@@ -1,4 +1,3 @@
-
 import { NextResponse } from 'next/server';
 import clientPromise from '../../../../../lib/mongodb';
 import { generateRandomPassword, addUserToGuild } from '../../../../../lib/utils';
@@ -22,7 +21,7 @@ export async function POST(request) {
         client_secret: process.env.DISCORD_CLIENT_SECRET,
         grant_type: 'authorization_code',
         code: code,
-        redirect_uri: "https://cryptix-sigma.vercel.app/callback",
+        redirect_uri: 'https://seraphix.vercel.app/callback',
       }),
     });
 

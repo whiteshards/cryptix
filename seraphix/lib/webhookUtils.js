@@ -1,4 +1,3 @@
-
 export async function sendWebhookNotification(webhookUrl, type, data) {
   if (!webhookUrl) return;
 
@@ -11,7 +10,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
           title: 'Checkpoint Completed',
           color: 0x00ff00,
           thumbnail: {
-            url: 'https://cryptixmanager.vercel.app/images/thumbnail.gif'
+            url: 'https://seraphix.vercel.app/images/thumbnail.gif'
           },
           fields: [
             {
@@ -48,7 +47,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
           timestamp: new Date().toISOString(),
           footer: {
             text: 'seraphix.app',
-            icon_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
+            icon_url: 'https://seraphix.vercel.app/images/unrounded-logo.png'
           }
         };
         break;
@@ -58,7 +57,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
           title: 'Anti-Bypass Triggered',
           color: 0xff0000,
           thumbnail: {
-            url: 'https://cryptixmanager.vercel.app/images/thumbnail.gif'
+            url: 'https://seraphix.vercel.app/images/thumbnail.gif'
           },
           fields: [
             {
@@ -90,7 +89,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
           timestamp: new Date().toISOString(),
           footer: {
             text: 'seraphix.app',
-            icon_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
+            icon_url: 'https://seraphix.vercel.app/images/unrounded-logo.png'
           }
         };
         break;
@@ -100,7 +99,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
           title: 'Key Generated',
           color: 0x0099ff,
           thumbnail: {
-            url: 'https://cryptixmanager.vercel.app/images/thumbnail.gif'
+            url: 'https://seraphix.vercel.app/images/thumbnail.gif'
           },
           fields: [
             {
@@ -137,7 +136,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
           timestamp: new Date().toISOString(),
           footer: {
             text: 'seraphix.app',
-            icon_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png'
+            icon_url: 'https://seraphix.vercel.app/images/unrounded-logo.png'
           }
         };
         break;
@@ -148,7 +147,7 @@ export async function sendWebhookNotification(webhookUrl, type, data) {
 
     const webhookPayload = {
       username: 'seraphix.app',
-      avatar_url: 'https://cryptixmanager.vercel.app/images/unrounded-logo.png',
+      avatar_url: 'https://seraphix.vercel.app/images/unrounded-logo.png',
       embeds: [embed]
     };
 
