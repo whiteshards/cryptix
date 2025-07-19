@@ -882,17 +882,19 @@ export default function Dashboard() {
                 >
                   <div className="flex flex-col space-y-2">
                     <h2 className="text-white text-xl font-semibold">Your Keysystems</h2>
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-gray-400 text-sm">Active:</span>
-                        <span className="text-white font-medium">{keysystems.length}</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                      <div className="flex items-center space-x-4">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-400 text-sm">Active:</span>
+                          <span className="text-white font-medium">{keysystems.length}</span>
+                        </div>
+                        <div className="w-px h-4 bg-white/10"></div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-gray-400 text-sm">Max:</span>
+                          <span className="text-white font-medium">{userProfile?.maxKeysystems || 3}</span>
+                        </div>
                       </div>
-                      <div className="w-px h-4 bg-white/10"></div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-gray-400 text-sm">Max Allowed:</span>
-                        <span className="text-white font-medium">{userProfile?.maxKeysystems || 3}</span>
-                      </div>
-                      <div className="w-px h-4 bg-white/10"></div>
+                      <div className="hidden sm:block w-px h-4 bg-white/10"></div>
                       <div className="flex items-center space-x-2">
                         <span className="text-gray-400 text-sm">Remaining:</span>
                         <span className={`font-medium ${
