@@ -1,33 +1,10 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Line, Bar, Doughnut } from 'react-chartjs-2';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from 'chart.js';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement
-);
+import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function Statistics() {
   const router = useRouter();
@@ -105,6 +82,7 @@ export default function Statistics() {
     let activeKeys = 0;
     let expiredKeys = 0;
     let recentKeys = 0;
+    const keysByDay = {};
 
     keys.forEach(key => {
       const expiresAt = new Date(key.expires_at);
@@ -118,6 +96,12 @@ export default function Statistics() {
 
       if (createdAt >= sevenDaysAgo) {
         recentKeys++;
+      }
+
+      // Group keys by creation date for chart
+      if (createdAt >= thirtyDaysAgo) {
+        const dateKey = createdAt.toISOString().split('T')[0];
+        keysByDay[dateKey] = (keysByDay[dateKey] || 0) + 1;
       }
     });
 
@@ -151,14 +135,22 @@ export default function Statistics() {
     });
 
     // Generate daily activity chart data for the last 7 days
-    const last7Days = [];
-    const activityData = [];
+    const last7DaysData = [];
     for (let i = 6; i >= 0; i--) {
       const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
       const dateKey = date.toISOString().split('T')[0];
-      last7Days.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
-      activityData.push(dailyActivity[dateKey] || 0);
+      last7DaysData.push({
+        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        completions: dailyActivity[dateKey] || 0,
+        keys: keysByDay[dateKey] || 0
+      });
     }
+
+    // Prepare checkpoint type data for pie chart
+    const checkpointTypeData = Object.entries(checkpointTypeBreakdown).map(([type, count]) => ({
+      name: type,
+      value: count
+    }));
 
     const processedStats = {
       keys: {
@@ -170,13 +162,11 @@ export default function Statistics() {
       checkpoints: {
         total: totalCheckpointCompletions,
         recent: recentCheckpointCompletions,
-        typeBreakdown: checkpointTypeBreakdown
+        typeBreakdown: checkpointTypeBreakdown,
+        typeData: checkpointTypeData
       },
       charts: {
-        dailyActivity: {
-          labels: last7Days,
-          data: activityData
-        }
+        dailyActivity: last7DaysData
       }
     };
 
@@ -191,6 +181,8 @@ export default function Statistics() {
     }
     return num.toString();
   };
+
+  const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#ef4444'];
 
   if (isLoading) {
     return (
@@ -240,84 +232,6 @@ export default function Statistics() {
       </div>
     );
   }
-
-  // Chart configurations
-  const dailyActivityChartData = {
-    labels: statistics.charts.dailyActivity.labels,
-    datasets: [
-      {
-        label: 'Daily Activity',
-        data: statistics.charts.dailyActivity.data,
-        borderColor: '#6366f1',
-        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-        borderWidth: 2,
-        fill: true,
-        tension: 0.4,
-      },
-    ],
-  };
-
-  const checkpointTypeChartData = {
-    labels: Object.keys(statistics.checkpoints.typeBreakdown),
-    datasets: [
-      {
-        data: Object.values(statistics.checkpoints.typeBreakdown),
-        backgroundColor: [
-          '#6366f1',
-          '#8b5cf6',
-          '#ec4899',
-          '#f59e0b',
-          '#10b981',
-          '#ef4444',
-        ],
-        borderWidth: 0,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        labels: {
-          color: '#ffffff',
-        },
-      },
-    },
-    scales: {
-      x: {
-        ticks: {
-          color: '#9ca3af',
-        },
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
-        },
-      },
-      y: {
-        ticks: {
-          color: '#9ca3af',
-        },
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
-        },
-      },
-    },
-  };
-
-  const doughnutOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          color: '#ffffff',
-          padding: 20,
-        },
-      },
-    },
-  };
 
   return (
     <motion.div 
@@ -480,9 +394,49 @@ export default function Statistics() {
               whileHover={{ y: -2 }}
               transition={{ duration: 0.2 }}
             >
-              <h3 className="text-white text-lg font-semibold mb-4">Daily Activity (Last 7 Days)</h3>
+              <h3 className="text-white text-lg font-semibold mb-4">Daily Activity & Keys (Last 7 Days)</h3>
               <div className="h-64">
-                <Line data={dailyActivityChartData} options={chartOptions} />
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={statistics.charts.dailyActivity}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                    <XAxis 
+                      dataKey="date" 
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: '#9ca3af', fontSize: 12 }}
+                    />
+                    <YAxis 
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: '#9ca3af', fontSize: 12 }}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#1f2937', 
+                        border: '1px solid rgba(255,255,255,0.1)',
+                        borderRadius: '8px',
+                        color: '#ffffff'
+                      }}
+                    />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="completions" 
+                      stroke="#6366f1" 
+                      strokeWidth={2}
+                      name="Completions"
+                      dot={{ fill: '#6366f1', strokeWidth: 2, r: 4 }}
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="keys" 
+                      stroke="#10b981" 
+                      strokeWidth={2}
+                      name="Keys Created"
+                      dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </motion.div>
 
@@ -494,8 +448,33 @@ export default function Statistics() {
             >
               <h3 className="text-white text-lg font-semibold mb-4">Checkpoint Types</h3>
               <div className="h-64">
-                {Object.keys(statistics.checkpoints.typeBreakdown).length > 0 ? (
-                  <Doughnut data={checkpointTypeChartData} options={doughnutOptions} />
+                {statistics.checkpoints.typeData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={statistics.checkpoints.typeData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percent }) => `${name} (${(percent * 100).toFixed(0)}%)`}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {statistics.checkpoints.typeData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: '#1f2937', 
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          borderRadius: '8px',
+                          color: '#ffffff'
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
                 ) : (
                   <div className="flex items-center justify-center h-full">
                     <p className="text-gray-400">No checkpoint data available</p>
