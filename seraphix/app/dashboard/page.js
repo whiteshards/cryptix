@@ -1067,48 +1067,67 @@ export default function Dashboard() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                 >
-                  <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between sm:space-x-4">
-                    <div className="flex-1">
-                      <label className="block text-white text-sm font-medium mb-2">
-                        Select Keysystem
-                      </label>
-                      <motion.select
-                        value={selectedKeysystemForKeys}
-                        onChange={(e) => {
-                          setSelectedKeysystemForKeys(e.target.value);
-                          setCurrentKeysPage(1);
-                          if (e.target.value) {
-                            fetchKeysData(e.target.value, 1);
-                          } else {
-                            setKeysData([]);
-                            setKeysPagination(null);
-                          }
-                        }}
-                        className="w-full max-w-md bg-[#2a2d47] border border-white/10 rounded px-3 py-2 text-white focus:border-[#6366f1] focus:outline-none transition-colors"
-                        whileFocus={{ scale: 1.02 }}
-                      >
-                        <option value="">Choose a keysystem...</option>
-                        {keysystems.map((ks) => (
-                          <option key={ks.id} value={ks.id}>
-                            {ks.name}
-                          </option>
-                        ))}
-                      </motion.select>
-                    </div>
+                  <div className="bg-black/20 rounded-lg p-4 border border-white/10">
+                    <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between lg:space-x-6 space-y-4 lg:space-y-0">
+                      <div className="flex-1">
+                        <label className="block text-white text-sm font-medium mb-3">
+                          Select Keysystem
+                        </label>
+                        <motion.select
+                          value={selectedKeysystemForKeys}
+                          onChange={(e) => {
+                            setSelectedKeysystemForKeys(e.target.value);
+                            setCurrentKeysPage(1);
+                            if (e.target.value) {
+                              fetchKeysData(e.target.value, 1);
+                            } else {
+                              setKeysData([]);
+                              setKeysPagination(null);
+                            }
+                          }}
+                          className="w-full bg-[#2a2d47] border border-white/10 rounded-lg px-4 py-3 text-white focus:border-[#6366f1] focus:ring-2 focus:ring-[#6366f1]/20 focus:outline-none transition-all shadow-sm"
+                          whileFocus={{ scale: 1.01 }}
+                        >
+                          <option value="" className="bg-[#2a2d47] text-gray-400">Choose a keysystem...</option>
+                          {keysystems.map((ks) => (
+                            <option key={ks.id} value={ks.id} className="bg-[#2a2d47] text-white">
+                              {ks.name} ({ks.id})
+                            </option>
+                          ))}
+                        </motion.select>
+                      </div>
 
-                    {selectedKeysystemForKeys && (
-                      <motion.button
-                        onClick={() => setShowCreateKeysModal(true)}
-                        className="mt-4 sm:mt-0 bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded text-sm font-medium transition-colors"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        Create Keys
-                      </motion.button>
-                    )}
+                      {selectedKeysystemForKeys && (
+                        <motion.div 
+                          className="flex flex-col sm:flex-row sm:items-center gap-3"
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          {/* Max Key Limit Display */}
+                          <div className="text-center sm:text-right">
+                            <div className="text-xs text-gray-400 mb-1">Max Key Limit</div>
+                            <div className="text-white font-medium">
+                              {keysystems.find(ks => ks.id === selectedKeysystemForKeys)?.maxKeyLimit || 5000}
+                            </div>
+                          </div>
+                          
+                          <motion.button
+                            onClick={() => setShowCreateKeysModal(true)}
+                            className="bg-[#6366f1] hover:bg-[#5856eb] text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
+                            whileHover={{ scale: 1.05, y: -2 }}
+                            whileTap={{ scale: 0.95 }}
+                          >
+                            <div className="flex items-center space-x-2">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                              </svg>
+                              <span>Create Keys</span>
+                            </div>
+                          </motion.button>
+                        </motion.div>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
 
@@ -1116,7 +1135,7 @@ export default function Dashboard() {
                   <>
                     
 
-                    {/* Keys Count */}
+                    {/* Keys Count with Max Limit */}
                     {keysPagination && (
                       <motion.div 
                         className="mb-4"
@@ -1124,9 +1143,33 @@ export default function Dashboard() {
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.5, delay: 0.4 }}
                       >
-                        <p className="text-gray-400 text-sm">
-                          Total Keys: <span className="text-white font-medium">{keysPagination.totalKeys}</span>
-                        </p>
+                        <div className="flex items-center justify-between bg-black/20 rounded-lg p-3 border border-white/10">
+                          <div className="flex items-center space-x-4">
+                            <div>
+                              <p className="text-gray-400 text-xs">Total Keys</p>
+                              <p className="text-white font-medium text-lg">{keysPagination.totalKeys}</p>
+                            </div>
+                            <div className="w-px h-8 bg-white/10"></div>
+                            <div>
+                              <p className="text-gray-400 text-xs">Max Limit</p>
+                              <p className="text-white font-medium text-lg">
+                                {keysystems.find(ks => ks.id === selectedKeysystemForKeys)?.maxKeyLimit || 5000}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-gray-400 text-xs">Usage</p>
+                            <p className={`font-medium text-lg ${
+                              (keysPagination.totalKeys / (keysystems.find(ks => ks.id === selectedKeysystemForKeys)?.maxKeyLimit || 5000)) > 0.8 
+                                ? 'text-red-400' 
+                                : (keysPagination.totalKeys / (keysystems.find(ks => ks.id === selectedKeysystemForKeys)?.maxKeyLimit || 5000)) > 0.6 
+                                  ? 'text-yellow-400' 
+                                  : 'text-green-400'
+                            }`}>
+                              {Math.round((keysPagination.totalKeys / (keysystems.find(ks => ks.id === selectedKeysystemForKeys)?.maxKeyLimit || 5000)) * 100)}%
+                            </p>
+                          </div>
+                        </div>
                       </motion.div>
                     )}
 
