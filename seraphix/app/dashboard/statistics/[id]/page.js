@@ -1,38 +1,44 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Line, Bar, Doughnut } from 'react-chartjs-2';
 import {
-  LineChart,
-  Line,
-  AreaChart,
-  Area,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
   Tooltip,
   Legend,
-  ResponsiveContainer
-} from 'recharts';
+  ArcElement,
+} from 'chart.js';
 
-export default function KeysystemStatistics() {
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ArcElement
+);
+
+export default function Statistics() {
   const router = useRouter();
   const params = useParams();
   const keysystemId = params.id;
 
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [keysystem, setKeysystem] = useState(null);
   const [statistics, setStatistics] = useState(null);
-  const [keysystemInfo, setKeysystemInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeChart, setActiveChart] = useState('daily');
 
   useEffect(() => {
     if (!keysystemId) {
@@ -51,8 +57,8 @@ export default function KeysystemStatistics() {
 
   const fetchKeysystemData = async (token) => {
     try {
-      // Fetch user profile to get keysystem data
-      const profileResponse = await fetch('/api/v1/users/profile', {
+      // Fetch keysystem data using the get route
+      const response = await fetch(`/api/v1/keysystems/get?keysystemId=${keysystemId}`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -60,38 +66,27 @@ export default function KeysystemStatistics() {
         },
       });
 
-      if (!profileResponse.ok) {
-        if (profileResponse.status === 401) {
+      if (!response.ok) {
+        if (response.status === 401) {
           localStorage.removeItem('cryptix_jwt');
           router.push('/login');
           return;
         }
-        throw new Error('Failed to fetch user data');
+        throw new Error('Failed to fetch keysystem data');
       }
 
-      const userData = await profileResponse.json();
+      const data = await response.json();
+      console.log('Keysystem data:', data);
 
-      if (!userData.success) {
-        throw new Error('Failed to fetch user data');
-      }
+      if (data.success && data.keysystem) {
+        setKeysystem(data.keysystem);
+        setIsAuthenticated(true);
 
-      // Find the specific keysystem
-      const keysystem = userData.user.keysystems?.find(ks => ks.id === keysystemId);
-      if (!keysystem) {
+        // Process the statistics from the keysystem data
+        processStatistics(data.keysystem);
+      } else {
         throw new Error('Keysystem not found');
       }
-
-      setKeysystemInfo({
-        id: keysystem.id,
-        name: keysystem.name,
-        active: keysystem.active
-      });
-
-      // Process the statistics data
-      const processedStats = processKeysystemData(keysystem);
-      setStatistics(processedStats);
-      setIsAuthenticated(true);
-
     } catch (error) {
       console.error('Error fetching keysystem data:', error);
       setError(error.message);
@@ -100,110 +95,92 @@ export default function KeysystemStatistics() {
     }
   };
 
-  const processKeysystemData = (keysystem) => {
+  const processStatistics = (keysystemData) => {
+    const now = new Date();
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
     // Process keys data
-    const keys = keysystem.keys || {};
-    const keyEntries = Object.entries(keys);
-    
-    const totalKeys = keyEntries.length;
-    const activeKeys = keyEntries.filter(([_, key]) => {
-      if (!key.expires_at) return true;
-      return new Date(key.expires_at) > new Date();
-    }).length;
-    const expiredKeys = totalKeys - activeKeys;
+    const keys = keysystemData.keys || [];
+    let activeKeys = 0;
+    let expiredKeys = 0;
+    let recentKeys = 0;
 
-    // Calculate recent keys (last 7 days)
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-    const recentKeys = keyEntries.filter(([_, key]) => {
-      return key.created_at && new Date(key.created_at) > sevenDaysAgo;
-    }).length;
+    keys.forEach(key => {
+      const expiresAt = new Date(key.expires_at);
+      const createdAt = new Date(key.created_at);
 
-    // Process checkpoint stats
-    const checkpointStats = keysystem.stats?.checkpoints || [];
-    const checkpointData = [];
-    
-    if (keysystem.checkpoints && keysystem.checkpoints.length > 0) {
-      keysystem.checkpoints.forEach((checkpoint, index) => {
-        const completions = checkpointStats.filter(stat => 
-          stat.type === checkpoint.type || stat.checkpoint === index
-        ).length;
-        
-        checkpointData.push({
-          name: checkpoint.name || `Checkpoint ${index + 1}`,
-          completed: completions,
-          completion_rate: totalKeys > 0 ? ((completions / totalKeys) * 100).toFixed(1) : 0
-        });
-      });
-    }
+      if (expiresAt > now) {
+        activeKeys++;
+      } else {
+        expiredKeys++;
+      }
 
-    // Process daily stats (group keys by creation date)
-    const dailyStats = {};
-    keyEntries.forEach(([_, key]) => {
-      if (key.created_at) {
-        const date = new Date(key.created_at).toISOString().split('T')[0];
-        if (!dailyStats[date]) {
-          dailyStats[date] = { keys: 0, completed: 0 };
-        }
-        dailyStats[date].keys++;
-        if (key.current_checkpoint === (keysystem.checkpoints?.length || 0)) {
-          dailyStats[date].completed++;
-        }
+      if (createdAt >= sevenDaysAgo) {
+        recentKeys++;
       }
     });
 
-    // Convert to array and sort by date (last 30 days)
-    const dailyStatsArray = Object.entries(dailyStats)
-      .map(([date, data]) => ({
-        date,
-        keys: data.keys,
-        completed: data.completed
-      }))
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
-      .slice(-30);
+    // Process checkpoint stats from the stats object
+    const stats = keysystemData.stats || {};
+    const checkpointStats = stats.checkpoints || {};
 
-    // Process hourly stats (group by hour of creation)
-    const hourlyStats = {};
-    for (let i = 0; i < 24; i++) {
-      hourlyStats[i] = { hour: i, keys: 0 };
-    }
-    
-    keyEntries.forEach(([_, key]) => {
-      if (key.created_at) {
-        const hour = new Date(key.created_at).getHours();
-        hourlyStats[hour].keys++;
+    let totalCheckpointCompletions = 0;
+    let recentCheckpointCompletions = 0;
+    const checkpointTypeBreakdown = {};
+    const dailyActivity = {};
+
+    // Process checkpoint completions
+    Object.values(checkpointStats).forEach(checkpoint => {
+      totalCheckpointCompletions++;
+      const checkpointDate = new Date(checkpoint.date);
+
+      if (checkpointDate >= sevenDaysAgo) {
+        recentCheckpointCompletions++;
+      }
+
+      // Count by type
+      const type = checkpoint.type || 'unknown';
+      checkpointTypeBreakdown[type] = (checkpointTypeBreakdown[type] || 0) + 1;
+
+      // Daily activity for the last 30 days
+      if (checkpointDate >= thirtyDaysAgo) {
+        const dateKey = checkpointDate.toISOString().split('T')[0];
+        dailyActivity[dateKey] = (dailyActivity[dateKey] || 0) + 1;
       }
     });
 
-    const hourlyStatsArray = Object.values(hourlyStats);
+    // Generate daily activity chart data for the last 7 days
+    const last7Days = [];
+    const activityData = [];
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+      const dateKey = date.toISOString().split('T')[0];
+      last7Days.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+      activityData.push(dailyActivity[dateKey] || 0);
+    }
 
-    // Calculate sessions data (based on keys with progress)
-    const completedSessions = keyEntries.filter(([_, key]) => 
-      key.current_checkpoint === (keysystem.checkpoints?.length || 0)
-    ).length;
-    const failedSessions = keyEntries.filter(([_, key]) => 
-      key.current_checkpoint < (keysystem.checkpoints?.length || 0) && key.expires_at && new Date(key.expires_at) < new Date()
-    ).length;
-    const totalSessions = totalKeys;
-    const completionRate = totalSessions > 0 ? ((completedSessions / totalSessions) * 100).toFixed(1) : 0;
-
-    return {
+    const processedStats = {
       keys: {
-        total: totalKeys,
+        total: keys.length,
         active: activeKeys,
         expired: expiredKeys,
         recent: recentKeys
       },
-      sessions: {
-        total: totalSessions,
-        completed: completedSessions,
-        failed: failedSessions,
-        completion_rate: parseFloat(completionRate)
+      checkpoints: {
+        total: totalCheckpointCompletions,
+        recent: recentCheckpointCompletions,
+        typeBreakdown: checkpointTypeBreakdown
       },
-      daily_stats: dailyStatsArray,
-      hourly_stats: hourlyStatsArray,
-      checkpoint_stats: checkpointData
+      charts: {
+        dailyActivity: {
+          labels: last7Days,
+          data: activityData
+        }
+      }
     };
+
+    setStatistics(processedStats);
   };
 
   const formatNumber = (num) => {
@@ -215,11 +192,14 @@ export default function KeysystemStatistics() {
     return num.toString();
   };
 
-  const pieColors = ['#6366f1', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444'];
-
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
+      <motion.div 
+        className="min-h-screen bg-[#0f1015] flex items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
         <div className="text-center">
           <motion.div 
             className="inline-block w-8 h-8 border-2 border-[#6366f1] border-t-transparent rounded-full mb-4"
@@ -228,18 +208,23 @@ export default function KeysystemStatistics() {
           />
           <p className="text-white text-lg">Loading statistics...</p>
         </div>
-      </div>
+      </motion.div>
     );
+  }
+
+  if (!isAuthenticated || !keysystem) {
+    return null;
   }
 
   if (error) {
     return (
       <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-400 text-lg mb-4">Error: {error}</div>
-          <button
+          <div className="text-red-400 text-lg mb-4">Error loading statistics</div>
+          <p className="text-gray-400">{error}</p>
+          <button 
             onClick={() => router.push('/dashboard')}
-            className="bg-[#6366f1] hover:bg-[#5555f1] text-white px-4 py-2 rounded-lg transition-colors"
+            className="mt-4 bg-[#6366f1] text-white px-4 py-2 rounded hover:bg-[#5856eb] transition-colors"
           >
             Back to Dashboard
           </button>
@@ -248,9 +233,91 @@ export default function KeysystemStatistics() {
     );
   }
 
-  if (!isAuthenticated || !statistics) {
-    return null;
+  if (!statistics) {
+    return (
+      <div className="min-h-screen bg-[#0f1015] flex items-center justify-center">
+        <div className="text-white">No statistics available</div>
+      </div>
+    );
   }
+
+  // Chart configurations
+  const dailyActivityChartData = {
+    labels: statistics.charts.dailyActivity.labels,
+    datasets: [
+      {
+        label: 'Daily Activity',
+        data: statistics.charts.dailyActivity.data,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+      },
+    ],
+  };
+
+  const checkpointTypeChartData = {
+    labels: Object.keys(statistics.checkpoints.typeBreakdown),
+    datasets: [
+      {
+        data: Object.values(statistics.checkpoints.typeBreakdown),
+        backgroundColor: [
+          '#6366f1',
+          '#8b5cf6',
+          '#ec4899',
+          '#f59e0b',
+          '#10b981',
+          '#ef4444',
+        ],
+        borderWidth: 0,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        labels: {
+          color: '#ffffff',
+        },
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          color: '#9ca3af',
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
+        },
+      },
+      y: {
+        ticks: {
+          color: '#9ca3af',
+        },
+        grid: {
+          color: 'rgba(255, 255, 255, 0.1)',
+        },
+      },
+    },
+  };
+
+  const doughnutOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          color: '#ffffff',
+          padding: 20,
+        },
+      },
+    },
+  };
 
   return (
     <motion.div 
@@ -260,32 +327,33 @@ export default function KeysystemStatistics() {
       transition={{ duration: 0.6 }}
     >
       {/* Header */}
-      <div className="pt-8 px-8">
+      <motion.div 
+        className="pt-8 px-8"
+        initial={{ y: -50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.1 }}
+      >
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
               <motion.button
                 onClick={() => router.push('/dashboard')}
                 className="text-gray-400 hover:text-white transition-colors"
-                whileHover={{ x: -5 }}
-                whileTap={{ scale: 0.95 }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </motion.button>
               <div>
-                <h1 className="text-white text-xl font-medium">
-                  {keysystemInfo?.name} Statistics
-                </h1>
-                <p className="text-gray-400 text-sm">
-                  Comprehensive analytics and insights
-                </p>
+                <h1 className="text-white text-2xl font-bold">{keysystem.name}</h1>
+                <p className="text-gray-400 text-sm">Analytics & Statistics</p>
               </div>
             </div>
-            <motion.div
-              className={`px-3 py-1 rounded-full text-xs font-medium ${
-                keysystemInfo?.active 
+            <motion.span 
+              className={`inline-flex px-4 py-2 rounded-full text-sm font-medium ${
+                keysystem.active 
                   ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
                   : 'bg-gray-500/20 text-gray-400 border border-gray-500/30'
               }`}
@@ -293,11 +361,11 @@ export default function KeysystemStatistics() {
               animate={{ scale: 1 }}
               transition={{ delay: 0.3, type: "spring" }}
             >
-              {keysystemInfo?.active ? 'Active' : 'Inactive'}
-            </motion.div>
+              {keysystem.active ? 'Active' : 'Inactive'}
+            </motion.span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Content */}
       <div className="px-8 pb-8">
@@ -340,20 +408,18 @@ export default function KeysystemStatistics() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm">Total Sessions</p>
-                  <p className="text-white text-2xl font-bold">{formatNumber(statistics.sessions.total)}</p>
+                  <p className="text-gray-400 text-sm">Active Keys</p>
+                  <p className="text-white text-2xl font-bold">{formatNumber(statistics.keys.active)}</p>
                 </div>
                 <div className="w-12 h-12 bg-[#10b981]/20 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-[#10b981]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
               </div>
               <div className="mt-4 flex items-center text-sm">
-                <span className="text-green-400">{statistics.sessions.completed}</span>
-                <span className="text-gray-400 mx-2">completed</span>
-                <span className="text-red-400">{statistics.sessions.failed}</span>
-                <span className="text-gray-400 ml-2">failed</span>
+                <span className="text-gray-300">Recent Keys (7 days)</span>
+                <span className="text-[#10b981] font-bold ml-2">{statistics.keys.recent}</span>
               </div>
             </motion.div>
 
@@ -364,24 +430,18 @@ export default function KeysystemStatistics() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm">Success Rate</p>
-                  <p className="text-white text-2xl font-bold">{statistics.sessions.completion_rate}%</p>
+                  <p className="text-gray-400 text-sm">Total Completions</p>
+                  <p className="text-white text-2xl font-bold">{formatNumber(statistics.checkpoints.total)}</p>
                 </div>
                 <div className="w-12 h-12 bg-[#f59e0b]/20 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-[#f59e0b]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
               </div>
-              <div className="mt-4">
-                <div className="bg-black/30 rounded-full h-2">
-                  <motion.div 
-                    className="bg-[#f59e0b] h-2 rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${statistics.sessions.completion_rate}%` }}
-                    transition={{ duration: 1, delay: 0.5 }}
-                  />
-                </div>
+              <div className="mt-4 flex items-center text-sm">
+                <span className="text-gray-300">Recent (7 days)</span>
+                <span className="text-[#f59e0b] font-bold ml-2">{statistics.checkpoints.recent}</span>
               </div>
             </motion.div>
 
@@ -392,247 +452,81 @@ export default function KeysystemStatistics() {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-gray-400 text-sm">Recent Keys</p>
-                  <p className="text-white text-2xl font-bold">{formatNumber(statistics.keys.recent)}</p>
+                  <p className="text-gray-400 text-sm">Checkpoints</p>
+                  <p className="text-white text-2xl font-bold">{keysystem.checkpoints?.length || 0}</p>
                 </div>
                 <div className="w-12 h-12 bg-[#8b5cf6]/20 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-[#8b5cf6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                   </svg>
                 </div>
               </div>
-              <div className="mt-4">
-                <span className="text-gray-400 text-sm">Last 7 days</span>
+              <div className="mt-4 flex items-center text-sm">
+                <span className="text-gray-300">Configured steps</span>
               </div>
             </motion.div>
           </motion.div>
 
-          {/* Chart Navigation */}
+          {/* Charts Section */}
           <motion.div 
-            className="bg-black/20 border border-white/10 rounded-xl p-4"
-            initial={{ y: 20, opacity: 0 }}
+            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+            initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <div className="flex flex-wrap gap-2 mb-4">
-              {[
-                { id: 'daily', label: 'Daily Overview', icon: '📈' },
-                { id: 'hourly', label: 'Hourly Activity', icon: '⏰' },
-                { id: 'checkpoints', label: 'Checkpoint Performance', icon: '🎯' },
-                { id: 'distribution', label: 'Key Distribution', icon: '📊' }
-              ].map((chart) => (
-                <motion.button
-                  key={chart.id}
-                  onClick={() => setActiveChart(chart.id)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    activeChart === chart.id
-                      ? 'bg-[#6366f1] text-white'
-                      : 'bg-black/30 text-gray-400 hover:text-white hover:bg-black/50'
-                  }`}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <span className="mr-2">{chart.icon}</span>
-                  {chart.label}
-                </motion.button>
-              ))}
-            </div>
+            {/* Daily Activity Chart */}
+            <motion.div 
+              className="bg-black/20 border border-white/10 rounded-xl p-6"
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+            >
+              <h3 className="text-white text-lg font-semibold mb-4">Daily Activity (Last 7 Days)</h3>
+              <div className="h-64">
+                <Line data={dailyActivityChartData} options={chartOptions} />
+              </div>
+            </motion.div>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeChart}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className="h-80"
-              >
-                {activeChart === 'daily' && (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <AreaChart data={statistics.daily_stats}>
-                      <defs>
-                        <linearGradient id="keysGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
-                        </linearGradient>
-                        <linearGradient id="sessionsGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
-                          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis dataKey="date" stroke="#9ca3af" />
-                      <YAxis stroke="#9ca3af" />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#1f2937', 
-                          border: '1px solid #374151', 
-                          borderRadius: '8px',
-                          color: '#ffffff'
-                        }} 
-                      />
-                      <Legend />
-                      <Area 
-                        type="monotone" 
-                        dataKey="keys" 
-                        stroke="#6366f1" 
-                        fillOpacity={1} 
-                        fill="url(#keysGradient)" 
-                        name="Keys Created"
-                      />
-                      <Area 
-                        type="monotone" 
-                        dataKey="completed" 
-                        stroke="#10b981" 
-                        fillOpacity={1} 
-                        fill="url(#sessionsGradient)" 
-                        name="Sessions Completed"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                )}
-
-                {activeChart === 'hourly' && (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={statistics.hourly_stats}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis 
-                        dataKey="hour" 
-                        stroke="#9ca3af"
-                        tickFormatter={(value) => `${value}:00`}
-                      />
-                      <YAxis stroke="#9ca3af" />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#1f2937', 
-                          border: '1px solid #374151', 
-                          borderRadius: '8px',
-                          color: '#ffffff'
-                        }}
-                        labelFormatter={(value) => `Hour: ${value}:00`}
-                      />
-                      <Bar dataKey="keys" fill="#8b5cf6" radius={[4, 4, 0, 0]} name="Keys Created" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                )}
-
-                {activeChart === 'checkpoints' && statistics.checkpoint_stats.length > 0 && (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={statistics.checkpoint_stats}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis dataKey="name" stroke="#9ca3af" />
-                      <YAxis stroke="#9ca3af" />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#1f2937', 
-                          border: '1px solid #374151', 
-                          borderRadius: '8px',
-                          color: '#ffffff'
-                        }} 
-                      />
-                      <Bar dataKey="completed" fill="#10b981" radius={[4, 4, 0, 0]} name="Completions" />
-                      <Bar dataKey="completion_rate" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Completion Rate %" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                )}
-
-                {activeChart === 'distribution' && (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={[
-                          { name: 'Active Keys', value: statistics.keys.active },
-                          { name: 'Expired Keys', value: statistics.keys.expired },
-                          { name: 'Completed Sessions', value: statistics.sessions.completed },
-                          { name: 'Failed Sessions', value: statistics.sessions.failed }
-                        ]}
-                        cx="50%"
-                        cy="50%"
-                        outerRadius={100}
-                        fill="#8884d8"
-                        dataKey="value"
-                        label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                      >
-                        {[
-                          { name: 'Active Keys', value: statistics.keys.active },
-                          { name: 'Expired Keys', value: statistics.keys.expired },
-                          { name: 'Completed Sessions', value: statistics.sessions.completed },
-                          { name: 'Failed Sessions', value: statistics.sessions.failed }
-                        ].map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: '#1f2937', 
-                          border: '1px solid #374151', 
-                          borderRadius: '8px',
-                          color: '#ffffff'
-                        }} 
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                )}
-
-                {activeChart === 'checkpoints' && statistics.checkpoint_stats.length === 0 && (
+            {/* Checkpoint Types Breakdown */}
+            <motion.div 
+              className="bg-black/20 border border-white/10 rounded-xl p-6"
+              whileHover={{ y: -2 }}
+              transition={{ duration: 0.2 }}
+            >
+              <h3 className="text-white text-lg font-semibold mb-4">Checkpoint Types</h3>
+              <div className="h-64">
+                {Object.keys(statistics.checkpoints.typeBreakdown).length > 0 ? (
+                  <Doughnut data={checkpointTypeChartData} options={doughnutOptions} />
+                ) : (
                   <div className="flex items-center justify-center h-full">
-                    <p className="text-gray-400">No checkpoints configured for this keysystem</p>
+                    <p className="text-gray-400">No checkpoint data available</p>
                   </div>
                 )}
-              </motion.div>
-            </AnimatePresence>
+              </div>
+            </motion.div>
           </motion.div>
 
-          {/* Detailed Text Statistics */}
+          {/* Additional Statistics */}
           <motion.div 
-            className="grid grid-cols-1 lg:grid-cols-2 gap-6"
-            initial={{ y: 20, opacity: 0 }}
+            className="bg-black/20 border border-white/10 rounded-xl p-6"
+            initial={{ y: 30, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.6 }}
           >
-            {/* Keys Breakdown */}
-            <div className="bg-black/20 border border-white/10 rounded-xl p-6">
-              <h3 className="text-white text-lg font-semibold mb-4">Keys Breakdown</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-black/30 rounded-lg">
-                  <span className="text-gray-300">Total Keys Created</span>
-                  <span className="text-white font-bold">{statistics.keys.total}</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-green-500/10 rounded-lg">
-                  <span className="text-gray-300">Active Keys</span>
-                  <span className="text-green-400 font-bold">{statistics.keys.active}</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-red-500/10 rounded-lg">
-                  <span className="text-gray-300">Expired Keys</span>
-                  <span className="text-red-400 font-bold">{statistics.keys.expired}</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-purple-500/10 rounded-lg">
-                  <span className="text-gray-300">Recent Keys (7 days)</span>
-                  <span className="text-purple-400 font-bold">{statistics.keys.recent}</span>
-                </div>
+            <h3 className="text-white text-lg font-semibold mb-4">Keysystem Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-black/30 rounded-lg p-4">
+                <p className="text-gray-400 text-sm mb-1">Max Keys Per Person</p>
+                <p className="text-white text-xl font-bold">{keysystem.maxKeyPerPerson}</p>
               </div>
-            </div>
-
-            {/* Sessions Breakdown */}
-            <div className="bg-black/20 border border-white/10 rounded-xl p-6">
-              <h3 className="text-white text-lg font-semibold mb-4">Sessions Breakdown</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center p-3 bg-black/30 rounded-lg">
-                  <span className="text-gray-300">Total Sessions</span>
-                  <span className="text-white font-bold">{statistics.sessions.total}</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-green-500/10 rounded-lg">
-                  <span className="text-gray-300">Completed Sessions</span>
-                  <span className="text-green-400 font-bold">{statistics.sessions.completed}</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-red-500/10 rounded-lg">
-                  <span className="text-gray-300">Failed Sessions</span>
-                  <span className="text-red-400 font-bold">{statistics.sessions.failed}</span>
-                </div>
-                <div className="flex justify-between items-center p-3 bg-blue-500/10 rounded-lg">
-                  <span className="text-gray-300">Success Rate</span>
-                  <span className="text-blue-400 font-bold">{statistics.sessions.completion_rate}%</span>
-                </div>
+              <div className="bg-black/30 rounded-lg p-4">
+                <p className="text-gray-400 text-sm mb-1">Key Timer</p>
+                <p className="text-white text-xl font-bold">{keysystem.keyTimer}h</p>
+              </div>
+              <div className="bg-black/30 rounded-lg p-4">
+                <p className="text-gray-400 text-sm mb-1">Created</p>
+                <p className="text-white text-xl font-bold">
+                  {keysystem.createdAt ? new Date(keysystem.createdAt).toLocaleDateString() : 'N/A'}
+                </p>
               </div>
             </div>
           </motion.div>
