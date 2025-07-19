@@ -60,10 +60,14 @@ export async function POST(request) {
     // Prepare stats update - initialize stats object if it doesn't exist
     const statsUpdate = {};
 
+    // Get the checkpoint type from the keysystem data
+    const completedCheckpoint = keysystem.checkpoints[checkpointIndex - 1];
+    const checkpointType = completedCheckpoint?.type || 'unknown';
+
     // Log checkpoint completion in stats
     const checkpointStat = {
       date: new Date().toISOString(),
-      type: checkpointType || 'unknown'
+      type: checkpointType
       // Note: This will be used for graphical representation later
     };
 
