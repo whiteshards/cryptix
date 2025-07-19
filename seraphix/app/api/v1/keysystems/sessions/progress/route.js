@@ -71,8 +71,7 @@ export async function POST(request) {
     // Log checkpoint completion in stats
     const checkpointStat = {
       date: new Date().toISOString(),
-      type: checkpointType,
-      country: location.country
+      type: checkpointType
       // Note: This will be used for graphical representation later
     };
 
